@@ -414,7 +414,7 @@ class General(commands.Cog):
 		currentTime, authorUser, _ = await init(ctx.guild, ctx.author)
 		cmd = commande # ~ Abbréviation pour cause de flemme
 		try:
-			await ctx.defer(ephemeral=True)
+			await ctx.defer(ephemeral=not visible)
 			# ~ Informations sur la commande
 			embed = Embed(title="Aide", color=ctx.author.color)
 			msg = f"""**__Description__** : {cmds[cmd][0]}
@@ -464,7 +464,7 @@ class General(commands.Cog):
 			embed = Embed(title="Code Source",
 				description="Le code source du bot est disponible sur [github](https://github.com/HenriGolo/GoloBot/)",
 				color=ctx.author.color)
-			await ctx.respond(embed=embed)
+			await ctx.respond(embed=embed, ephemeral=True)
 			print(f"\n{currentTime} {ctx.author.name} a récupéré le code source\n")
 
 		except Exception:
@@ -524,7 +524,7 @@ class General(commands.Cog):
 	async def droprates(self, ctx, pourcentage:float, nom="", item=""):
 		currentTime, _, authorUser = await init(ctx.guild, ctx.author)
 		try:
-			await ctx.defer(ephemeral=True)
+			await ctx.defer(ephemeral=(nom == "" or item == ""))
 			p = pourcentage / 100
 			seuils = {50 : 0,
 					  75 : 0,
@@ -711,7 +711,7 @@ class Admin(commands.Cog):
 	async def poll(self, ctx, question, reponses, salon:TextChannel=None):
 		currentTime, authorUser, _ = await init(ctx.guild, ctx.author)
 		try:
-			await ctx.defer(ephemeral=True)
+			await ctx.defer()
 			if salon == None:
 				channel = ctx.channel
 			else:
@@ -779,7 +779,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 		if roles == "" and message == "" and message_id == None:
 			await ctx.respond("Veuillez renseigner au moins un paramètre")
 		try:
-			await ctx.defer(ephemeral=True)
+			await ctx.defer()
 			roles = rolesInStr(roles, ctx.guild)
 			view = ViewRoleReact(roles=roles)
 			rolesm = list(map(lambda e: e.mention, roles))
@@ -981,7 +981,7 @@ class Fun(commands.Cog):
 	async def spam_emote(self, ctx, emote="<:pepe_fuck:943761805703020614>", user:User=None):
 		currentTime, _, _ = await init(ctx.guild, ctx.author)
 		try:
-			await ctx.defer(ephemeral=True)
+			await ctx.defer()
 			emoji = str(emote) + " "
 			lim = ""
 			if not user == None:
@@ -1006,7 +1006,7 @@ class Fun(commands.Cog):
 	async def qpup(self, ctx, nbquestions:int=1):
 		currentTime, _, _ = await init(ctx.guild, ctx.author)
 		try:
-			await ctx.defer(ephemeral=True)
+			await ctx.defer()
 			qpup = read_db(infos.qpup)
 			# ~ Boucle sur le nombre de questions à poser
 			for loop in range(nbquestions):
@@ -1042,7 +1042,7 @@ class Fun(commands.Cog):
 	async def _2048(self, ctx, size:int=4):
 		currentTime, _, _ = await init(ctx.guild, ctx.author)
 		try:
-			await ctx.defer(ephemeral=True)
+			await ctx.defer()
 			# ~ Nouveau joueur
 			if not ctx.author.mention in bot.players:
 				bot.players[ctx.author.mention] = Joueur(nom=ctx.author.mention)
@@ -1070,7 +1070,7 @@ class Fun(commands.Cog):
 	async def stats_jeux(self, ctx):
 		currentTime, _, botMember = await init(ctx.guild, ctx.author)
 		try:
-			await ctx.defer(ephemeral=True)
+			await ctx.defer()
 			embed = Embed(title="Stats", description=str(bot.stats), color=botMember.color)
 			for joueur in bot.stats.joueurs:
 				if joueur.name == ctx.author.mention:
@@ -1090,7 +1090,7 @@ class WorldOfWarships(commands.Cog):
 	def getship(self, ship:str):
 		return self.shipsAutoComp.search(word=ship, max_cost=3, size=1)[0][0]
 
-	@commands.slash_command(description=cmds["clanships"][0])
+	@commands.slash_command(name="clanships", description=cmds["clanships"][0])
 	@option("clan", description=cmds["clanships"][3]["clan"])
 	async def clanships(self, ctx, clan:str):
 		currentTime, _, _ = await init(ctx.guild, ctx.author)
@@ -1112,12 +1112,12 @@ class WorldOfWarships(commands.Cog):
 			with open(infos.stderr, 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
-	@commands.slash_command(description=cmds["compo"][0])
+	@commands.slash_command(name="compo", description=cmds["compo"][0])
 	@option("clan", description=cmds["compo"][3]["clan"])
 	async def compo(self, ctx, clan:str):
 		currentTime, _, _ = await init(ctx.guild, ctx.author)
 		try:
-			await ctx.defer(ephemeral=True)
+			await ctx.defer()
 			ships = dict()
 			players_db = read_db(infos.shiplist(clan))
 			players = convert_db_dict(players_db, 0)
@@ -1140,7 +1140,7 @@ class WorldOfWarships(commands.Cog):
 			with open(infos.stderr, 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
-	@commands.slash_command(description=cmds["set_compo"][0])
+	@commands.slash_command(name="set_compo", description=cmds["set_compo"][0])
 	@option("clan", description=cmds["set_compo"][3]["clan"])
 	@option("ships", description=cmds["set_compo"][3]["ships"])
 	async def set_compo(self, ctx, clan:str, ships:str):
