@@ -1,0 +1,2 @@
+# GoloBot
+Discord Bot
