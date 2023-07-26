@@ -379,7 +379,6 @@ class General(commands.Cog):
 	async def on_message(self, msg):
 		currentTime, _, _ = await init(msg.guild)
 		try:
-			await ctx.defer(ephemeral=True)
 			# ~ Message d'un bot -> inutile
 			if msg.author.bot:
 				return
