@@ -19,8 +19,6 @@ class Ship:
 		self.tier = self.data["tier"]
 		self.nation = self.data["nation"]
 
-		print(self)
-
 	def __str__(self):
 		return f"{self.type} {self.tier} {self.name}"
 
@@ -42,8 +40,6 @@ class Player:
 			self.shipstats = self.shipstats[str(id)]
 
 		self.name = self.data["nickname"]
-		print()
-		print(self.name)
 		ships = [ship["ship_id"] for ship in self.shipstats]
 		self.ships = list(map(lambda e: Ship(e), ships))
 		self.discord_mention = self.name
