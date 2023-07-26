@@ -1104,13 +1104,14 @@ class WorldOfWarships(commands.Cog):
 				Popen([infos.getplayer, str(id), file])
 			await ctx.respond(f"""Actualisation des ships dans le clan {clan.tag} lancée.
 `/compo` sera opérationnel sous peu. Veuillez patienter encore quelques instants""", ephemeral=True)
-			print(f"\n{currentTime} {ctx.author} a lancé l'actualisation des ships du clan [{clan}]\n")
+			print(f"\n{currentTime} {ctx.author.name} a lancé l'actualisation des ships du clan [{clan}]\n")
 
 		except Exception:
 			with open(infos.stderr, 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
-	@commands.slash_command(name="compo", description=cmds["compo"][0])
+	@commands.slash_command(description=cmds["compo"][0])
+	@option("clan", description=cmds["compo"][3]["clan"])
 	async def compo(self, ctx, clan:str):
 		currentTime, _, _ = await init(ctx.guild, ctx.author)
 		try:
@@ -1131,7 +1132,7 @@ class WorldOfWarships(commands.Cog):
 				embed.add_field(name=ship, value=", ".join(_joueurs), inline=False)
 
 			await ctx.respond(embed=embed)
-			print(f"\n{currentTime} {ctx.author} a récupéré la compo du clan [{clan}]\n")
+			print(f"\n{currentTime} {ctx.author.name} a récupéré la compo du clan [{clan}]\n")
 
 		except Exception:
 			with open(infos.stderr, 'a') as file:
