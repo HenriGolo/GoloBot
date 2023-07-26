@@ -182,6 +182,6 @@ def init_autocomplete(file):
 
 	for data in db:
 		words[data[0]] = dict()
-		synonyms[data[0]] = ships[1]
+		synonyms[data[0]] = data[1]
 
 	return AutoComplete(words=words, synonyms=synonyms)
