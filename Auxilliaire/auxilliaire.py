@@ -5,6 +5,7 @@
 # ~ DB = DataBase
 
 from subprocess import check_output
+from fast_autocomplete import AutoComplete
 
 class Version:
 	def __init__(self, version=None, subversion=None, id=None):
@@ -173,3 +174,14 @@ def insert(liste:list, pos:int, elt):
 
 def check_unicity(string:str, elt:str):
 	return len(string.split(elt)) == 2
+
+def init_autocomplete(file):
+	db = read_db(file)
+	words = dict()
+	synonyms = dict()
+
+	for data in db:
+		words[data[0]] = dict()
+		synonyms[data[0]] = ships[1]
+
+	return AutoComplete(words=words, synonyms=synonyms)
