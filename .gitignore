@@ -5,4 +5,5 @@ bot_discord.pid
 database.txt
 infos.py
 infos.txt
+makefile
 qpup.txt
