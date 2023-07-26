@@ -463,12 +463,10 @@ class General(commands.Cog):
 		currentTime, _, _ = await init(ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
-			files = list()
-			for file in infos.path:
-				files.append(File(fp=infos.fileFromName(file), filename=file))
-			await ctx.respond(f"Voici le code du bot, bien évidemment anonymisé. Ce message disparaîtra après 5 minutes.\n" +\
-				"\n".join(f"{key} ? -> {docs[key]}" for key in docs),
-				files=files, ephemeral=True, delete_after=300)
+			embed = Embed(title="Code Source",
+				description="Le code source du bot est disponible sur [github](https://github.com/HenriGolo/GoloBot/)",
+				color=ctx.author.color)
+			await ctx.respond(embed=embed)
 			print(f"\n{currentTime} {ctx.author.name} a récupéré le code source\n")
 
 		except Exception:
