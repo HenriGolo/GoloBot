@@ -110,8 +110,8 @@ Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']})""",
 		"clanships" : ["Actualise la liste des navires des joueurs d'un clan",
 				"Everyone",
 				"",
-				{"clan" : "Tag du clan à actualiser"}]
-		"compo" : ["Affiche les joueurs d'un possédant les ships définis comme étant la compo de ce clan"
+				{"clan" : "Tag du clan à actualiser"}],
+		"compo" : ["Affiche les joueurs d'un possédant les ships définis comme étant la compo de ce clan",
 				"Everyone",
 				"Utiliser `/link_discord_wows` pour faire apparaître la mention discord au lieu du pseudo ingame",
 				{"clan" : "Tag du clan à actualiser"}],
@@ -120,7 +120,5 @@ Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']})""",
 				"",
 				{"clan" : "Tag du clan dont la compo est définie",
 				"ships" : "Liste des navires désirés, séparer par ;"}]}
-
-shipNames = {}
 
 gif313 = "https://media.giphy.com/media/I6ubIh995SW0cc5xco/giphy-downsized-large.gif"
