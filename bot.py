@@ -364,7 +364,6 @@ async def on_ready():
 	bot.whitelist = [bot.dev]
 	for id in wl:
 		bot.whitelist.append(await bot.fetch_user(id))
-	bot.version = version
 	await bot.change_presence(activity=Game(name="https://github.com/HenriGolo/GoloBot", start=bot.startTime))
 	bot.add_view(ViewRoleReact())
 	with open(infos.pidfile, "w") as file:
@@ -488,7 +487,7 @@ class General(commands.Cog):
 			reponse = ""
 			if "all" in files:
 				files = "guild ; bot.dev ; dm ; stderr"
-			for fl in list(map(lambda s: s.strip(), files.split(";"))):
+			for fl in list(map(str.strip, files.split(";"))):
 				# ~ Logs du serveur accessible à tous
 				if fl == "guild":
 					file = None
@@ -728,7 +727,7 @@ class Admin(commands.Cog):
 			alphabet = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲',
 						'🇳', '🇴', '🇵', '🇶', '🇷', '🇸', '🇹', '🇺', '🇻', '🇼', '🇽', '🇾', '🇿']
 			# ~ Ensemble des réponses possibles
-			reps = list(map(lambda s: s.strip(), reponses.split(';')))
+			reps = list(map(str.strip, reponses.split(';')))
 			# ~ Première lettre de chaque réponse
 			first_letters = "".join([s[0].lower() for s in reps])
 			# ~ Tableau de bool pour savoir si les premières lettres sont uniques
@@ -1087,6 +1086,10 @@ class Fun(commands.Cog):
 class WorldOfWarships(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
+		self.shipsAutoComp = init_autocomplete(infos.shipnames)
+
+	def getship(self, ship:str):
+		return self.shipsAutoComp.search(word=ship, max_cost=3, size=1)[0][0]
 
 	@commands.slash_command(description=cmds["clanships"][0])
 	@option("clan", description=cmds["clanships"][3]["clan"])
@@ -1133,6 +1136,24 @@ class WorldOfWarships(commands.Cog):
 
 			await ctx.respond(embed=embed)
 			print(f"\n{currentTime} {ctx.author.name} a récupéré la compo du clan [{clan}]\n")
+
+		except Exception:
+			with open(infos.stderr, 'a') as file:
+				file.write(f"\n{currentTime}\n{fail()}\n")
+
+	@commands.slash_command(description=cmds["set_compo"][0])
+	@option("clan", description=cmds["set_compo"][3]["clan"])
+	@option("ships", description=cmds["set_compo"][3]["ships"])
+	async def set_compo(self, ctx, clan:str, ships:str):
+		currentTime, _, _ = await init(ctx.guild, ctx.author)
+		try:
+			await ctx.defer(ephemeral=True)
+			ships = list(map(str.strip, ships.split(';')))
+			ships = list(map(self.getship, ships))
+			file = infos.shiplist(clan)
+			modify_db(file, ["compo"], [ships])
+			await ctx.respond(f"La composition pour le clan [{clan}] est maintenant *{'*, *'.join(ships)}*")
+			print(f"{currentTime} {ctx.author.name} a redéfni la compo pour le clan [{clan}]")
 
 		except Exception:
 			with open(infos.stderr, 'a') as file:
