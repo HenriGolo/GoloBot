@@ -106,6 +106,21 @@ Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']})""",
 				"Renseigner le nom du conteneur et l'item voulu va afficher la fenêtre de résultats à tout le monde",
 				{"pourcentage" : "Pourcentage de drop de l'item désiré",
 				"nom o" : "Nom du conteneur",
-				"item o" : "Item désiré"}]}
+				"item o" : "Item désiré"}],
+		"clanships" : ["Actualise la liste des navires des joueurs d'un clan",
+				"Everyone",
+				"",
+				{"clan" : "Tag du clan à actualiser"}]
+		"compo" : ["Affiche les joueurs d'un possédant les ships définis comme étant la compo de ce clan"
+				"Everyone",
+				"Utiliser `/link_discord_wows` pour faire apparaître la mention discord au lieu du pseudo ingame",
+				{"clan" : "Tag du clan à actualiser"}],
+		"set_compo" : ["Définis une liste de navires comme étant la compo d'un clan",
+				"Everyone",
+				"",
+				{"clan" : "Tag du clan dont la compo est définie",
+				"ships" : "Liste des navires désirés, séparer par ;"}]}
+
+shipNames = {}
 
 gif313 = "https://media.giphy.com/media/I6ubIh995SW0cc5xco/giphy-downsized-large.gif"
