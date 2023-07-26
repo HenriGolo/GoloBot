@@ -1,0 +1,8 @@
+Tests
+logs
+__pycache__
+bot_discord.pid
+database.txt
+infos.py
+infos.txt
+qpup.txt
