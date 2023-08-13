@@ -1090,8 +1090,9 @@ class WorldOfWarships(commands.Cog):
 		currentTime, _, _ = await init(ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
-			clanID = getClanID(clan)
-			clan = Clan(clanID)
+			s = CustomSession()
+			clanID = getClanID(clan, s)
+			clan = Clan(clanID, s)
 			file = infos.shiplist(clan.tag)
 			clan.serialise(file)
 			await ctx.respond(f"""Actualisation des ships dans le clan {clan.tag} lancée.
