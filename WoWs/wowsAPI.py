@@ -12,7 +12,7 @@ class Ship:
 		self.s = session
 		if self.s == None:
 			self.s = CustomSession()
-		self.json = self.s.getResponse(self.request).json()
+		self.json = self.s.get(self.request).json()
 		self.data = self.json["data"][str(id)]
 
 		if self.data == None:
@@ -39,9 +39,9 @@ class Player:
 		self.s = session
 		if self.s == None:
 			self.s = CustomSession()
-		self.json = self.s.getResponse(self.request).json()
+		self.json = self.s.get(self.request).json()
 		self.data = self.json["data"][str(id)]
-		self.shipstats = self.s.getResponse(f"https://api.worldofwarships.eu/wows/ships/stats/?application_id={token}&account_id={id}").json()["data"]#[str(id)]
+		self.shipstats = self.s.get(f"https://api.worldofwarships.eu/wows/ships/stats/?application_id={token}&account_id={id}").json()["data"]#[str(id)]
 		if not str(id) in self.shipstats:
 			print(self.shipstats)
 		else:
@@ -76,7 +76,7 @@ class Clan:
 		self.s = session
 		if self.s == None:
 			self.s = CustomSession()
-		self.json = self.s.getResponse(self.request).json()
+		self.json = self.s.get(self.request).json()
 		self.data = self.json["data"][str(id)]
 
 		self.name = self.data["name"]
@@ -115,7 +115,7 @@ def getClanID(tag:str, session=None):
 		s = CustomSession()
 	if len(tag) > 5:
 		raise Exception("Tag invalide")
-	response = s.getResponse(f"https://api.worldofwarships.eu/wows/clans/list/?application_id={token}&search={tag}")
+	response = s.get(f"https://api.worldofwarships.eu/wows/clans/list/?application_id={token}&search={tag}")
 	clans = response.json()["data"]
 	for clan in clans:
 		if clan["tag"] == tag:

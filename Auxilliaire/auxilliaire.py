@@ -19,7 +19,7 @@ class CustomSession():
 	def __len__(self):
 		return len(self.responses)
 
-	def getResponse(self, request):
+	def get(self, request):
 		try:
 			return self.responses[request]
 		except KeyError:
