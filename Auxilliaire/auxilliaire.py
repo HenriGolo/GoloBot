@@ -6,7 +6,9 @@
 
 from subprocess import check_output
 from fast_autocomplete import AutoComplete
-import requests
+from time import ctime
+from datetime import datetime, timedelta
+from requests import Session
 
 class CustomSession():
 	def __init__(self):
@@ -20,11 +22,15 @@ class CustomSession():
 		return len(self.responses)
 
 	def get(self, request):
+		t = datetime.strptime(time.ctime(),"%c")
 		try:
-			return self.responses[request]
+			resp = self.responses[request]
+			if t - resp[1] > timedelta(hours=1):
+				raise KeyError
+			return resp[0]
 		except KeyError:
 			r = self.s.get(request)
-			self.responses[request] = r
+			self.responses[request] = [r, t]
 			return r
 
 # ~ Lis une DB
