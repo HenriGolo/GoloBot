@@ -357,7 +357,7 @@ async def on_ready():
 	bot.players = dict()
 	for joueur in bot.stats.joueurs:
 		bot.players[joueur.name] = joueur
-	# ~ Récupération de l'User du bot.dev
+	# ~ Récupération de l'User du dev
 	bot.dev = await bot.fetch_user(infos.ownerID)
 	bot.lastDM = bot.dev
 	bot.games = dict()
@@ -385,16 +385,16 @@ class General(commands.Cog):
 			if msg.author.bot:
 				return
 
-			# ~ Message privé -> transmission au bot.dev
+			# ~ Message privé -> transmission au dev
 			if isDM(msg.channel):
 				log = f"MP reçu de {msg.author.mention} : ```{msg.content} ```"
 				# ~ Sert pour la commande reply
-				bot.lastDM = msg.author
+				self.bot.lastDM = msg.author
 				files = list()
 				# ~ Transmission des pièces jointes
 				for file in msg.attachments:
 					files.append(await file.to_file())
-				await bot.dev.send(log, files=files)
+				await self.bot.dev.send(log, files=files)
 				with open(infos.dm, 'a') as fichier:
 					fichier.write(f"\n{currentTime} {msg.author.name} a envoyé un DM :\n{msg.content}\n")
 				await msg.add_reaction("✅")
@@ -487,7 +487,7 @@ class General(commands.Cog):
 			path = bot.pwd
 			reponse = ""
 			if "all" in files:
-				files = "guild ; bot.dev ; dm ; stderr"
+				files = "guild ; dev ; dm ; stderr"
 			for fl in [e.strip() for e in files.split(";")]:
 				# ~ Logs du serveur accessible à tous
 				if fl == "guild":
@@ -577,10 +577,10 @@ class Dev(commands.Cog):
 		try:
 			await ctx.defer(ephemeral=True)
 			user = await self.bot.fetch_user(user_id)
-			# ~ Commande réservée au bot.dev
-			if not ctx.author == bot.dev:
+			# ~ Commande réservée au dev
+			if not ctx.author == self.bot.dev:
 				await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
-				await bot.dev.send(f"{ctx.author.mention} a essayé de MP {user.mention} pour envoyer ```{message}```")
+				await self.bot.dev.send(f"{ctx.author.mention} a essayé de MP {user.mention} pour envoyer ```{message}```")
 				print(f"\n{currentTime} {ctx.author.name} a essayé de MP {user.name} :\n{message}\n")
 				return
 
@@ -606,10 +606,10 @@ class Dev(commands.Cog):
 		currentTime, _, _ = await init(ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
-			# ~ Commande réservée au bot.dev
-			if not ctx.author == bot.dev:
+			# ~ Commande réservée au dev
+			if not ctx.author == self.bot.dev:
 				await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
-				await bot.dev.send(f"{ctx.author.mention} a essayé de /reply {bot.lastDM.mention} pour envoyer ```{message}```")
+				await self.bot.dev.send(f"{ctx.author.mention} a essayé de /reply {bot.lastDM.mention} pour envoyer ```{message}```")
 				print(f"\n{currentTime} {ctx.author.name} a essayé de MP {bot.lastDM.name} :\n{message}\n")
 				return
 
@@ -631,16 +631,16 @@ class Dev(commands.Cog):
 		try:
 			await ctx.defer(ephemeral=True)
 			# ~ Commande réservée aux User dans la bot.whitelist
-			if not ctx.author == bot.dev:
+			if not ctx.author == self.bot.dev:
 				if not ctx.author in bot.whitelist or restart == None:
 					await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
-					await bot.dev.send(f"{ctx.author.mention} a essayé de déconnecter le bot, redémarrage : {restart != None}")
+					await self.bot.dev.send(f"{ctx.author.mention} a essayé de déconnecter le bot, redémarrage : {restart != None}")
 					print(f"\n{currentTime} {ctx.author.name} a voulu déconnecter le bot\n")
 					return
 
 				# ~ Autorisation pour la bot.whitelist seulement si redémarrage
 				elif not restart == None:
-					await bot.dev.send(f"{ctx.author.mention} a redémarré le bot")
+					await self.bot.dev.send(f"{ctx.author.mention} a redémarré le bot")
 					print(f"\n{currentTime} {ctx.author.name} a redémarré le bot")
 
 			await ctx.respond(f"Running time : {currentTime - bot.startTime}", ephemeral=True)
@@ -665,8 +665,8 @@ class Dev(commands.Cog):
 			embed = Embed(title="Ping et autres informations", color=ctx.author.color)
 			embed.add_field(name="Ping", value=f"{round(self.bot.latency*1000)} ms", inline=False)
 			embed.add_field(name="Bot en ligne depuis", value=f"{currentTime - bot.startTime}", inline=False)
-			embed.add_field(name="Propiétaire", value=bot.dev.mention, inline=False)
-			if ctx.author == bot.dev:
+			embed.add_field(name="Propiétaire", value=self.bot.dev.mention, inline=False)
+			if ctx.author == self.bot.dev:
 				embed.add_field(name="Websocket", value=self.bot.ws, inline=False)
 				embed.add_field(name="Dernier MP", value=bot.lastDM, inline=False)
 			await ctx.respond(embed=embed, ephemeral=True)
@@ -685,9 +685,9 @@ class Dev(commands.Cog):
 			await ctx.defer(ephemeral=True)
 			idea = Embed(title="Nouvelle suggestion}", description=suggestion, color=ctx.author.color)
 			idea.add_field(name="Informations", value=ctx.author.mention)
-			await bot.dev.send(embed=idea)
+			await self.bot.dev.send(embed=idea)
 			await ctx.respond("Ta suggestion a été transmise, \
-tu vas très probablement recevoir une réponse en MP et pouvoir y discuter directement avec le bot.dev", ephemeral=True)
+tu vas très probablement recevoir une réponse en MP et pouvoir y discuter directement avec le dev", ephemeral=True)
 			print(f"\n{currentTime} {ctx.author.name} a fait une suggestion\n")
 
 		except Exception:
@@ -862,7 +862,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 			# ~ Rôle de la cible trop élevé
 			if user.top_role >= ctx.author.top_role:
 				await ctx.respond(f"Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
-				await bot.dev.send(f"{ctx.author.mention} a voulu ban {user.mention} de {ctx.guild}")
+				await self.bot.dev.send(f"{ctx.author.mention} a voulu ban {user.mention} de {ctx.guild}")
 				await ctx.author.timeout(until=currentTime+dt.timedelta(minutes=2), reason=f"A voulu ban {user.name}")
 				print(f"\n{currentTime} {ctx.author.name} a voulu ban {user.name} de {ctx.guild}\n")
 				return
@@ -876,9 +876,9 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
 			except Exception as error:
 				msg = f"Échec du ban de {user.mention} : ```{error}```"
-				if not ctx.author == bot.dev:
-					await bot.dev.send(f"{ctx.author.mention} a raté son ban de {user.mention}, message d'erreur : ```{fail()}```")
-					msg += "(message d'erreur envoyé au bot.dev en copie)"
+				if not ctx.author == self.bot.dev:
+					await self.bot.dev.send(f"{ctx.author.mention} a raté son ban de {user.mention}, message d'erreur : ```{fail()}```")
+					msg += "(message d'erreur envoyé au dev en copie)"
 				await ctx.respond(msg, ephemeral=True)
 				print(f"\n{currentTime} échec du ban de {user.name}, erreur :\n{error}\n")
 
@@ -926,9 +926,9 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
 			except Exception as error:
 				msg = f"Échec du mute de {user.mention} : ```{error}```"
-				if not ctx.author == bot.dev:
-					await bot.dev.send(f"{ctx.author.mention} a raté son mute de {user.mention}, message d'erreur : ```{fail()}```")
-					msg += "(message d'erreur envoyé au bot.dev en copie)"
+				if not ctx.author == self.bot.dev:
+					await self.bot.dev.send(f"{ctx.author.mention} a raté son mute de {user.mention}, message d'erreur : ```{fail()}```")
+					msg += "(message d'erreur envoyé au dev en copie)"
 				await ctx.respond(msg, ephemeral=True)
 				print(f"\n{currentTime} échec du mute de {user.name}, erreur :\n{error}\n")
 
