@@ -786,7 +786,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 					content = message
 				await ctx.respond(content=content, view=view)
 
-			print(f"\n{currentTime} Ajout d'un role réaction pour {','.join([e.name for e in roles)]}\n")
+			print(f"\n{currentTime} Ajout d'un role réaction pour {','.join([e.name for e in roles])}\n")
 
 		except Exception:
 			with open(infos.stderr, 'a') as file:
