@@ -624,7 +624,7 @@ class Dev(commands.Cog):
 	@commands.slash_command(description=cmds["logout"][0])
 	@option("restart", description=cmds["logout"][3]["restart o"])
 	@option("update", description=cmds["logout"][3]["update o"])
-	async def logout(self, ctx, restart=None, update=None):
+	async def logout(self, ctx, restart=None):
 		currentTime, _, _ = await init(ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
@@ -642,12 +642,6 @@ class Dev(commands.Cog):
 					print(f"\n{currentTime} {ctx.author.name} a redémarré le bot")
 
 			await ctx.respond(f"Running time : {currentTime - bot.startTime}", ephemeral=True)
-			# ~ Augmentation de la version du bot
-			if update == None:
-				self.bot.version +1
-			else:
-				self.bot.version.update()
-			write_db(infos.version, self.bot.version.serialise())
 			# ~ restart != None -> redémarrage
 			if not restart == None:
 				Popen([infos.restart])

@@ -8,31 +8,6 @@ from subprocess import check_output
 from fast_autocomplete import AutoComplete
 import requests
 
-class Version:
-	def __init__(self, version=None, subversion=None, id=None):
-		self.v = version
-		self.sv = subversion
-		self.id = id
-
-	def __str__(self):
-		return f"v{self.v}.{self.sv}.{self.id}"
-
-	def __add__(self, other:int):
-		self.id += other
-
-	def update(self, major:bool=False):
-		if major:
-			self.v += 1
-			self.sv = -1 # ~ S'annule avec le +1 qui suit
-		self.sv += 1
-		self.id = 0
-
-	def deserialise(self, content:list):
-		return Version(int(content[0]), int(content[1]), int(content[2]))
-
-	def serialise(self):
-		return [[self.v, self.sv, self.id]]
-
 class CustomSession():
 	def __init__(self):
 		self.s = requests.Session()
