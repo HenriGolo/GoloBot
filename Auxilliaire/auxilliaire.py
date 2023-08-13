@@ -12,7 +12,7 @@ from requests import Session
 
 class CustomSession():
 	def __init__(self):
-		self.s = requests.Session()
+		self.s = Session()
 		self.responses = dict()
 
 	def __str__(self):
