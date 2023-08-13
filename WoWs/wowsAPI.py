@@ -9,10 +9,10 @@ class Ship:
 	def __init__(self, id, session=None):
 		self.id = id
 		self.request = f"https://api.worldofwarships.eu/wows/encyclopedia/ships/?application_id={token}&ship_id={id}"
-		self.s = session
-		if self.s == None:
-			self.s = CustomSession()
-		self.json = self.s.get(self.request).json()
+		self.session = session
+		if self.session == None:
+			self.session = CustomSession()
+		self.json = self.session.get(self.request).json()
 		self.data = self.json["data"][str(id)]
 
 		if self.data == None:
@@ -36,20 +36,20 @@ class Player:
 	def __init__(self, id, session=None):
 		self.id = id
 		self.request = f"https://api.worldofwarships.eu/wows/account/info/?application_id={token}&account_id={id}"
-		self.s = session
-		if self.s == None:
-			self.s = CustomSession()
-		self.json = self.s.get(self.request).json()
+		self.session = session
+		if self.session == None:
+			self.session = CustomSession()
+		self.json = self.session.get(self.request).json()
 		self.data = self.json["data"][str(id)]
-		self.shipstats = self.s.get(f"https://api.worldofwarships.eu/wows/ships/stats/?application_id={token}&account_id={id}").json()["data"]#[str(id)]
-		if not str(id) in self.shipstats:
-			print(self.shipstats)
-		else:
+		self.shipstats = self.session.get(f"https://api.worldofwarships.eu/wows/ships/stats/?application_id={token}&account_id={id}").json()["data"]#[str(id)]
+		try:
 			self.shipstats = self.shipstats[str(id)]
+		except:
+			pass
 
 		self.name = self.data["nickname"]
 		ships = [ship["ship_id"] for ship in self.shipstats]
-		self.ships = list(map(lambda e: Ship(e, self.s), ships))
+		self.ships = [Ship(e, self.session) for e in ships]
 		self.discord_mention = self.name
 
 	def __str__(self):
@@ -67,21 +67,21 @@ class Player:
 		return self.ships[key]
 
 	def serialise(self):
-		return f"{self.name}!" + "!".join(list(map(lambda e: e.name, self.ships)))
+		return f"{self.name}!" + "!".join([e.name for e in self.ships])
 
 class Clan:
 	def __init__(self, id, session=None):
 		self.id = id
 		self.request = f"https://api.worldofwarships.eu/wows/clans/info/?application_id={token}&clan_id={id}"
-		self.s = session
-		if self.s == None:
-			self.s = CustomSession()
-		self.json = self.s.get(self.request).json()
+		self.session = session
+		if self.session == None:
+			self.session = CustomSession()
+		self.json = self.session.get(self.request).json()
 		self.data = self.json["data"][str(id)]
 
 		self.name = self.data["name"]
 		self.tag = self.data["tag"]
-		self.members = list(map(lambda e: Player(e, self.s), self.data["members_ids"]))
+		self.members = [Player(e, self.session) for e in self.data["members_ids"]]
 		self.leader = self.data["leader_name"]
 
 	def __str__(self):

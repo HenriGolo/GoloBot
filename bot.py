@@ -80,9 +80,9 @@ def timeAccuracy(t):
 # ~ Récupère tous les rôles mentionnés dans un message
 # ~ Message.role_mentions existe mais parfois ne marche pas complétement
 def rolesInStr(msg:str, guild:Guild):
-	sep = list(map(lambda e: e.split(">"), msg.split("<@&")))
+	sep = [e.split(">") for e in msg.split("<@&")]
 	role_ids = [int(sl[0]) for sl in sep[1:]]
-	roles = list(map(lambda e: guild.get_role(e), role_ids))
+	roles = [guild.get_role(e) for e in role_ids]
 	return roles
 
 def fail():
@@ -305,7 +305,7 @@ class Select(ui.Select):
 	def __init__(self, roles:list[Role]):
 		self.roles = roles
 		# ~ Création des options du menu déroulant
-		options = list(map(lambda e: SelectOption(label=e.name, description=f"Récupérer / Enlever {e.name}"), roles))
+		options = [SelectOption(label=e.name, description=f"Récupérer / Enlever {e.name}") for e in roles]
 		if options == []:
 			options = [SelectOption(label="Actualiser", description="Actualise la liste")]
 		# ~ Création du menu déroulant
@@ -488,7 +488,7 @@ class General(commands.Cog):
 			reponse = ""
 			if "all" in files:
 				files = "guild ; bot.dev ; dm ; stderr"
-			for fl in list(map(str.strip, files.split(";"))):
+			for fl in [e.strip() for e in files.split(";")]:
 				# ~ Logs du serveur accessible à tous
 				if fl == "guild":
 					file = None
@@ -722,15 +722,12 @@ class Admin(commands.Cog):
 			alphabet = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲',
 						'🇳', '🇴', '🇵', '🇶', '🇷', '🇸', '🇹', '🇺', '🇻', '🇼', '🇽', '🇾', '🇿']
 			# ~ Ensemble des réponses possibles
-			reps = list(map(str.strip, reponses.split(';')))
+			reps = [e.strip() for e in reponses.split(';')]
 			# ~ Première lettre de chaque réponse
 			first_letters = "".join([s[0].lower() for s in reps])
 			# ~ Tableau de bool pour savoir si les premières lettres sont uniques
-			all_unique = [check_unicity(first_letters, l) for l in first_letters]
-			for i in range(len(all_unique)):
-				all_unique[i] = all_unique[i] and 'a' <= first_letters[i].lower() <= 'z'
 			# ~ Au moins un doublon, ou une non lettre -> alphabet standard
-			if False in all_unique:
+			if False in [check_unicity(first_letters, l) and 'a' <= l <= 'z' for l in first_letters]:
 				used_alphaB = alphabet[:len(reps)]
 			# ~ Que des lettres uniques, on répond avec les lettres correspondantes
 			else:
@@ -778,7 +775,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 			await ctx.defer()
 			roles = rolesInStr(roles, ctx.guild)
 			view = ViewRoleReact(roles=roles)
-			rolesm = list(map(lambda e: e.mention, roles))
+			rolesm = [e.mention for e in roles]
 			if not message_id == None:
 				msg = await ctx.channel.fetch_message(int(message_id))
 				await msg.delete()
@@ -789,7 +786,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 					content = message
 				await ctx.respond(content=content, view=view)
 
-			print(f"\n{currentTime} Ajout d'un role réaction pour {','.join(list(map(lambda e: e.name, roles)))}\n")
+			print(f"\n{currentTime} Ajout d'un role réaction pour {','.join([e.name for e in roles)]}\n")
 
 		except Exception:
 			with open(infos.stderr, 'a') as file:
@@ -956,7 +953,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 			if not user.premium_since == None:
 				embed.add_field(name="Booste le serveur depuis", value=user.premium_since, inline=False)
 			if ctx.channel.permissions_for(ctx.author).administrator:
-				roles = list(map(lambda r: r.mention, user.roles[1:]))
+				roles = [r.mention for r in user.roles[1:]]
 				embed.add_field(name="Rôles", value=", ".join(roles), inline=False)
 			await ctx.respond(embed=embed)
 			print(f"\n{currentTime} {ctx.author.name} a récupéré les infos de {user.name}\n")
@@ -1138,8 +1135,7 @@ class WorldOfWarships(commands.Cog):
 		currentTime, _, _ = await init(ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
-			ships = list(map(str.strip, ships.split(';')))
-			ships = list(map(self.getship, ships))
+			ships = [self.getship(e.strip()) for e in ships.split(';')]
 			file = infos.shiplist(clan)
 			modify_db(file, ["compo"], [ships])
 			await ctx.respond(f"La composition pour le clan [{clan}] est maintenant *{'*, *'.join(ships)}*")
