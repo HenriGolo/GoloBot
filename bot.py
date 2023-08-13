@@ -347,6 +347,8 @@ async def on_ready():
 	bot.startTime = dt.datetime.strptime(time.ctime(),"%c")
 	# ~ Récupération du chemin du fichier
 	bot.pwd = "/".join(__file__.split('/')[:-1])+"/"
+	# ~ Création de session pour les requêtes
+	bot.session = CustomSession()
 	# ~ Lecture les bot.stats sérialisées
 	bot.stats = Stats()
 	bot.stats.read(infos.stats)
@@ -1090,9 +1092,8 @@ class WorldOfWarships(commands.Cog):
 		currentTime, _, _ = await init(ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
-			s = CustomSession()
-			clanID = getClanID(clan, s)
-			clan = Clan(clanID, s)
+			clanID = getClanID(clan, self.bot.session)
+			clan = Clan(clanID, self.bot.session)
 			file = infos.shiplist(clan.tag)
 			clan.serialise(file)
 			await ctx.respond(f"""Actualisation des ships dans le clan {clan.tag} lancée.
