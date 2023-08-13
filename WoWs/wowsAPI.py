@@ -81,7 +81,8 @@ class Clan:
 
 		self.name = self.data["name"]
 		self.tag = self.data["tag"]
-		self.members = self.data["members_ids"]
+		self.members =
+		self.members = list(map(lambda e: Player(e, self.s), self.data["members_ids"]))
 		self.leader = self.data["leader_name"]
 
 	def __str__(self):
@@ -97,9 +98,6 @@ class Clan:
 
 	def __getitem__(self, key):
 		return self.members[key]
-
-	def getPlayers(self):
-		self.members = list(map(lambda e: Player(e, self.s), self.members))
 
 	def serialise(self, filename):
 		self.getPlayers()

@@ -1096,8 +1096,7 @@ class WorldOfWarships(commands.Cog):
 			clan = Clan(clanID, self.bot.session)
 			file = infos.shiplist(clan.tag)
 			clan.serialise(file)
-			await ctx.respond(f"""Actualisation des ships dans le clan {clan.tag} lancée.
-`/compo` sera opérationnel sous peu. Veuillez patienter encore quelques instants""", ephemeral=True)
+			await ctx.respond(f"Liste des ships du clan [{clan.tag}] actualisée", ephemeral=True)
 			print(f"\n{currentTime} {ctx.author.name} a lancé l'actualisation des ships du clan [{clan}]\n")
 
 		except Exception:
