@@ -1099,11 +1099,7 @@ class WorldOfWarships(commands.Cog):
 			clanID = getClanID(clan)
 			clan = Clan(clanID)
 			file = infos.shiplist(clan.tag)
-			old_db = convert_db_dict(read_db(file), 0)
-			write_db(file, [["compo"] + old_db["compo"]], "w")
-			for id in clan.members:
-				# ~ Récupération de la liste des ships + écriture dans le bon fichier
-				Popen([infos.getplayer, str(id), file])
+			clan.serialise(file)
 			await ctx.respond(f"""Actualisation des ships dans le clan {clan.tag} lancée.
 `/compo` sera opérationnel sous peu. Veuillez patienter encore quelques instants""", ephemeral=True)
 			print(f"\n{currentTime} {ctx.author.name} a lancé l'actualisation des ships du clan [{clan}]\n")

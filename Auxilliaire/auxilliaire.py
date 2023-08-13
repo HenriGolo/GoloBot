@@ -6,6 +6,7 @@
 
 from subprocess import check_output
 from fast_autocomplete import AutoComplete
+import requests
 
 class Version:
 	def __init__(self, version=None, subversion=None, id=None):
@@ -31,6 +32,25 @@ class Version:
 
 	def serialise(self):
 		return [[self.v, self.sv, self.id]]
+
+class CustomSession():
+	def __init__(self):
+		self.s = requests.Session()
+		self.responses = dict()
+
+	def __str__(self):
+		return f"{str(self.s)}\n{[key for key in self.responses]}"
+
+	def __len__(self):
+		return len(self.responses)
+
+	def getResponse(self, request):
+		try:
+			return self.responses[request]
+		except KeyError:
+			r = self.s.get(request)
+			self.responses[request] = r
+			return r
 
 # ~ Lis une DB
 def read_db(filename:str):
