@@ -301,7 +301,7 @@ class View2048(ui.View):
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 # ~ Menu déroulant pour le role react
-class Select(ui.Select):
+class SelectRoleReact(ui.Select):
 	def __init__(self, roles:list[Role]):
 		self.roles = roles
 		# ~ Création des options du menu déroulant
@@ -338,7 +338,7 @@ class Select(ui.Select):
 class ViewRoleReact(ui.View):
 	def __init__(self ,roles:list[Role]=[]):
 		super().__init__(timeout=None)
-		self.add_item(Select(roles))
+		self.add_item(SelectRoleReact(roles))
 
 # ~ Code du bot
 @bot.event

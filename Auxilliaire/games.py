@@ -2,8 +2,6 @@ from math import log2
 from statistics import mean
 from datetime import timedelta
 
-from sys import path
-path[:0]=["../"]
 from auxilliaire import *
 from random import randrange
 
@@ -74,8 +72,8 @@ class Joueur():
 		game = line[1]
 		self.games[game] = dict()
 		self.games[game]['nombre'] = round(float(line[2]))
-		self.games[game]['scores'] = list(map(lambda n: round(float(n)), line[3]))
-		self.games[game]['times'] = list(map(lambda n: round(float(n)), line[4]))
+		self.games[game]['scores'] = [round(float(n)) for n in line[3]]
+		self.games[game]['times'] = [round(float(n)) for n in line[4]]
 		self.games[game]['finished'] = round(float(line[5]))
 		self.games[game]['winrate'] = round(float(line[6]))
 		self.games[game]['best score'] = round(float(line[7]))
@@ -142,7 +140,7 @@ class Stats():
 	def write(self, file):
 		with open(file, 'w') as f:
 			pass
-		# ~ players = list(map(lambda p: p.name, self.joueurs))
+		# ~ players = [p.name for p in self.joueurs]
 		# ~ write_db(file, pack(players, 1))
 		for player in self.joueurs:
 			player.write(file)
@@ -164,7 +162,7 @@ class Coordonnees():
 		self.dim = len(pos)
 
 	def __str__(self):
-		pos_str = list(map(lambda n: str(n), self.pos))
+		pos_str = [str(n) for n in self.pos]
 		return f"({','.join(pos_str)})"
 
 	def __add__(self, other):
@@ -217,9 +215,9 @@ class Grid():
 
 	# ~ N'est pas censé être utilisé, ne sert qu'au débug
 	def __str__(self):
-		sep = ("+--"+"-"*15)*(self.grid.size+2) + "+\n| "
+		sep = ("+--"+"-"*15)*(self.size+2) + "+\n| "
 		affichage = sep
-		for line in self.grid.grid:
+		for line in self.grid:
 			for case in line:
 				affichage += "{:>15} | ".format(str(case))
 			affichage += "\n" + sep

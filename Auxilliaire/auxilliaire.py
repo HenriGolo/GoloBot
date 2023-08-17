@@ -9,11 +9,13 @@ from fast_autocomplete import AutoComplete
 from time import ctime
 from datetime import datetime, timedelta
 from requests import Session
+from collections import namedtuple
 
 class CustomSession():
 	def __init__(self):
 		self.s = Session()
 		self.responses = dict()
+		self.data = namedtuple("RequestResult", ["result", "time"])
 
 	def __str__(self):
 		return f"{str(self.s)}\n{[key for key in self.responses]}"
@@ -25,12 +27,12 @@ class CustomSession():
 		t = datetime.strptime(time.ctime(),"%c")
 		try:
 			resp = self.responses[request]
-			if t - resp[1] > timedelta(hours=1):
+			if t - resp.time > timedelta(hours=1):
 				raise KeyError
-			return resp[0]
+			return resp.result
 		except KeyError:
 			r = self.s.get(request)
-			self.responses[request] = [r, t]
+			self.responses[request] = self.data(r, t)
 			return r
 
 # ~ Lis une DB
