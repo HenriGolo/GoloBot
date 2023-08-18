@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 # ~ Étant donné que tu lis ce code, tu as aussi eu accès à un fichier readme.txt
 # ~ Il contient des informations utiles pour faire tourner ce programme
