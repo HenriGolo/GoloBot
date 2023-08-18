@@ -223,6 +223,9 @@ class Grid():
 			affichage += "\n" + sep
 		return affichage[:-3]
 
+	def __getitem__(self, key):
+		return self.grid[key]
+
 	def spawnCase(self, value):
 		vides = list()
 		for i in range(1, 1+self.size):
@@ -235,7 +238,7 @@ class Grid():
 			case.value = value
 
 	def getCase(self, pos):
-		return self.grid[pos[0]][pos[1]]
+		return self[pos[0]][pos[1]]
 
 	def read(self, matrice:list[list]):
 		# ~ Si la matrice n'est pas carré, on arrête
