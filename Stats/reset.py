@@ -1,6 +1,6 @@
 from sys import path
-path[:0]=["../Games/"]
-from board_games import *
+path[:0]=["../Auxilliaire/"]
+from games import *
 
 noStatsPlayer = Joueur(nom="noStats")
 noStatsPlayer + Game2048()
