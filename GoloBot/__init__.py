@@ -20,19 +20,16 @@ from subprocess import Popen
 import random
 # ~ Gestion d'erreurs
 from traceback import format_exc
-# ~ Certains fichiers sont dans d'autres dossiers
-from sys import path
-path[:0]=["Auxilliaire/"]
-path[:0]=["WoWs/"]
 
 # ~ Mes propres fichiers python
-from abreviations import * # ~ Raccourcis et noms customs
-from auxilliaire import * # ~ Quelques fonctions utiles
-from games import * # ~ Mes jeux custom
-from aux_maths import * # ~ Outils mathématiques
-from wowsAPI import * # ~ L'API de World of Warships adaptée pour lisibilité
+from GoloBot.Auxilliaire import * # ~ Quelques fonctions utiles
+from GoloBot.Auxilliaire.abreviations import * # ~ Raccourcis et noms customs
+from GoloBot.Auxilliaire.games import * # ~ Mes jeux custom
+from GoloBot.Auxilliaire.aux_maths import * # ~ Outils mathématiques
+from GoloBot.WoWs.wowsAPI import * # ~ L'API de World of Warships adaptée pour lisibilité
 import infos # ~ Les tokens c'est privé
 
+# ~ Création Bot
 intents = Intents.all()
 bot = Bot(intents=intents)
 
@@ -1089,8 +1086,8 @@ class WorldOfWarships(commands.Cog):
 		currentTime, _, _ = await init(ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
-			clanID = getClanID(clan, self.bot.session)
-			clan = Clan(clanID, self.bot.session)
+			clanID = getClanID(infos.tokenWOWS, clan, self.bot.session)
+			clan = Clan(infos.tokenWOWS, clanID, self.bot.session)
 			file = infos.shiplist(clan.tag)
 			clan.serialise(file)
 			await ctx.respond(f"Liste des ships du clan [{clan.tag}] actualisée", ephemeral=True)
@@ -1145,12 +1142,14 @@ class WorldOfWarships(commands.Cog):
 			with open(infos.stderr, 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
-# ~ Et on lance le bot
+# ~ Lancement
+def startBot():
+	# ~ Ajout commandes
+	bot.add_cog(General(bot))
+	bot.add_cog(Dev(bot))
+	bot.add_cog(Admin(bot))
+	bot.add_cog(Fun(bot))
+	bot.add_cog(WorldOfWarships(bot))
 
-bot.add_cog(General(bot))
-bot.add_cog(Dev(bot))
-bot.add_cog(Admin(bot))
-bot.add_cog(Fun(bot))
-bot.add_cog(WorldOfWarships(bot))
-
-bot.run(token=infos.token)
+	# ~ Run
+	bot.run(token=infos.tokenDSC)

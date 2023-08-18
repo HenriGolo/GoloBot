@@ -1,12 +1,9 @@
 import time, datetime as dt
-from sys import path
-path[:0] = ["../Auxilliaire/"]
 
-from auxilliaire import CustomSession, modify_db
-from data_API import token # ~ Le token permettant d'accéder à l'API WG
+from GoloBot.Auxilliaire import CustomSession, modify_db
 
 class Ship:
-	def __init__(self, id, session=None):
+	def __init__(self, token, id, session=None):
 		self.id = id
 		self.request = f"https://api.worldofwarships.eu/wows/encyclopedia/ships/?application_id={token}&ship_id={id}"
 		self.session = session
@@ -33,7 +30,7 @@ class Ship:
 		return self.id == other.id
 
 class Player:
-	def __init__(self, id, session=None):
+	def __init__(self, token, id, session=None):
 		self.id = id
 		self.request = f"https://api.worldofwarships.eu/wows/account/info/?application_id={token}&account_id={id}"
 		self.session = session
@@ -49,7 +46,7 @@ class Player:
 
 		self.name = self.data["nickname"]
 		ships = [ship["ship_id"] for ship in self.shipstats]
-		self.ships = [Ship(e, self.session) for e in ships]
+		self.ships = [Ship(token, e, self.session) for e in ships]
 		self.discord_mention = self.name
 
 	def __str__(self):
@@ -70,7 +67,7 @@ class Player:
 		return f"{self.name}!" + "!".join([e.name for e in self.ships])
 
 class Clan:
-	def __init__(self, id, session=None):
+	def __init__(self, token, id, session=None):
 		self.id = id
 		self.request = f"https://api.worldofwarships.eu/wows/clans/info/?application_id={token}&clan_id={id}"
 		self.session = session
@@ -81,7 +78,7 @@ class Clan:
 
 		self.name = self.data["name"]
 		self.tag = self.data["tag"]
-		self.members = [Player(e, self.session) for e in self.data["members_ids"]]
+		self.members = [Player(token, e, self.session) for e in self.data["members_ids"]]
 		self.leader = self.data["leader_name"]
 
 	def __str__(self):
@@ -106,7 +103,7 @@ class Clan:
 				file.write(player.serialise())
 				file.write("!\n")
 
-def getClanID(tag:str, session=None):
+def getClanID(token, tag:str, session=None):
 	s = session
 	if s == None:
 		s = CustomSession()

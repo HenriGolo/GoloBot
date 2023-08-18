@@ -2,7 +2,7 @@ from math import log2
 from statistics import mean
 from datetime import timedelta
 
-from auxilliaire import *
+from GoloBot.Auxilliaire import *
 from random import randrange
 
 class Joueur():

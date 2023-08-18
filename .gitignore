@@ -1,4 +1,5 @@
-Tests
+Debug
+dist
 logs
 __pycache__
 bot_discord.pid
@@ -10,4 +11,3 @@ qpup.txt
 WoWs/data_API.py
 WoWs/all_ships_names.txt
 discord.pid
-Stats
