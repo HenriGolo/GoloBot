@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from sys import path
-path[:0]=["../Games/"]
-from board_games import *
+path[:0]=["../Auxilliaire/"]
+from games import *
 
 stats = Stats()
 stats.read("players.txt")
