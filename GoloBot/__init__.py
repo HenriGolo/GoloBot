@@ -120,9 +120,9 @@ class View2048(ui.View):
 				# ~ Actualisation des stats
 				game.termine = True
 				game.duree = currentTime - game.duree
-				bot.players[user.mention] + game
-				bot.stats + self.bot.players[user.mention]
-				bot.stats.write(infos.stats)
+				self.bot.players[user.mention] + game
+				self.bot.stats + self.bot.players[user.mention]
+				self.bot.stats.write(infos.stats)
 
 			# ~ On itère sur les boutons de la View
 			for child in self.children:
@@ -164,9 +164,9 @@ class View2048(ui.View):
 					child.disabled = True
 				game.termine = True
 				game.duree = currentTime - game.duree
-				bot.players[user.mention] + game
-				bot.stats + self.bot.players[user.mention]
-				bot.stats.write(infos.stats)
+				self.bot.players[user.mention] + game
+				self.bot.stats + self.bot.players[user.mention]
+				self.bot.stats.write(infos.stats)
 
 			for child in self.children:
 				if not child.label.lower() in toward:
@@ -204,9 +204,9 @@ class View2048(ui.View):
 					child.disabled = True
 				game.termine = True
 				game.duree = currentTime - game.duree
-				bot.players[user.mention] + game
-				bot.stats + self.bot.players[user.mention]
-				bot.stats.write(infos.stats)
+				self.bot.players[user.mention] + game
+				self.bot.stats + self.bot.players[user.mention]
+				self.bot.stats.write(infos.stats)
 
 			for child in self.children:
 				if not child.label.lower() in toward:
@@ -244,9 +244,9 @@ class View2048(ui.View):
 					child.disabled = True
 				game.termine = True
 				game.duree = currentTime - game.duree
-				bot.players[user.mention] + game
-				bot.stats + self.bot.players[user.mention]
-				bot.stats.write(infos.stats)
+				self.bot.players[user.mention] + game
+				self.bot.stats + self.bot.players[user.mention]
+				self.bot.stats.write(infos.stats)
 
 			for child in self.children:
 				if not child.label.lower() in toward:
@@ -286,10 +286,10 @@ class View2048(ui.View):
 			game.gagne = "2048" in str(game)
 			game.duree = currentTime - game.duree
 
-			bot.players[user.mention] + game
-			bot.stats + self.bot.players[user.mention]
-			bot.stats.write(infos.stats)
-			bot.games[user.mention] = [g for g in self.bot.games[user.mention] if g.jeu!="2048"]
+			self.bot.players[user.mention] + game
+			self.bot.stats + self.bot.players[user.mention]
+			self.bot.stats.write(infos.stats)
+			self.bot.games[user.mention] = [g for g in self.bot.games[user.mention] if g.jeu!="2048"]
 			await interaction.response.edit_message(view=self)
 
 		except Exception:
@@ -573,14 +573,14 @@ class Dev(commands.Cog):
 			# ~ Commande réservée au dev
 			if not ctx.author == self.bot.dev:
 				await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
-				await self.bot.dev.send(f"{ctx.author.mention} a essayé de /reply {bot.lastDM.mention} pour envoyer ```{message}```")
-				print(f"\n{currentTime} {ctx.author.name} a essayé de MP {bot.lastDM.name} :\n{message}\n")
+				await self.bot.dev.send(f"{ctx.author.mention} a essayé de /reply {self.bot.lastDM.mention} pour envoyer ```{message}```")
+				print(f"\n{currentTime} {ctx.author.name} a essayé de MP {self.bot.lastDM.name} :\n{message}\n")
 				return
 
 			# ~ On envoie une réponse à la dernière personne qui a envoyé un message au bot
 			await self.bot.lastDM.send(message)
-			await ctx.respond(f"MP envoyé à {bot.lastDM.mention} : ```{message}```", ephemeral=True)
-			print(f"\n{currentTime} : MP envoyé à {bot.lastDM.name} :\n{message}\n")
+			await ctx.respond(f"MP envoyé à {self.bot.lastDM.mention} : ```{message}```", ephemeral=True)
+			print(f"\n{currentTime} : MP envoyé à {self.bot.lastDM.name} :\n{message}\n")
 
 		except Exception:
 			with open(infos.stderr, 'a') as file:
@@ -721,7 +721,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 	@default_permissions(manage_roles=True)
 	@guild_only()
 	async def role_react(self, ctx, roles:str="", message:str="", message_id=None):
-		currentTime, _, botMember = await init(self.bot, ctx.guild, ctx.author)
+		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		if roles == "" and message == "" and message_id == None:
 			await ctx.respond("Veuillez renseigner au moins un paramètre")
 		try:
@@ -991,11 +991,11 @@ class Fun(commands.Cog):
 			await ctx.defer()
 			# ~ Nouveau joueur
 			if not ctx.author.mention in self.bot.players:
-				bot.players[ctx.author.mention] = Joueur(nom=ctx.author.mention)
+				self.bot.players[ctx.author.mention] = Joueur(nom=ctx.author.mention)
 			# ~ Création d'un 2048
 			game = Game2048(size=size)
 			game.duree = currentTime
-			add_dict(bot.games, ctx.author.mention, game)
+			add_dict(self.bot.games, ctx.author.mention, game)
 			embed = Embed(title="2048", color=ctx.author.color)
 			# ~ Envoie du jeu formatté en python ou n'importe quel autre langage
 			# ~ pour colorer les chiffres et ajouter un effet visuel
@@ -1017,7 +1017,7 @@ class Fun(commands.Cog):
 		currentTime, _, botMember = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer()
-			embed = Embed(title="Stats", description=str(bot.stats), color=botMember.color)
+			embed = Embed(title="Stats", description=str(self.bot.stats), color=botMember.color)
 			for joueur in self.bot.stats.joueurs:
 				if joueur.name == ctx.author.mention:
 					embed.add_field(name="Stats Personnelles", value=str(joueur))
