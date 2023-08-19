@@ -20,6 +20,8 @@ dependencies = [
     "fast_autocomplete",
     "fast-autocomplete[levenshtein]",
     "requests",
+    "py-cord",
+    "pytz"
 ]
 
 [project.urls]
