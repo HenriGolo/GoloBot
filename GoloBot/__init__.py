@@ -449,7 +449,6 @@ class General(commands.Cog):
 			await ctx.defer(ephemeral=True)
 			fichiers = list()
 			sent = str()
-			path = self.bot.pwd
 			reponse = ""
 			if "all" in files:
 				files = "guild ; dev ; dm ; stderr"
@@ -471,7 +470,7 @@ class General(commands.Cog):
 					file = infos.stderr
 					# ~ Récupération des dernière lignes
 					# ~ Le [-1900:] s'assure que le message ne dépasse pas les 2000 caractères
-					reponse += f"Dernières {last_x_lines} lignes de **{file}** :\n{tail(path+file, last_x_lines)[-1900:]}"
+					reponse += f"Dernières {last_x_lines} lignes de **{file}** :\n{tail(file, last_x_lines)[-1900:]}"
 
 				# ~ On ajoute le fichier à la liste des renvois
 				if not file == None:
