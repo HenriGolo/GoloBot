@@ -116,8 +116,8 @@ def modify_db(filename:str, old_starts:list, new_lines:list):
 	write_db(filename, new_db)
 
 # ~ Commande bash tail avec un peu de traitement
-def tail(file, lastN=10):
-	cmd = check_output(f"tail -n {lastN} {file}", shell=True)
+def tail(file:str, lastN=10):
+	cmd = check_output(["tail", file,  "-n", str(lastN)])
 	# ~ On doit convertir l'output de check_output (de type bytes) vers un str
 	cmd = str(cmd, 'UTF-8')
 	return cmd
