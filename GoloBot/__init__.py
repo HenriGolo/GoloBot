@@ -1015,7 +1015,7 @@ class Fun(commands.Cog):
 			moves = [f"{to} : {bool_reac[game.canMove(to)]}" for to in toward]
 			embed.add_field(name="Mouvements", value="\n".join(moves), inline=True)
 			embed.add_field(name="Score", value=game.score, inline=True)
-			await ctx.respond(embed=embed, view=View2048())
+			await ctx.respond(embed=embed, view=View2048(self.bot))
 			with open(f"logs/logs_{ctx.guild.name}.txt", "a") as file:
 				file.write(f"\n{currentTime} {ctx.author.name} a lancé un 2048\n")
 
