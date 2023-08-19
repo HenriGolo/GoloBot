@@ -89,6 +89,10 @@ def correspond(attendu:list, reponse:str):
 
 # ~ Les boutons pour le jeu de 2048
 class View2048(ui.View):
+	def __init__(self, bot):
+		self.bot = bot
+		super().__init__()
+
 	# ~ Bouton "bouger vers le haut"
 	@ui.button(label="Haut", style=ButtonStyle.primary, emoji='⬆️')
 	async def up_button(self, button, interaction):
@@ -97,7 +101,7 @@ class View2048(ui.View):
 		currentTime, _, _ = await init(self.bot, interaction.guild, user)
 		try:
 			# ~ Récupération de la dernière partie de 2048 du joueur
-			game = [g for g in bot.games[user.mention] if g.jeu=="2048"][-1]
+			game = [g for g in self.bot.games[user.mention] if g.jeu=="2048"][-1]
 			# ~ Voir board_bot.games.py
 			game.moveAll("haut")
 			if not game.gagne:
@@ -113,11 +117,11 @@ class View2048(ui.View):
 						child.label = "Partie Terminée"
 					# ~ Dans tous les cas on désactive le bouton
 					child.disabled = True
-				# ~ Actualisation des bot.stats
+				# ~ Actualisation des stats
 				game.termine = True
 				game.duree = currentTime - game.duree
 				bot.players[user.mention] + game
-				bot.stats + bot.players[user.mention]
+				bot.stats + self.bot.players[user.mention]
 				bot.stats.write(infos.stats)
 
 			# ~ On itère sur les boutons de la View
@@ -148,7 +152,7 @@ class View2048(ui.View):
 		user = interaction.user
 		currentTime, _, _ = await init(self.bot, interaction.guild, user)
 		try:
-			game = [g for g in bot.games[user.mention] if g.jeu=="2048"][-1]
+			game = [g for g in self.bot.games[user.mention] if g.jeu=="2048"][-1]
 			game.moveAll("bas")
 			if not game.gagne:
 				game.gagne = "2048" in str(game)
@@ -161,7 +165,7 @@ class View2048(ui.View):
 				game.termine = True
 				game.duree = currentTime - game.duree
 				bot.players[user.mention] + game
-				bot.stats + bot.players[user.mention]
+				bot.stats + self.bot.players[user.mention]
 				bot.stats.write(infos.stats)
 
 			for child in self.children:
@@ -188,7 +192,7 @@ class View2048(ui.View):
 		user = interaction.user
 		currentTime, _, _ = await init(self.bot, interaction.guild, user)
 		try:
-			game = [g for g in bot.games[user.mention] if g.jeu=="2048"][-1]
+			game = [g for g in self.bot.games[user.mention] if g.jeu=="2048"][-1]
 			game.moveAll("gauche")
 			if not game.gagne:
 				game.gagne = "2048" in str(game)
@@ -201,7 +205,7 @@ class View2048(ui.View):
 				game.termine = True
 				game.duree = currentTime - game.duree
 				bot.players[user.mention] + game
-				bot.stats + bot.players[user.mention]
+				bot.stats + self.bot.players[user.mention]
 				bot.stats.write(infos.stats)
 
 			for child in self.children:
@@ -228,7 +232,7 @@ class View2048(ui.View):
 		user = interaction.user
 		currentTime, _, _ = await init(self.bot, interaction.guild, user)
 		try:
-			game = [g for g in bot.games[user.mention] if g.jeu=="2048"][-1]
+			game = [g for g in self.bot.games[user.mention] if g.jeu=="2048"][-1]
 			game.moveAll("droite")
 			if not game.gagne:
 				game.gagne = "2048" in str(game)
@@ -241,7 +245,7 @@ class View2048(ui.View):
 				game.termine = True
 				game.duree = currentTime - game.duree
 				bot.players[user.mention] + game
-				bot.stats + bot.players[user.mention]
+				bot.stats + self.bot.players[user.mention]
 				bot.stats.write(infos.stats)
 
 			for child in self.children:
@@ -274,7 +278,7 @@ class View2048(ui.View):
 			user = interaction.user
 
 			# ~ On supprime la partie de la liste des parties en cours
-			game = [g for g in bot.games[user.mention] if g.jeu=="2048"][-1]
+			game = [g for g in self.bot.games[user.mention] if g.jeu=="2048"][-1]
 			# ~ False -> abandon, True -> bloqué
 			# ~ Normalement, True est impossible car détecté par les boutons directionnels
 			game.termine = not game.canMoveAll()
@@ -283,9 +287,9 @@ class View2048(ui.View):
 			game.duree = currentTime - game.duree
 
 			bot.players[user.mention] + game
-			bot.stats + bot.players[user.mention]
+			bot.stats + self.bot.players[user.mention]
 			bot.stats.write(infos.stats)
-			bot.games[user.mention] = [g for g in bot.games[user.mention] if g.jeu!="2048"]
+			bot.games[user.mention] = [g for g in self.bot.games[user.mention] if g.jeu!="2048"]
 			await interaction.response.edit_message(view=self)
 
 		except Exception:
@@ -445,7 +449,7 @@ class General(commands.Cog):
 			await ctx.defer(ephemeral=True)
 			fichiers = list()
 			sent = str()
-			path = bot.pwd
+			path = self.bot.pwd
 			reponse = ""
 			if "all" in files:
 				files = "guild ; dev ; dm ; stderr"
@@ -456,8 +460,8 @@ class General(commands.Cog):
 					if not ctx.guild == None:
 						file = infos.log(ctx.guild.name)
 
-				# ~ Autres logs, réservés aux gens dans la bot.whitelist
-				elif not ctx.author in bot.whitelist:
+				# ~ Autres logs, réservés aux gens dans la whitelist
+				elif not ctx.author in self.bot.whitelist:
 					continue
 				elif fl == "dev":
 					file = infos.stdout
@@ -575,7 +579,7 @@ class Dev(commands.Cog):
 				return
 
 			# ~ On envoie une réponse à la dernière personne qui a envoyé un message au bot
-			await bot.lastDM.send(message)
+			await self.bot.lastDM.send(message)
 			await ctx.respond(f"MP envoyé à {bot.lastDM.mention} : ```{message}```", ephemeral=True)
 			print(f"\n{currentTime} : MP envoyé à {bot.lastDM.name} :\n{message}\n")
 
@@ -591,20 +595,20 @@ class Dev(commands.Cog):
 		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
-			# ~ Commande réservée aux User dans la bot.whitelist
+			# ~ Commande réservée aux User dans la whitelist
 			if not ctx.author == self.bot.dev:
-				if not ctx.author in bot.whitelist or restart == None:
+				if not ctx.author in self.bot.whitelist or restart == None:
 					await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
 					await self.bot.dev.send(f"{ctx.author.mention} a essayé de déconnecter le bot, redémarrage : {restart != None}")
 					print(f"\n{currentTime} {ctx.author.name} a voulu déconnecter le bot\n")
 					return
 
-				# ~ Autorisation pour la bot.whitelist seulement si redémarrage
+				# ~ Autorisation pour la whitelist seulement si redémarrage
 				elif not restart == None:
 					await self.bot.dev.send(f"{ctx.author.mention} a redémarré le bot")
 					print(f"\n{currentTime} {ctx.author.name} a redémarré le bot")
 
-			await ctx.respond(f"Running time : {currentTime - bot.startTime}", ephemeral=True)
+			await ctx.respond(f"Running time : {currentTime - self.bot.startTime}", ephemeral=True)
 			# ~ restart != None -> redémarrage
 			if not restart == None:
 				Popen([infos.restart])
@@ -625,7 +629,7 @@ class Dev(commands.Cog):
 			await ctx.defer(ephemeral=True)
 			embed = Embed(title="Ping et autres informations", color=ctx.author.color)
 			embed.add_field(name="Ping", value=f"{round(self.bot.latency*1000)} ms", inline=False)
-			embed.add_field(name="Bot en ligne depuis", value=f"{currentTime - bot.startTime}", inline=False)
+			embed.add_field(name="Bot en ligne depuis", value=f"{currentTime - self.bot.startTime}", inline=False)
 			embed.add_field(name="Propiétaire", value=self.bot.dev.mention, inline=False)
 			if ctx.author == self.bot.dev:
 				embed.add_field(name="Websocket", value=self.bot.ws, inline=False)
@@ -998,7 +1002,7 @@ class Fun(commands.Cog):
 		try:
 			await ctx.defer()
 			# ~ Nouveau joueur
-			if not ctx.author.mention in bot.players:
+			if not ctx.author.mention in self.bot.players:
 				bot.players[ctx.author.mention] = Joueur(nom=ctx.author.mention)
 			# ~ Création d'un 2048
 			game = Game2048(size=size)
@@ -1019,14 +1023,14 @@ class Fun(commands.Cog):
 			with open(infos.stderr, 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
-	# ~ Renvoie les bot.stats sur les différents jeux
+	# ~ Renvoie les stats sur les différents jeux
 	@commands.slash_command(name="stats_jeux", description=cmds["stats_jeux"][0])
 	async def stats_jeux(self, ctx):
 		currentTime, _, botMember = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer()
 			embed = Embed(title="Stats", description=str(bot.stats), color=botMember.color)
-			for joueur in bot.stats.joueurs:
+			for joueur in self.bot.stats.joueurs:
 				if joueur.name == ctx.author.mention:
 					embed.add_field(name="Stats Personnelles", value=str(joueur))
 			await ctx.respond(embed=embed)
