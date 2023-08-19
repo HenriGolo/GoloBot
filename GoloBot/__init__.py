@@ -621,7 +621,7 @@ class Dev(commands.Cog):
 			embed.add_field(name="Propiétaire", value=self.bot.dev.mention, inline=False)
 			if ctx.author == self.bot.dev:
 				embed.add_field(name="Websocket", value=self.bot.ws, inline=False)
-				embed.add_field(name="Dernier MP", value=bot.lastDM, inline=False)
+				embed.add_field(name="Dernier MP", value=self.bot.lastDM, inline=False)
 			await ctx.respond(embed=embed, ephemeral=True)
 			print(f"\n{currentTime} {ctx.author.name} a utilisé ping\n")
 
