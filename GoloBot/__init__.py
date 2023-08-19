@@ -474,7 +474,7 @@ class General(commands.Cog):
 
 				# ~ On ajoute le fichier à la liste des renvois
 				if not file == None:
-					fichiers.append(File(fp=path+file, filename=file))
+					fichiers.append(File(fp=file, filename=file))
 					sent += f"{file}, "
 			await ctx.respond(f"Voici les logs demandés\n{reponse}", files=fichiers, ephemeral=True)
 			print(f"\n{currentTime} Logs envoyés : {sent[:-2]}\n")
