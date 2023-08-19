@@ -9,7 +9,7 @@ class TestMisc(unittest.TestCase):
         p = pack(e, 1)
         self.assertEqual(p, [e])
 
-        u = unpack(p, 1)
+        u = unpack(p)
         self.assertEqual(u, e)
 
     def test_aux_math(self):
