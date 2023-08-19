@@ -160,7 +160,7 @@ def add_dict(dico:dict, key, elt):
 
 # ~ Enveloppe item dans n listes
 def pack(item, n):
-	if wanted == 0:
+	if n == 0:
 		return item
 	return pack([item], n-1)
 
