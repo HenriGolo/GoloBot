@@ -588,29 +588,18 @@ class Dev(commands.Cog):
 
 	# ~ Déconnecte le bot
 	@commands.slash_command(description=cmds["logout"][0])
-	@option("restart", description=cmds["logout"][3]["restart o"])
-	@option("update", description=cmds["logout"][3]["update o"])
-	async def logout(self, ctx, restart=None):
+	async def logout(self, ctx):
 		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
 			# ~ Commande réservée aux User dans la whitelist
 			if not ctx.author == self.bot.dev:
-				if not ctx.author in self.bot.whitelist or restart == None:
+				if not ctx.author in self.bot.whitelist:
 					await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
-					await self.bot.dev.send(f"{ctx.author.mention} a essayé de déconnecter le bot, redémarrage : {restart != None}")
+					await self.bot.dev.send(f"{ctx.author.mention} a essayé de déconnecter le bot")
 					print(f"\n{currentTime} {ctx.author.name} a voulu déconnecter le bot\n")
-					return
-
-				# ~ Autorisation pour la whitelist seulement si redémarrage
-				elif not restart == None:
-					await self.bot.dev.send(f"{ctx.author.mention} a redémarré le bot")
-					print(f"\n{currentTime} {ctx.author.name} a redémarré le bot")
 
 			await ctx.respond(f"Running time : {currentTime - self.bot.startTime}", ephemeral=True)
-			# ~ restart != None -> redémarrage
-			if not restart == None:
-				Popen([infos.restart])
 			# ~ Déconnecte le bot
 			await self.bot.close()
 			print(f"\n{currentTime} Bot déconnecté\n")
