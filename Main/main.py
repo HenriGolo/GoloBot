@@ -7,7 +7,7 @@ bot = Bot(intents=intents)
 
 @bot.event
 async def on_ready():
-	currentTime, _, _ = await init()
+	currentTime, _, _ = await init(bot)
 	bot.startTime = currentTime
 	# ~ Récupération du chemin du fichier
 	bot.pwd = "/".join(__file__.split('/')[:-1])+"/"
@@ -37,14 +37,15 @@ async def on_ready():
 	bot.add_view(ViewRoleReact())
 	with open(infos.pidfile, "w") as file:
 		file.write(str(getpid()))
-	print(f'Logged on as {bot.user}!')
 
-# ~ Ajout commandes
-bot.add_cog(General(bot))
-bot.add_cog(Dev(bot))
-bot.add_cog(Admin(bot))
-bot.add_cog(Fun(bot))
-bot.add_cog(WorldOfWarships(bot))
+	# ~ Ajout commandes
+	bot.add_cog(General(bot))
+	bot.add_cog(Dev(bot))
+	bot.add_cog(Admin(bot))
+	bot.add_cog(Fun(bot))
+	bot.add_cog(WorldOfWarships(bot))
+
+	print(f'Logged on as {bot.user}!')
 
 # ~ Run
 bot.run(token=infos.tokenDSC)

@@ -30,7 +30,7 @@ import infos # ~ Les tokens c'est privé
 
 # ~ À appeler à chaque commande
 # ~ récupère la date, le Member du bot et le User de l'auteur
-async def init(guild=None, author=None):
+async def init(bot, guild=None, author=None):
 	# ~ Récupération de la date
 	currentTime = dt.datetime.strptime(time.ctime(),"%c")
 
@@ -94,7 +94,7 @@ class View2048(ui.View):
 	async def up_button(self, button, interaction):
 		# ~ Récupération du joueur
 		user = interaction.user
-		currentTime, _, _ = await init(interaction.guild, user)
+		currentTime, _, _ = await init(self.bot, interaction.guild, user)
 		try:
 			# ~ Récupération de la dernière partie de 2048 du joueur
 			game = [g for g in bot.games[user.mention] if g.jeu=="2048"][-1]
@@ -146,7 +146,7 @@ class View2048(ui.View):
 	@ui.button(label="Bas", style=ButtonStyle.primary, emoji='⬇️')
 	async def down_button(self, button, interaction):
 		user = interaction.user
-		currentTime, _, _ = await init(interaction.guild, user)
+		currentTime, _, _ = await init(self.bot, interaction.guild, user)
 		try:
 			game = [g for g in bot.games[user.mention] if g.jeu=="2048"][-1]
 			game.moveAll("bas")
@@ -186,7 +186,7 @@ class View2048(ui.View):
 	@ui.button(label="Gauche", style=ButtonStyle.primary, emoji='⬅️')
 	async def left_button(self, button, interaction):
 		user = interaction.user
-		currentTime, _, _ = await init(interaction.guild, user)
+		currentTime, _, _ = await init(self.bot, interaction.guild, user)
 		try:
 			game = [g for g in bot.games[user.mention] if g.jeu=="2048"][-1]
 			game.moveAll("gauche")
@@ -226,7 +226,7 @@ class View2048(ui.View):
 	@ui.button(label="Droite", style=ButtonStyle.primary, emoji='➡️')
 	async def right_button(self, button, interaction):
 		user = interaction.user
-		currentTime, _, _ = await init(interaction.guild, user)
+		currentTime, _, _ = await init(self.bot, interaction.guild, user)
 		try:
 			game = [g for g in bot.games[user.mention] if g.jeu=="2048"][-1]
 			game.moveAll("droite")
@@ -265,7 +265,7 @@ class View2048(ui.View):
 	# ~ Bouton d'arrêt
 	@ui.button(label="Arrêter", custom_id="stop", style=ButtonStyle.danger, emoji='❌')
 	async def delete_button(self, button, interaction):
-		currentTime, _, _ = await init(interaction.guild, interaction.user)
+		currentTime, _, _ = await init(self.bot, interaction.guild, interaction.user)
 		try:
 			# ~ On déasctive tous les boutons
 			for child in self.children:
@@ -307,7 +307,7 @@ class SelectRoleReact(ui.Select):
 		user = interaction.user
 		msg = interaction.message
 		guild = interaction.guild
-		currentTime, _, _ = await init(guild, user)
+		currentTime, _, _ = await init(self.bot, guild, user)
 		try:
 			if self.values[0] == "Actualiser":
 				await interaction.response.edit_message(view=ViewRoleReact(rolesInStr(msg.content, guild)))
@@ -340,7 +340,7 @@ class General(commands.Cog):
 	# ~ Gestion des messages
 	@commands.Cog.listener()
 	async def on_message(self, msg):
-		currentTime, _, _ = await init(msg.guild)
+		currentTime, _, _ = await init(self.bot, msg.guild)
 		try:
 			# ~ Message d'un bot -> inutile
 			if msg.author.bot:
@@ -374,7 +374,7 @@ class General(commands.Cog):
 	@option("commande", choices=[cmd for cmd in cmds], description=cmds["aide"][3]["commande o"])
 	@option("visible", choices=[True, False], description=cmds["aide"][3]["visible o"])
 	async def aide(self, ctx, commande="aide", visible:bool=False):
-		currentTime, authorUser, _ = await init(ctx.guild, ctx.author)
+		currentTime, authorUser, _ = await init(self.bot, ctx.guild, ctx.author)
 		cmd = commande # ~ Abbréviation pour cause de flemme
 		try:
 			await ctx.defer(ephemeral=not visible)
@@ -408,7 +408,7 @@ class General(commands.Cog):
 	# ~ Renvoie un lien pour inviter le bot
 	@commands.slash_command(description=cmds["invite"][0])
 	async def invite(self, ctx):
-		currentTime, _, _ = await init(ctx.guild, ctx.author)
+		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
 			await ctx.respond(f"Le lien pour m'inviter : {infos.invitation}", ephemeral=True)
@@ -421,7 +421,7 @@ class General(commands.Cog):
 	# ~ Renvoie le code source du bot
 	@commands.slash_command(description=cmds["code"][0])
 	async def code(self, ctx):
-		currentTime, _, _ = await init(ctx.guild, ctx.author)
+		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
 			embed = Embed(title="Code Source",
@@ -440,7 +440,7 @@ class General(commands.Cog):
 	@option("last_x_lines", description=cmds["get_logs"][3]["last_x_lines o"])
 	@default_permissions(manage_messages=True)
 	async def get_logs(self, ctx, files, last_x_lines:int=50):
-		currentTime, _, _ = await init(ctx.guild, ctx.author)
+		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
 			fichiers = list()
@@ -485,7 +485,7 @@ class General(commands.Cog):
 	@option("nom", description=cmds["droprates"][3]["nom o"])
 	@option("item", description=cmds["droprates"][3]["item o"])
 	async def droprates(self, ctx, pourcentage:float, nom="", item=""):
-		currentTime, _, authorUser = await init(ctx.guild, ctx.author)
+		currentTime, _, authorUser = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=(nom == "" or item == ""))
 			p = pourcentage / 100
@@ -534,7 +534,7 @@ class Dev(commands.Cog):
 	@option("user_id", description=cmds["dm"][3]["user_id"])
 	@option("message", description=cmds["dm"][3]["message"])
 	async def dm(self, ctx, user_id, message):
-		currentTime, _, _ = await init(ctx.guild, ctx.author)
+		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
 			user = await self.bot.fetch_user(user_id)
@@ -564,7 +564,7 @@ class Dev(commands.Cog):
 	@commands.slash_command(description=cmds["reply"][0])
 	@option("message", description=cmds["reply"][3]["message"])
 	async def reply(self, ctx, message):
-		currentTime, _, _ = await init(ctx.guild, ctx.author)
+		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
 			# ~ Commande réservée au dev
@@ -588,7 +588,7 @@ class Dev(commands.Cog):
 	@option("restart", description=cmds["logout"][3]["restart o"])
 	@option("update", description=cmds["logout"][3]["update o"])
 	async def logout(self, ctx, restart=None):
-		currentTime, _, _ = await init(ctx.guild, ctx.author)
+		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
 			# ~ Commande réservée aux User dans la bot.whitelist
@@ -620,7 +620,7 @@ class Dev(commands.Cog):
 	# ~ Renvoie le ping et d'autres informations
 	@commands.slash_command(description=cmds["ping"][0])
 	async def ping(self, ctx):
-		currentTime, authorUser, _ = await init(ctx.guild, ctx.author)
+		currentTime, authorUser, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
 			embed = Embed(title="Ping et autres informations", color=ctx.author.color)
@@ -641,7 +641,7 @@ class Dev(commands.Cog):
 	@commands.slash_command(name="suggestions", description=cmds["suggestions"][0])
 	@option("suggestion", description=cmds["suggestions"][3]["suggestion"])
 	async def suggest(self, ctx, suggestion):
-		currentTime, authorUser, _ = await init(ctx.guild, ctx.author)
+		currentTime, authorUser, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
 			idea = Embed(title="Nouvelle suggestion}", description=suggestion, color=ctx.author.color)
@@ -666,7 +666,7 @@ class Admin(commands.Cog):
 	@option("reponses", description=cmds["poll"][3]["réponses"])
 	@option("salon", description=cmds["poll"][3]["salon o"])
 	async def poll(self, ctx, question, reponses, salon:TextChannel=None):
-		currentTime, authorUser, _ = await init(ctx.guild, ctx.author)
+		currentTime, authorUser, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer()
 			if salon == None:
@@ -729,7 +729,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 	@default_permissions(manage_roles=True)
 	@guild_only()
 	async def role_react(self, ctx, roles:str="", message:str="", message_id=None):
-		currentTime, _, botMember = await init(ctx.guild, ctx.author)
+		currentTime, _, botMember = await init(self.bot, ctx.guild, ctx.author)
 		if roles == "" and message == "" and message_id == None:
 			await ctx.respond("Veuillez renseigner au moins un paramètre")
 		try:
@@ -759,7 +759,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 	@option("salon", description=cmds["clear"][3]["salon o"])
 	@option("user", description=cmds["clear"][3]["user o"])
 	async def clear(self, ctx, nombre:int, salon:TextChannel=None, user:User=None):
-		currentTime, _, _ = await init(ctx.guild, ctx.author)
+		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
 			if isDM(ctx.channel):
@@ -817,7 +817,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 	@option("raison", description=cmds["ban"][3]["raison o"])
 	@default_permissions(ban_members=True)
 	async def ban(self, ctx, user:Member, raison=""):
-		currentTime, _, _ = await init(ctx.guild, ctx.author)
+		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
 			# ~ Rôle de la cible trop élevé
@@ -854,7 +854,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 	@option("raison", description=cmds["mute"][3]["raison o"])
 	@default_permissions(moderate_members=True)
 	async def mute(self, ctx, user:Member, duree="30m", raison=" "):
-		currentTime, _, _ = await init(ctx.guild, ctx.author)
+		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
 			tps = currentTime
@@ -901,7 +901,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 	@commands.slash_command(description=cmds["user_info"][0])
 	@option("user", description=cmds["user_info"][3]["user"])
 	async def user_info(self, ctx, user:Member):
-		currentTime, _, _ = await init(ctx.guild, ctx.author)
+		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
 			embed = Embed(title="Informations", description=f"À propos de {user.mention}", color=user.color)
@@ -933,7 +933,7 @@ class Fun(commands.Cog):
 	@option("emote", description=cmds["spam_emote"][3]["emote o"])
 	@option("user", description=cmds["spam_emote"][3]["user o"])
 	async def spam_emote(self, ctx, emote="<:pepe_fuck:943761805703020614>", user:User=None):
-		currentTime, _, _ = await init(ctx.guild, ctx.author)
+		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer()
 			emoji = str(emote) + " "
@@ -958,7 +958,7 @@ class Fun(commands.Cog):
 	@commands.slash_command(description=cmds["qpup"][0])
 	@option("nbquestions", description=cmds["qpup"][3]["nbquestions o"])
 	async def qpup(self, ctx, nbquestions:int=1):
-		currentTime, _, _ = await init(ctx.guild, ctx.author)
+		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer()
 			qpup = read_db(infos.qpup)
@@ -994,7 +994,7 @@ class Fun(commands.Cog):
 	@commands.slash_command(name="2048", description=cmds["2048"][0])
 	@option("size", description=cmds["2048"][3]["size o"])
 	async def _2048(self, ctx, size:int=4):
-		currentTime, _, _ = await init(ctx.guild, ctx.author)
+		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer()
 			# ~ Nouveau joueur
@@ -1022,7 +1022,7 @@ class Fun(commands.Cog):
 	# ~ Renvoie les bot.stats sur les différents jeux
 	@commands.slash_command(name="stats_jeux", description=cmds["stats_jeux"][0])
 	async def stats_jeux(self, ctx):
-		currentTime, _, botMember = await init(ctx.guild, ctx.author)
+		currentTime, _, botMember = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer()
 			embed = Embed(title="Stats", description=str(bot.stats), color=botMember.color)
@@ -1047,7 +1047,7 @@ class WorldOfWarships(commands.Cog):
 	@commands.slash_command(name="clanships", description=cmds["clanships"][0])
 	@option("clan", description=cmds["clanships"][3]["clan"])
 	async def clanships(self, ctx, clan:str):
-		currentTime, _, _ = await init(ctx.guild, ctx.author)
+		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
 			clanID = getClanID(infos.tokenWOWS, clan, self.bot.session)
@@ -1064,7 +1064,7 @@ class WorldOfWarships(commands.Cog):
 	@commands.slash_command(name="compo", description=cmds["compo"][0])
 	@option("clan", description=cmds["compo"][3]["clan"])
 	async def compo(self, ctx, clan:str):
-		currentTime, _, _ = await init(ctx.guild, ctx.author)
+		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer()
 			ships = dict()
@@ -1093,7 +1093,7 @@ class WorldOfWarships(commands.Cog):
 	@option("clan", description=cmds["set_compo"][3]["clan"])
 	@option("ships", description=cmds["set_compo"][3]["ships"])
 	async def set_compo(self, ctx, clan:str, ships:str):
-		currentTime, _, _ = await init(ctx.guild, ctx.author)
+		currentTime, _, _ = await init(self.bot, ctx.guild, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
 			ships = [self.getship(e.strip()) for e in ships.split(';')]
