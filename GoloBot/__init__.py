@@ -365,7 +365,7 @@ class General(commands.Cog):
 					fichier.write(f"\n{currentTime} {msg.author.name} a envoyé un DM :\n{msg.content}\n")
 				await msg.add_reaction("✅")
 			else:
-				if "313" in "".join(msg.content.split(" ")) and msg.guild.id in infos.main_servers:
+				if "313" in "".join(msg.content.split(" ")) and msg.guild.id in [664006363508244481, 300562494672601089]:
 					await msg.reply(gif313)
 				with open(infos.log(msg.guild.name), 'a') as fichier:
 					fichier.write(f"\n{currentTime} #{msg.channel.name} :\n{msg.content}\n{len(msg.attachments)} pièces jointes\n\n")
