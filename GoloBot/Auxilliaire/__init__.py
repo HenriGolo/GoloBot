@@ -22,13 +22,14 @@ class CustomSession():
 	def __len__(self):
 		return len(self.responses)
 
-	def get(self, request):
+	def get(self, request, timeout=timedelta(hours=1)):
 		t = datetime.now().replace(microsecond=0)
 		try:
 			resp = self.responses[request]
-			if t - resp.time > timedelta(hours=1):
-				raise KeyError
+			if t - resp.time > timeout:
+				raise KeyError # ~ Va se faire attraper par le except
 			return resp.result
+
 		except KeyError:
 			r = self.s.get(request)
 			self.responses[request] = self.data(r, t)
@@ -194,7 +195,8 @@ def init_autocomplete(file):
 	synonyms = dict()
 
 	for data in db:
-		words[data[0]] = dict()
-		synonyms[data[0]] = data[1]
+		words[data[0].lower()] = dict()
+		if not data[1] == ['']:
+			synonyms[data[0].lower()] = [e.lower() for e in data[1]]
 
 	return AutoComplete(words=words, synonyms=synonyms)
