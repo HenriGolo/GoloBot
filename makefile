@@ -4,11 +4,11 @@ setup_venv :
 	mkvirtualenv GoloBot-venv
 
 build :
-	./my_virtualenv.sh 'python3 -m build'
-	./my_virtualenv.sh 'pip install dist/golobot-0.0.1-py3-none-any.whl --force-reinstall'
+	./golobotvenv.sh 'python3 -m build'
+	./golobotvenv.sh 'pip install dist/golobot-0.0.1-py3-none-any.whl --force-reinstall'
 
 test : build
-	./my_virtualenv.sh 'python3 -m unittest discover --start-directory Tests'
+	./golobotvenv.sh 'python3 -m unittest discover --start-directory Tests'
 
 launch : build
-	./my_virtualenv.sh ./Main/restart.py
+	./golobotvenv.sh ./Main/restart.py
