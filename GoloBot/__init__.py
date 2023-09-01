@@ -12,7 +12,8 @@
 from discord import *
 from discord.ext import commands
 # ~ Gestion du temps
-import time, pytz, datetime as dt
+from datetime import datetime, timedelta
+from pytz import timezone
 # ~ Les commandes sp ne marchent potentiellement que sous UNIX
 from os import getpid
 from subprocess import Popen
@@ -32,7 +33,7 @@ import infos # ~ Les tokens c'est privé
 # ~ récupère la date, le Member du bot et le User de l'auteur
 async def init(bot, guild=None, author=None):
 	# ~ Récupération de la date
-	currentTime = dt.datetime.strptime(time.ctime(),"%c")
+	currentTime = datetime.now().replace(microsecond=0)
 
 	# ~ Tentative de récupérer le Member associé au bot
 	botMember = bot.user
@@ -61,13 +62,13 @@ def isDM(channel):
 	return False
 
 # ~ Règle la précision temporelle
-def timeAccuracy(t):
+def timeAccuracy(dt:datetime):
 	# ~ Tronque à la seconde
-	t -= dt.timedelta(microseconds=t.microsecond)
+	dt.replace(microsecond=0)
 	# ~ Convertis en heure française
-	t = t.astimezone(pytz.timezone('Europe/Paris')).strftime('%Y-%m-%d %H:%M:%S')
+	dt = t.astimezone(timezone('Europe/Paris')).strftime('%Y-%m-%d %H:%M:%S')
 	# ~ Attention, astimezone renvoie un str pas un datetime.datetime
-	return t
+	return dt
 
 # ~ Récupère tous les rôles mentionnés dans un message
 # ~ Message.role_mentions existe mais parfois ne marche pas complétement
@@ -816,7 +817,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 			if user.top_role >= ctx.author.top_role:
 				await ctx.respond(f"Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
 				await self.bot.dev.send(f"{ctx.author.mention} a voulu ban {user.mention} de {ctx.guild}")
-				await ctx.author.timeout(until=currentTime+dt.timedelta(minutes=2), reason=f"A voulu ban {user.name}")
+				await ctx.author.timeout(until=currentTime+timedelta(minutes=2), reason=f"A voulu ban {user.name}")
 				print(f"\n{currentTime} {ctx.author.name} a voulu ban {user.name} de {ctx.guild}\n")
 				return
 
@@ -852,13 +853,13 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 			tps = currentTime
 			# ~ Interprétation de la durée donnée
 			if duree[-1] == "s":
-				tps += dt.timedelta(seconds=int(duree[:-1]))
+				tps += timedelta(seconds=int(duree[:-1]))
 			elif duree[-1] == "m":
-				tps += dt.timedelta(minutes=int(duree[:-1]))
+				tps += timedelta(minutes=int(duree[:-1]))
 			elif duree[-1] == "h":
-				tps += dt.timedelta(hours=int(duree[:-1]))
+				tps += timedelta(hours=int(duree[:-1]))
 			elif duree[-1] == "j" or duree[:-1] == "d":
-				tps += dt.timedelta(days=int(duree[:-1]))
+				tps += timedelta(days=int(duree[:-1]))
 			else:
 				await ctx.respond(f"{duree} n'a pas le bon format, `/aide mute` pour plus d'infos", ephemeral=True)
 				return
