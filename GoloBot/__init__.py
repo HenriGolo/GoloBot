@@ -475,7 +475,7 @@ class General(commands.Cog):
 
 				# ~ On ajoute le fichier à la liste des renvois
 				if not file == None:
-					fichiers.append(File(fp=file, filename=file))
+					fichiers.append(File(fp=file, filename=file.split("/")[-1])
 					sent += f"{file}, "
 			await ctx.respond(f"Voici les logs demandés\n{reponse}", files=fichiers, ephemeral=True)
 			print(f"\n{currentTime} Logs envoyés : {sent[:-2]}\n")
@@ -1035,7 +1035,7 @@ class WorldOfWarships(commands.Cog):
 		self.shipsAutoComp = init_autocomplete(infos.shipnames)
 
 	def getship(self, ship:str):
-		return self.shipsAutoComp.search(word=ship, max_cost=3, size=1)[0][0]
+		return self.shipsAutoComp.search(word=ship, max_cost=10, size=1)[0][0].title()
 
 	@commands.slash_command(name="clanships", description=cmds["clanships"][0])
 	@option("clan", description=cmds["clanships"][3]["clan"])
