@@ -6,7 +6,6 @@ bot_discord.pid
 database.txt
 infos.py
 infos.txt
-makefile
 qpup.txt
 WoWs/data_API.py
 WoWs/all_ships_names.txt
