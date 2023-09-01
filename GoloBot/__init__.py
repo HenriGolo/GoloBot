@@ -600,7 +600,7 @@ class Dev(commands.Cog):
 					await self.bot.dev.send(f"{ctx.author.mention} a essayé de déconnecter le bot")
 					print(f"\n{currentTime} {ctx.author.name} a voulu déconnecter le bot\n")
 
-			await ctx.respond(f"Running time : {currentTime - self.bot.startTime}", ephemeral=True)
+			await ctx.respond(f"En ligne depuis : {Timestamp(self.bot.startTime).relative}", ephemeral=True)
 			# ~ Déconnecte le bot
 			await self.bot.close()
 			print(f"\n{currentTime} Bot déconnecté\n")
@@ -618,7 +618,7 @@ class Dev(commands.Cog):
 			await ctx.defer(ephemeral=True)
 			embed = Embed(title="Ping et autres informations", color=ctx.author.color)
 			embed.add_field(name="Ping", value=f"{round(self.bot.latency*1000)} ms", inline=False)
-			embed.add_field(name="Bot en ligne depuis", value=f"{currentTime - self.bot.startTime}", inline=False)
+			embed.add_field(name="Bot en ligne depuis", value=f"{Timestamp(self.bot.startTime).relative}", inline=False)
 			embed.add_field(name="Propiétaire", value=self.bot.dev.mention, inline=False)
 			if ctx.author == self.bot.dev:
 				embed.add_field(name="Websocket", value=self.bot.ws, inline=False)

@@ -6,7 +6,6 @@
 
 from subprocess import check_output
 from fast_autocomplete import AutoComplete
-from time import ctime
 from datetime import datetime, timedelta
 from requests import Session
 from collections import namedtuple
@@ -24,7 +23,7 @@ class CustomSession():
 		return len(self.responses)
 
 	def get(self, request):
-		t = datetime.strptime(time.ctime(),"%c")
+		t = datetime.now().replace(microsecond=0)
 		try:
 			resp = self.responses[request]
 			if t - resp.time > timedelta(hours=1):
@@ -34,6 +33,17 @@ class CustomSession():
 			r = self.s.get(request)
 			self.responses[request] = self.data(r, t)
 			return r
+
+class Timestamp:
+	def __init__(self, dt:datetime):
+		ts = int(dt.timestamp())
+		self.relative = f"<t:{ts}:R>"
+		self.long_date = f"<t:{ts}:D>"
+		self.short_date = f"<t:{ts}:d>"
+		self.long_time = f"<t:{ts}:T>"
+		self.short_time = f"<t:{ts}:t>"
+		self.long_datetime = f"<t:{ts}:F>"
+		self.short_datetime = f"<t:{ts}:f>"
 
 # ~ Lis une DB
 def read_db(filename:str):
