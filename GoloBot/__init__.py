@@ -28,42 +28,6 @@ from GoloBot.WoWs.wowsAPI import * # ~ L'API de World of Warships adaptée pour 
 from GoloBot.views import *
 import infos # ~ Les tokens c'est privé
 
-def now():
-	return datetime.now().replace(microsecond=0)
-
-async def User2Member(guild, user):
-	return await guild.fetch_member(user.id)
-
-async def Member2User(bot, member):
-	return bot.fetch_user(member.id)
-
-# ~ Sert pas à grand chose, renvoie si le salon est un message privé
-def isDM(channel):
-	if type(channel) == DMChannel:
-		return True
-	if type(channel) == PartialMessageable:
-		return True
-	if str(channel.type) == 'private':
-		return True
-	return False
-
-# ~ Règle la précision temporelle
-def timeAccuracy(dt:datetime):
-	# ~ Tronque à la seconde
-	dt.replace(microsecond=0)
-	# ~ Convertis en heure française
-	dt = t.astimezone(timezone('Europe/Paris')).strftime('%Y-%m-%d %H:%M:%S')
-	# ~ Attention, astimezone renvoie un str pas un datetime.datetime
-	return dt
-
-# ~ Récupère tous les rôles mentionnés dans un message
-# ~ Message.role_mentions existe mais parfois ne marche pas complétement
-def rolesInStr(msg:str, guild:Guild):
-	sep = [e.split(">") for e in msg.split("<@&")]
-	role_ids = [int(sl[0]) for sl in sep[1:]]
-	roles = [guild.get_role(e) for e in role_ids]
-	return roles
-
 # ~ Code du bot
 class General(commands.Cog):
 	def __init__(self, bot):
@@ -79,7 +43,7 @@ class General(commands.Cog):
 				return
 
 			# ~ Message privé -> transmission au dev
-			if isDM(msg.channel):
+			if msg.channel.type == ChannelType.private:
 				log = f"MP reçu de {msg.author.mention} : ```{msg.content} ```"
 				# ~ Sert pour la commande reply
 				self.bot.lastDM = msg.author
@@ -486,7 +450,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 		currentTime = now()
 		try:
 			await ctx.defer(ephemeral=True)
-			if isDM(ctx.channel):
+			if ctx.channel.type == ChannelType.private:
 				with open("logs/logs_dm.txt", "a") as file:
 					await ctx.respond("Début du clear", ephemeral=True, delete_after=2)
 					hist = ctx.channel.history(limit=nombre).flatten()
@@ -633,7 +597,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 			embed.set_thumbnail(url=user.avatar.url)
 			if not user.banner == None:
 				embed.add_field(name="Bannière", value=user.banner.url, inline=False)
-			embed.add_field(name="Date de Création", value=timeAccuracy(user.created_at), inline=False)
+			embed.add_field(name="Date de Création", value=datetime.fromtimestamp(user.created_at), inline=False)
 			embed.add_field(name="Dans le serveur depuis", value=timeAccuracy(user.joined_at), inline=False)
 			if not user.premium_since == None:
 				embed.add_field(name="Booste le serveur depuis", value=user.premium_since, inline=False)

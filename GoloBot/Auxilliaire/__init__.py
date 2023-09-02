@@ -9,8 +9,8 @@ from fast_autocomplete import AutoComplete
 from datetime import datetime, timedelta
 from requests import Session
 from collections import namedtuple
-# ~ Gestion d'erreurs
 from traceback import format_exc
+from discord import DMChannel, PartialMessageable
 
 class CustomSession():
 	def __init__(self):
@@ -212,3 +212,20 @@ def correspond(attendu:list, reponse:str):
 		if not mot in attendu and not mot in articles:
 			return False
 	return True
+
+def now():
+	return datetime.now().replace(microsecond=0)
+
+async def User2Member(guild, user):
+	return await guild.fetch_member(user.id)
+
+async def Member2User(bot, member):
+	return bot.fetch_user(member.id)
+
+# ~ Récupère tous les rôles mentionnés dans un message
+# ~ Message.role_mentions existe mais parfois ne marche pas complétement
+def rolesInStr(string, guild):
+	sep = [e.split(">") for e in string.split("<@&")]
+	role_ids = [int(sl[0]) for sl in sep[1:]]
+	roles = [guild.get_role(e) for e in role_ids]
+	return roles
