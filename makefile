@@ -2,6 +2,7 @@ setup_venv :
 	sudo apt install virtualenvwrapper
 	source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 	mkvirtualenv GoloBot-venv
+	deactivate
 
 build :
 	./golobotvenv.sh 'python3 -m build'
