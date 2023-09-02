@@ -25,6 +25,7 @@ from GoloBot.Auxilliaire.abreviations import * # ~ Raccourcis et noms customs
 from GoloBot.Auxilliaire.games import * # ~ Mes jeux custom
 from GoloBot.Auxilliaire.aux_maths import * # ~ Outils mathématiques
 from GoloBot.WoWs.wowsAPI import * # ~ L'API de World of Warships adaptée pour lisibilité
+from GoloBot.views import *
 import infos # ~ Les tokens c'est privé
 
 def now():
