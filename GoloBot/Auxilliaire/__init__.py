@@ -9,6 +9,8 @@ from fast_autocomplete import AutoComplete
 from datetime import datetime, timedelta
 from requests import Session
 from collections import namedtuple
+# ~ Gestion d'erreurs
+from traceback import format_exc
 
 class CustomSession():
 	def __init__(self):
@@ -200,3 +202,13 @@ def init_autocomplete(file):
 			synonyms[data[0].lower()] = [e.lower() for e in data[1]]
 
 	return AutoComplete(words=words, synonyms=synonyms)
+
+def fail():
+	return format_exc() + "\n\n"
+
+def correspond(attendu:list, reponse:str):
+	articles = ["le", "la", "les", "l'", "un", "une", "des", "du", "de la"]
+	for mot in reponse.split(" "):
+		if not mot in attendu and not mot in articles:
+			return False
+	return True

@@ -7,9 +7,7 @@ bot = Bot(intents=intents)
 
 @bot.event
 async def on_ready():
-	currentTime, _, _ = await init(bot)
-
-	bot.startTime = currentTime
+	bot.startTime = now()
 
 	# ~ Récupération du chemin du fichier
 	bot.pwd = "/".join(__file__.split('/')[:-1])+"/"
