@@ -48,17 +48,17 @@ class General(commands.Cog):
 			# ~ Message privé -> transmission au dev
 			if channel.type == ChannelType.private:
 				if author == self.bot.dev:
-				log = f"MP reçu de {msg.author.mention} : ```{msg.content} ```"
-				# ~ Sert pour la commande reply
-				self.bot.lastDM = msg.author
-				files = list()
-				# ~ Transmission des pièces jointes
-				for file in msg.attachments:
-					files.append(await file.to_file())
-				await self.bot.dev.send(log, files=files)
-				with open(infos.dm, 'a') as fichier:
-					fichier.write(f"\n{currentTime} {msg.author.name} a envoyé un DM :\n{msg.content}\n")
-				await msg.add_reaction("✅")
+					log = f"MP reçu de {msg.author.mention} : ```{msg.content} ```"
+					# ~ Sert pour la commande reply
+					self.bot.lastDM = msg.author
+					files = list()
+					# ~ Transmission des pièces jointes
+					for file in msg.attachments:
+						files.append(await file.to_file())
+					await self.bot.dev.send(log, files=files)
+					with open(infos.dm, 'a') as fichier:
+						fichier.write(f"\n{currentTime} {msg.author.name} a envoyé un DM :\n{msg.content}\n")
+					await msg.add_reaction("✅")
 			else:
 				for pr in self.bot.PR:
 					if pr.trigger(msg.content) and pr.users(author) and pr.guilds(guild):
