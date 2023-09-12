@@ -9,9 +9,6 @@ bot = Bot(intents=intents)
 async def on_ready():
 	bot.startTime = now()
 
-	# ~ Récupération du chemin du fichier
-	bot.pwd = "/".join(__file__.split('/')[:-1])+"/"
-
 	# ~ Création de session pour les requêtes
 	bot.session = CustomSession()
 
@@ -50,7 +47,7 @@ async def on_ready():
 	with open(infos.pidfile, "w") as file:
 		file.write(str(getpid()))
 
-	print(f'Logged on as {bot.user}!')
+	print(f'{bot.user} (public) connecté !')
 
 # ~ Ajout commandes
 bot.add_cog(General(bot))
