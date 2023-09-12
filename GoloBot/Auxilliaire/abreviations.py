@@ -119,5 +119,3 @@ Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']})""",
 				"",
 				{"clan" : "Tag du clan dont la compo est définie",
 				"ships" : "Liste des navires désirés, séparer par ;"}]}
-
-gif313 = "https://media.giphy.com/media/I6ubIh995SW0cc5xco/giphy-downsized-large.gif"
