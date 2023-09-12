@@ -27,7 +27,6 @@ from GoloBot.views import * # ~ Les composants de l'UI custom
 
 # ~ Privé
 import infos # ~ Tokens entre autres, voir README.md
-import privatebot # ~ Réponses custom à certains contenus de messages
 
 # ~ Code du bot
 class General(commands.Cog):
@@ -48,6 +47,7 @@ class General(commands.Cog):
 
 			# ~ Message privé -> transmission au dev
 			if channel.type == ChannelType.private:
+				if author == self.bot.dev
 				log = f"MP reçu de {msg.author.mention} : ```{msg.content} ```"
 				# ~ Sert pour la commande reply
 				self.bot.lastDM = msg.author
@@ -60,7 +60,7 @@ class General(commands.Cog):
 					fichier.write(f"\n{currentTime} {msg.author.name} a envoyé un DM :\n{msg.content}\n")
 				await msg.add_reaction("✅")
 			else:
-				for pr in privatebot.PR:
+				for pr in self.bot.PR:
 					if pr.trigger(msg.content) and pr.users(author) and pr.guilds(guild):
 						await msg.reply(pr.message)
 
