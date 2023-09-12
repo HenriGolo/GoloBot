@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from subprocess import Popen, DEVNULL
-from infos import bot
+from infos import bot, stdout, stderr
 
 Popen([bot],
 		stdin=DEVNULL,
