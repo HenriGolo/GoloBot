@@ -24,7 +24,10 @@ from GoloBot.Auxilliaire.games import * # ~ Jeux de plateau custom
 from GoloBot.Auxilliaire.aux_maths import * # ~ Outils mathématiques
 from GoloBot.WoWs.wowsAPI import * # ~ L'API de World of Warships adaptée pour lisibilité
 from GoloBot.views import * # ~ Les composants de l'UI custom
+
+# ~ Privé
 import infos # ~ Tokens entre autres, voir README.md
+import privatebot # ~ Réponses custom à certains contenus de messages
 
 # ~ Code du bot
 class General(commands.Cog):
@@ -57,7 +60,7 @@ class General(commands.Cog):
 					fichier.write(f"\n{currentTime} {msg.author.name} a envoyé un DM :\n{msg.content}\n")
 				await msg.add_reaction("✅")
 			else:
-				for pr in bot.PR:
+				for pr in privatebot.PR:
 					if pr.trigger(msg.content) and pr.users(author) and pr.guilds(guild):
 						await msg.reply(pr.message)
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from GoloBot import * # ~ Contient tout ce qu'il faut, imports compris
-import privatebot # ~ Réponses custom à certains contenus de messages, privé
 
 # ~ Création Bot
 intents = Intents.all()
@@ -43,8 +42,6 @@ async def on_ready():
 
 	# ~ View persistantes
 	bot.add_view(ViewRoleReact())
-
-	bot.PR = private_bot.PR
 
 	# ~ Gestion pour pid pour kill proprement
 	with open(infos.pidfile, "w") as file:
