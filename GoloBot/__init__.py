@@ -629,7 +629,7 @@ class Fun(commands.Cog):
 	async def spam_emote(self, ctx, emote="<:pepe_fuck:943761805703020614>", user:User=None):
 		currentTime = now()
 		try:
-			await ctx.defer()
+			await ctx.defer(ephemeral=True)
 			emoji = str(emote) + " "
 			lim = ""
 			if not user == None:
