@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-# ~ Étant donné que tu lis ce code, tu as aussi eu accès à un fichier readme.txt
-# ~ Il contient des informations utiles pour faire tourner ce programme
-
-
 # ~ Code Principal
 
 # ~ Bibliothèques
@@ -11,10 +7,12 @@
 # ~ Discord, la base
 from discord import *
 from discord.ext import commands
+
 # ~ Gestion du temps
 from datetime import datetime, timedelta
 from pytz import timezone
-# ~ Les commandes sp ne marchent potentiellement que sous UNIX
+
+# ~ Les commandes subprocess ne marchent potentiellement que sous UNIX
 from os import getpid
 from subprocess import Popen
 import random
@@ -22,11 +20,11 @@ import random
 # ~ Mes propres fichiers python
 from GoloBot.Auxilliaire import * # ~ Quelques fonctions utiles
 from GoloBot.Auxilliaire.abreviations import * # ~ Raccourcis et noms customs
-from GoloBot.Auxilliaire.games import * # ~ Mes jeux custom
+from GoloBot.Auxilliaire.games import * # ~ Jeux de plateau custom
 from GoloBot.Auxilliaire.aux_maths import * # ~ Outils mathématiques
 from GoloBot.WoWs.wowsAPI import * # ~ L'API de World of Warships adaptée pour lisibilité
-from GoloBot.views import *
-import infos # ~ Les tokens c'est privé
+from GoloBot.views import * # ~ Les composants de l'UI custom
+import infos # ~ Tokens entre autres, voir README.md
 
 # ~ Code du bot
 class General(commands.Cog):
