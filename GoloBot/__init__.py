@@ -35,13 +35,16 @@ class General(commands.Cog):
 	@commands.Cog.listener()
 	async def on_message(self, msg):
 		currentTime = now()
+		author = msg.author
+		channel = msg.channel
+		guild = msg.guild
 		try:
 			# ~ Message d'un bot -> inutile
-			if msg.author.bot:
+			if author.bot:
 				return
 
 			# ~ Message privé -> transmission au dev
-			if msg.channel.type == ChannelType.private:
+			if channel.type == ChannelType.private:
 				log = f"MP reçu de {msg.author.mention} : ```{msg.content} ```"
 				# ~ Sert pour la commande reply
 				self.bot.lastDM = msg.author
@@ -54,6 +57,10 @@ class General(commands.Cog):
 					fichier.write(f"\n{currentTime} {msg.author.name} a envoyé un DM :\n{msg.content}\n")
 				await msg.add_reaction("✅")
 			else:
+				for pr in bot.PR:
+					if pr.trigger(msg.content) and pr.users(author) and pr.guilds(guild):
+						await msg.reply(pr.message)
+
 				with open(infos.log(msg.guild.name), 'a') as fichier:
 					fichier.write(f"\n{currentTime} #{msg.channel.name} :\n{msg.content}\n{len(msg.attachments)} pièces jointes\n\n")
 
