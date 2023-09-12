@@ -1,3 +1,6 @@
+launch : build
+	./golobotvenv.sh ./Main/restart.py
+
 setup_venv :
 	sudo apt install virtualenvwrapper
 	source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
@@ -10,6 +13,3 @@ build :
 
 test : build
 	./golobotvenv.sh 'python3 -m unittest discover --start-directory Tests'
-
-launch : build
-	./golobotvenv.sh ./Main/restart.py
