@@ -10,3 +10,5 @@ WoWs/data_API.py
 WoWs/all_ships_names.txt
 discord.pid
 Main/Stats/players.txt
+Main/privatebot.py
+discordP.pid
