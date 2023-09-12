@@ -47,7 +47,7 @@ class General(commands.Cog):
 
 			# ~ Message privé -> transmission au dev
 			if channel.type == ChannelType.private:
-				if author == self.bot.dev
+				if author == self.bot.dev:
 				log = f"MP reçu de {msg.author.mention} : ```{msg.content} ```"
 				# ~ Sert pour la commande reply
 				self.bot.lastDM = msg.author
