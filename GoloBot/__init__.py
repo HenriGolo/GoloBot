@@ -60,9 +60,10 @@ class General(commands.Cog):
 						fichier.write(f"\n{currentTime} {msg.author.name} a envoyé un DM :\n{msg.content}\n")
 					await msg.add_reaction("✅")
 			else:
-				for pr in self.bot.PR:
-					if pr.trigger(msg.content) and pr.users(author) and pr.guilds(guild):
-						await msg.reply(pr.message)
+				if not msg.flags.suppress_notifications:
+					for pr in self.bot.PR:
+						if pr.trigger(msg.content) and pr.users(author) and pr.guilds(guild):
+							await msg.reply(str(pr))
 
 				with open(infos.log(msg.guild.name), 'a') as fichier:
 					fichier.write(f"\n{currentTime} #{msg.channel.name} :\n{msg.content}\n{len(msg.attachments)} pièces jointes\n\n")
