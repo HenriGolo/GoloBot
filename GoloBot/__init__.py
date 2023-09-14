@@ -253,29 +253,6 @@ class Dev(commands.Cog):
 			with open(infos.stderr, 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
-	# ~ Similaire à dm, le destinataire est déjà pré-rempli
-	@commands.slash_command(description=cmds["reply"][0])
-	@option("message", description=cmds["reply"][3]["message"])
-	async def reply(self, ctx, message):
-		currentTime = now()
-		try:
-			await ctx.defer(ephemeral=True)
-			# ~ Commande réservée au dev
-			if not ctx.author == self.bot.dev:
-				await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
-				await self.bot.dev.send(f"{ctx.author.mention} a essayé de /reply {self.bot.lastDM.mention} pour envoyer ```{message}```")
-				print(f"\n{currentTime} {ctx.author.name} a essayé de MP {self.bot.lastDM.name} :\n{message}\n")
-				return
-
-			# ~ On envoie une réponse à la dernière personne qui a envoyé un message au bot
-			await self.bot.lastDM.send(message)
-			await ctx.respond(f"MP envoyé à {self.bot.lastDM.mention} : ```{message}```", ephemeral=True)
-			print(f"\n{currentTime} : MP envoyé à {self.bot.lastDM.name} :\n{message}\n")
-
-		except Exception:
-			with open(infos.stderr, 'a') as file:
-				file.write(f"\n{currentTime}\n{fail()}\n")
-
 	# ~ Déconnecte le bot
 	@commands.slash_command(description=cmds["logout"][0])
 	async def logout(self, ctx):
