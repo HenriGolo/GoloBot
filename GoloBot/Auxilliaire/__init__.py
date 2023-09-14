@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from requests import Session
 from collections import namedtuple
 from traceback import format_exc
-from discord import DMChannel, PartialMessageable
+from discord import DMChannel, PartialMessageable, Embed
 
 class CustomSession():
 	def __init__(self):
@@ -47,6 +47,11 @@ class Timestamp:
 		self.short_time = f"<t:{ts}:t>"
 		self.long_datetime = f"<t:{ts}:F>"
 		self.short_datetime = f"<t:{ts}:f>"
+
+class MyEmbed(Embed):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.timestamp = now()
 
 # ~ Lis une DB
 def read_db(filename:str):
@@ -222,10 +227,17 @@ async def User2Member(guild, user):
 async def Member2User(bot, member):
 	return bot.fetch_user(member.id)
 
-# ~ Récupère tous les rôles mentionnés dans un message
+# ~ Récupère toutes les sous-chaînes encadrées par start et end
+def eltInStr(string, start, end, to_type=str):
+	sep = [e.split(end) for e in string.split(start)]
+	return [to_type(e[0]) for e in sep[1:]]
+
 # ~ Message.role_mentions existe mais parfois ne marche pas complétement
 def rolesInStr(string, guild):
-	sep = [e.split(">") for e in string.split("<@&")]
-	role_ids = [int(sl[0]) for sl in sep[1:]]
-	roles = [guild.get_role(e) for e in role_ids]
+	roles_ids = eltInStr(string, "<@&", ">", to_type=int)
+	roles = [guild.get_role(r) for r in role_ids]
 	return roles
+
+async def usersInStr(string, bot):
+	users_ids = eltInStr(string, "<@", ">", to_type=int)
+	users = [await bot.fetch_user(u) for u in users_ids]
