@@ -264,10 +264,46 @@ class ModalQPUP(ui.Modal):
 
 class ViewQPUP(ui.View):
 	def __init__(self, rep):
-		self.rep = rep
 		super().__init__()
+		self.rep = rep
 
 	@ui.button(label="Répondre")
 	async def button_callback(self, button, interaction):
 		msg = interaction.message
 		await interaction.response.send_modal(ModalQPUP(rep=self.rep, title=msg.content))
+
+class ModalDM(ui.Modal):
+	def __init__(self, bot, target=None, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.bot = bot
+		self.target = target
+		self.add_item(ui.InputText(label="Message", style=InputTextStyle.long))
+		if target == None:
+			self.add_item(ui.InputText(label="Pour"))
+
+	async def callback(self, interaction):
+		user = interaction.user
+		if self.target == None:
+			self.target = await self.bot.fetch_user(int(self.children[1].value))
+		embed = MyEmbed(description=self.children[0].value, color=user.color)
+		content = ""
+		if self.target == self.bot.dev:
+			content = f"Reçu de {user.mention}"
+		await self.target.send(content, embed=embed)
+		await interaction.response.send_message("Message envoyé :", embed=embed, ephemeral=True)
+
+class ViewDM(ui.View):
+	def __init__(self, bot, target=None):
+		super().__init__(timeout=None)
+		self.target = target
+		if not self.message == None:
+			self.target = usersInStr(self.message.content, bot)[0]
+		self.bot = bot
+
+	@ui.button(label="Répondre", custom_id="reponse")
+	async def reply_button(self, button, interaction):
+		await interaction.response.send_modal(ModalDM(bot=self.bot, target=self.target, title=f"Votre Message pour {self.target.name}"))
+
+	@ui.button(label="Supprimer", custom_id="supprimer", style=ButtonStyle.danger)
+	async def delete_button(self, button, interaction):
+		await interaction.response.edit_message(delete_after=0)

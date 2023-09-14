@@ -47,15 +47,17 @@ class General(commands.Cog):
 
 			# ~ Message privé -> transmission au dev
 			if channel.type == ChannelType.private:
-				if author == self.bot.dev:
-					log = f"MP reçu de {msg.author.mention} : ```{msg.content} ```"
+				if not author == self.bot.dev:
+					embed = MyEmbed(title="Nouveau Message", description=msg.content, color=author.color)
+					# ~ log = f"MP reçu de {author.mention} : ```{msg.content} ```"
 					# ~ Sert pour la commande reply
-					self.bot.lastDM = msg.author
-					files = list()
+					# ~ self.bot.lastDM = author
 					# ~ Transmission des pièces jointes
-					for file in msg.attachments:
-						files.append(await file.to_file())
-					await self.bot.dev.send(log, files=files)
+					files = [await file.to_file() for file in msg.attachments]
+					await self.bot.dev.send(f"Reçu de {author.mention}",
+							embed=embed,
+							files=files,
+							view=ViewDM(bot=self.bot, target=author))
 					with open(infos.dm, 'a') as fichier:
 						fichier.write(f"\n{currentTime} {msg.author.name} a envoyé un DM :\n{msg.content}\n")
 					await msg.add_reaction("✅")
@@ -234,29 +236,17 @@ class Dev(commands.Cog):
 
 	# ~ Envoie un message privé à un User
 	@commands.slash_command(description=cmds["dm"][0])
-	@option("user_id", description=cmds["dm"][3]["user_id"])
-	@option("message", description=cmds["dm"][3]["message"])
-	async def dm(self, ctx, user_id, message):
+	async def dm(self, ctx):
 		currentTime = now()
 		try:
-			await ctx.defer(ephemeral=True)
-			user = await self.bot.fetch_user(user_id)
 			# ~ Commande réservée au dev
 			if not ctx.author == self.bot.dev:
 				await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
-				await self.bot.dev.send(f"{ctx.author.mention} a essayé de MP {user.mention} pour envoyer ```{message}```")
-				print(f"\n{currentTime} {ctx.author.name} a essayé de MP {user.name} :\n{message}\n")
+				print(f"\n{currentTime} {ctx.author.name} a essayé d'envoyer un MP à travers le bot")
 				return
 
-			try:
-				await user.send(message)
-				await ctx.respond(f"MP envoyé à {user.mention} : ```{message}```", ephemeral=True)
-				print(f"\n{currentTime} : MP envoyé à {user.name} :\n{message}\n")
-
-			# ~ Erreur dans l'envoi
-			except Exception as error:
-				await ctx.respond(f"Échec d'envoi de MP à {user.mention}```{error}```", ephemeral=True)
-				print(f"\n{currentTime} : échec d'envoi de MP à {user.name} :\n{message}\n")
+			await ctx.send_modal(ModalDM(bot=self.bot, title="Envoyer un message privé"))
+			print(f"\n{currentTime} envoi d'un modal de configuration de MP\n")
 
 		# ~ Erreur dans la fonction
 		except Exception:
@@ -332,17 +322,10 @@ class Dev(commands.Cog):
 
 	# ~ Propose une suggestion
 	@commands.slash_command(name="suggestions", description=cmds["suggestions"][0])
-	@option("suggestion", description=cmds["suggestions"][3]["suggestion"])
-	async def suggest(self, ctx, suggestion):
+	async def suggest(self, ctx):
 		currentTime = now()
-		authorUser = await Member2User(self.bot, ctx.author)
 		try:
-			await ctx.defer(ephemeral=True)
-			idea = Embed(title="Nouvelle suggestion}", description=suggestion, color=ctx.author.color)
-			idea.add_field(name="Informations", value=ctx.author.mention)
-			await self.bot.dev.send(embed=idea)
-			await ctx.respond("Ta suggestion a été transmise, \
-tu vas très probablement recevoir une réponse en MP et pouvoir y discuter directement avec le dev", ephemeral=True)
+			await ctx.send_modal(ModalDM(bot=self.bot, target=self.bot.dev, title="Suggestion"))
 			print(f"\n{currentTime} {ctx.author.name} a fait une suggestion\n")
 
 		except Exception:

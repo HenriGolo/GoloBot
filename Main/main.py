@@ -43,6 +43,7 @@ async def on_ready():
 
 	# ~ View persistantes
 	bot.add_view(ViewRoleReact())
+	bot.add_view(ViewDM(bot))
 
 	# ~ class PrivateResponse:
 		# ~ def __init__(self, triggers:list[str], message:str)
