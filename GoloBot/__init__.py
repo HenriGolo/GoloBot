@@ -49,9 +49,6 @@ class General(commands.Cog):
 			if channel.type == ChannelType.private:
 				if not author == self.bot.dev:
 					embed = MyEmbed(title="Nouveau Message", description=msg.content, color=author.color)
-					# ~ log = f"MP reçu de {author.mention} : ```{msg.content} ```"
-					# ~ Sert pour la commande reply
-					# ~ self.bot.lastDM = author
 					# ~ Transmission des pièces jointes
 					files = [await file.to_file() for file in msg.attachments]
 					await self.bot.dev.send(f"Reçu de {author.mention}",
