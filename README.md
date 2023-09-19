@@ -8,7 +8,7 @@ Me contacter -> envoyer un message privé au bot.
 
 # Setup
 
-Configurer l'envrironnement virtuel : `make setup`
+**Nécessite un environnement virtuel**
 
 Créer le module python avec `make build` puis utiliser `import GoloBot`
 
