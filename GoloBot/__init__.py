@@ -54,7 +54,7 @@ class General(commands.Cog):
 					await self.bot.dev.send(f"Reçu de {author.mention}",
 							embed=embed,
 							files=files,
-							view=ViewDM(bot=self.bot, target=author))
+							view=ViewDM(bot=self.bot))
 					with open(infos.dm, 'a') as fichier:
 						fichier.write(f"\n{currentTime} {msg.author.name} a envoyé un DM :\n{msg.content}\n")
 					await msg.add_reaction("✅")
@@ -82,7 +82,7 @@ class General(commands.Cog):
 		try:
 			await ctx.defer(ephemeral=not visible)
 			# ~ Informations sur la commande
-			embed = Embed(title="Aide", color=ctx.author.color)
+			embed = MyEmbed(title="Aide", color=ctx.author.color)
 			msg = f"""**__Description__** : {cmds[cmd][0]}
 **__Permissions nécessaires__** : {cmds[cmd][1]}
 **__Paramètres__** :\n"""
@@ -127,7 +127,7 @@ class General(commands.Cog):
 		currentTime = now()
 		try:
 			await ctx.defer(ephemeral=True)
-			embed = Embed(title="Code Source",
+			embed = MyEmbed(title="Code Source",
 				description="Le code source du bot est disponible sur [github](https://github.com/HenriGolo/GoloBot/)",
 				color=ctx.author.color)
 			await ctx.respond(embed=embed, ephemeral=True)
@@ -214,7 +214,7 @@ class General(commands.Cog):
 			title = f"Chances de drop {item}"
 			if not nom == "":
 				title += f" dans {nom}"
-			embed = Embed(title=title, description=f"Pourcentage dans 1 conteneur : {pourcentage}", color=ctx.author.color)
+			embed = MyEmbed(title=title, description=f"Pourcentage dans 1 conteneur : {pourcentage}", color=ctx.author.color)
 			for key in seuils:
 				n = seuils[key]
 				embed.add_field(name=f"Au moins {key}% de chances", value=f"{n} conteneurs", inline=False)
@@ -280,13 +280,12 @@ class Dev(commands.Cog):
 		authorUser = await Member2User(self.bot, ctx.author)
 		try:
 			await ctx.defer(ephemeral=True)
-			embed = Embed(title="Ping et autres informations", color=ctx.author.color)
+			embed = MyEmbed(title="Ping et autres informations", color=ctx.author.color)
 			embed.add_field(name="Ping", value=f"{round(self.bot.latency*1000)} ms", inline=False)
 			embed.add_field(name="Bot en ligne depuis", value=f"{Timestamp(self.bot.startTime).relative}", inline=False)
 			embed.add_field(name="Propiétaire", value=self.bot.dev.mention, inline=False)
 			if ctx.author == self.bot.dev:
 				embed.add_field(name="Websocket", value=self.bot.ws, inline=False)
-				embed.add_field(name="Dernier MP", value=self.bot.lastDM, inline=False)
 			await ctx.respond(embed=embed, ephemeral=True)
 			print(f"\n{currentTime} {ctx.author.name} a utilisé ping\n")
 
@@ -357,7 +356,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 				choix += f"{used_alphaB[i]} {reps[i]}\n"
 
 			# ~ Création de l'embed
-			embed = Embed(title="Sondage", description=f"Créé par {ctx.author.mention}", color=ctx.author.color)
+			embed = MyEmbed(title="Sondage", description=f"Créé par {ctx.author.mention}", color=ctx.author.color)
 			embed.add_field(name="Question :", value=question, inline=False)
 			embed.add_field(name="Réponses", value=choix, inline=False)
 
@@ -556,7 +555,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 		currentTime = now()
 		try:
 			await ctx.defer(ephemeral=True)
-			embed = Embed(title="Informations", description=f"À propos de {user.mention}", color=user.color)
+			embed = MyEmbed(title="Informations", description=f"À propos de {user.mention}", color=user.color)
 			embed.add_field(name="Nom", value=str(user), inline=False)
 			embed.set_thumbnail(url=user.avatar.url)
 			if not user.banner == None:
@@ -640,7 +639,7 @@ class Fun(commands.Cog):
 			game = Game2048(size=size)
 			game.duree = currentTime
 			add_dict(self.bot.games, ctx.author.mention, game)
-			embed = Embed(title="2048", color=ctx.author.color)
+			embed = MyEmbed(title="2048", color=ctx.author.color)
 			# ~ Envoie du jeu formatté en python ou n'importe quel autre langage
 			# ~ pour colorer les chiffres et ajouter un effet visuel
 			embed.add_field(name=f"Partie de {ctx.author.name}", value=f"```python\n{game}```", inline=True)
@@ -661,7 +660,7 @@ class Fun(commands.Cog):
 		currentTime = now()
 		try:
 			await ctx.defer()
-			embed = Embed(title="Stats", description=str(self.bot.stats), color=botMember.color)
+			embed = MyEmbed(title="Stats", description=str(self.bot.stats), color=botMember.color)
 			for joueur in self.bot.stats.joueurs:
 				if joueur.name == ctx.author.mention:
 					embed.add_field(name="Stats Personnelles", value=str(joueur))
@@ -710,7 +709,7 @@ class WorldOfWarships(commands.Cog):
 				for ship in player:
 					add_dict(ships, ship, player)
 
-			embed = Embed(title="Joueurs avec les ships de la compo", color=ctx.author.color)
+			embed = MyEmbed(title="Joueurs avec les ships de la compo", color=ctx.author.color)
 			for ship in ships:
 				joueurs = ships[ship]
 				if not "compo" in joueurs:

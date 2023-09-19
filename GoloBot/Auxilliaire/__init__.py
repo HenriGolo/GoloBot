@@ -52,6 +52,28 @@ class MyEmbed(Embed):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.timestamp = now()
+		# ~ self.set_footer(text="https://github.com/HenriGolo/GoloBot/")
+
+class PrivateResponse:
+	def __init__(self, triggers=[""], message="", guilds=[]):
+		self.triggers = triggers # ~ Contenu d'un message pour activer la réponse
+		self.message = message # ~ Réponse à envoyer
+		self.guilds = guilds # ~ Servers sur lesquels la réponse fonctionne ([] = tous)
+
+	def __str__(self):
+		return self.message
+
+	def trigger(self, content):
+		for t in self.triggers:
+			if t in content:
+				return True
+		return False
+
+	def users(self, user):
+		return True
+
+	def guilds(self, guild):
+		return self.guilds == [] or guild.id in self.guilds
 
 # ~ Lis une DB
 def read_db(filename:str):
@@ -225,7 +247,7 @@ async def User2Member(guild, user):
 	return await guild.fetch_member(user.id)
 
 async def Member2User(bot, member):
-	return bot.fetch_user(member.id)
+	return await bot.fetch_user(member.id)
 
 # ~ Récupère toutes les sous-chaînes encadrées par start et end
 def eltInStr(string, start, end, to_type=str):
@@ -241,3 +263,4 @@ def rolesInStr(string, guild):
 async def usersInStr(string, bot):
 	users_ids = eltInStr(string, "<@", ">", to_type=int)
 	users = [await bot.fetch_user(u) for u in users_ids]
+	return users

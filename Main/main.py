@@ -2,70 +2,59 @@
 from GoloBot import * # ~ Contient tout ce qu'il faut, imports
 from privatebot import PrivateResponse # ~ Réponses custom à certains contenus de messages
 
+class GoloBot(Bot):
+	async def on_ready(self):
+		# ~ Heure de démarrage (no shit sherlock)
+		self.startTime = now()
+
+		# ~ Création de session pour les requêtes
+		self.session = CustomSession()
+
+		# ~ Lecture les stats précédents sérialisées
+		self.stats = Stats()
+		self.stats.read(infos.stats)
+		self.stats = self.stats
+		# ~ Jeux en cours
+		self.games = dict()
+		# ~ Remplissage notre dictionnaire de joueurs
+		self.players = dict()
+		for joueur in self.stats.joueurs:
+			self.players[joueur.name] = joueur
+
+		# ~ Récupération de l'User du dev
+		self.dev = await self.fetch_user(infos.ownerID)
+
+		# ~ Création de la bot.whitelist des User avec des permissions sur le bot
+		wl = infos.whitelisted_users
+		self.whitelist = [self.dev]
+		for id in wl:
+			self.whitelist.append(await self.fetch_user(id))
+
+		# ~ Message de statut du bot
+		activity = Activity(name="GitHub",
+							state="https://github.com/HenriGolo/GoloBot",
+							type=ActivityType.watching)
+		await self.change_presence(activity=activity)
+
+		# ~ View persistantes
+		self.add_view(ViewRoleReact())
+		self.add_view(ViewDM(bot))
+
+		self.PR = [pr() for pr in PrivateResponse.__subclasses__()]
+
+		# ~ Gestion pour pid pour kill proprement
+		with open(infos.pidfile, "w") as file:
+			file.write(str(getpid()))
+
+		print(f"{self.user} connecté !")
+
 # ~ Création Bot
 intents = Intents.all()
-bot = Bot(intents=intents)
+bot = GoloBot(intents=intents)
 
-@bot.event
-async def on_ready():
-	bot.startTime = now()
-
-	# ~ Création de session pour les requêtes
-	bot.session = CustomSession()
-
-	# ~ Lecture les stats sérialisées
-	bot.stats = Stats()
-	bot.stats.read(infos.stats)
-	bot.stats = bot.stats
-	# ~ Remplissage notre dictionnaire de joueurs
-	bot.players = dict()
-	for joueur in bot.stats.joueurs:
-		bot.players[joueur.name] = joueur
-
-	# ~ Récupération de l'User du dev
-	bot.dev = await bot.fetch_user(infos.ownerID)
-
-	bot.lastDM = bot.dev
-
-	bot.games = dict()
-
-	# ~ Création de la bot.whitelist des User avec des permissions sur le bot
-	wl = infos.whitelisted_users
-	bot.whitelist = [bot.dev]
-	for id in wl:
-		bot.whitelist.append(await bot.fetch_user(id))
-
-	# ~ Message de statut du bot
-	activity = Activity(name="GitHub",
-						state="https://github.com/HenriGolo/GoloBot",
-						type=ActivityType.watching)
-	await bot.change_presence(activity=activity)
-
-	# ~ View persistantes
-	bot.add_view(ViewRoleReact())
-	bot.add_view(ViewDM(bot))
-
-	# ~ class PrivateResponse:
-		# ~ def __init__(self, triggers:list[str], message:str)
-		# ~ def __str__(self):
-		# ~ def trigger(self, content)
-		# ~ def users(self, user)
-		# ~ def guilds(self, guild)
-
-	bot.PR = [pr() for pr in PrivateResponse.__subclasses__()]
-
-	# ~ Gestion pour pid pour kill proprement
-	with open(infos.pidfile, "w") as file:
-		file.write(str(getpid()))
-
-	print(f'{bot.user} (public) connecté !')
-
-# ~ Ajout commandes
-bot.add_cog(General(bot))
-bot.add_cog(Dev(bot))
-bot.add_cog(Admin(bot))
-bot.add_cog(Fun(bot))
-bot.add_cog(WorldOfWarships(bot))
+# ~ Ajout des commandes
+for cog in commands.Cog.__subclasses__():
+	bot.add_cog(cog(bot))
 
 # ~ Run
 bot.run(token=infos.tokenDSC)

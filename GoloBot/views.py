@@ -293,15 +293,17 @@ class ModalDM(ui.Modal):
 		await interaction.response.send_message("Message envoyé :", embed=embed, ephemeral=True)
 
 class ViewDM(ui.View):
-	def __init__(self, bot, target=None):
+	def __init__(self, bot):
 		super().__init__(timeout=None)
-		self.target = target
-		if not self.message == None:
-			self.target = usersInStr(self.message.content, bot)[0]
 		self.bot = bot
+
+	async def set_target(self, content):
+		targets = await usersInStr(content, self.bot)
+		return targets[0]
 
 	@ui.button(label="Répondre", custom_id="reponse")
 	async def reply_button(self, button, interaction):
+		self.target = await self.set_target(interaction.message.content)
 		await interaction.response.send_modal(ModalDM(bot=self.bot, target=self.target, title=f"Votre Message pour {self.target.name}"))
 
 	@ui.button(label="Supprimer", custom_id="supprimer", style=ButtonStyle.danger)

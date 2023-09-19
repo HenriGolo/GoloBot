@@ -155,6 +155,7 @@ class Stats():
 			joueur = Joueur()
 			joueur.read(line)
 			self.__add__(joueur)
+		return self
 
 class Coordonnees():
 	def __init__(self, pos):
