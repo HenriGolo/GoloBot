@@ -18,7 +18,7 @@ Attention, un fichier `infos.py` doit être créé dans `Main/`, contenant :
 Nom de la variable | Description
 ---|---
 tokenDSC | Token de connexion à [Discord](https://discord.com/developers/applications)
-tokenWOWS | Token de connexion à [World of Warships](https://developers.wargaming.net/reference/all/wows/)
+tokenWOWS | Token de connexion à [World of Warships](https://developers.wargaming.net/reference/all/wows/), laisser "" pour ignorer
 ownerID | Votre identifiant discord
 invitation | Lien pour inviter votre bot
 whitelisted_users | Liste des id des User Discord auxquels vous accordez des permissions (eventuellement vide)

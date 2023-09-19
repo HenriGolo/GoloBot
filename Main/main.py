@@ -54,6 +54,8 @@ bot = GoloBot(intents=intents)
 
 # ~ Ajout des commandes
 for cog in commands.Cog.__subclasses__():
+	if cog.__name__ == "WorldOfWarships" and infos.tokenWOWS == "":
+		continue
 	bot.add_cog(cog(bot))
 
 # ~ Run
