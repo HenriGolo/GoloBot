@@ -52,7 +52,6 @@ class MyEmbed(Embed):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.timestamp = now()
-		# ~ self.set_footer(text="https://github.com/HenriGolo/GoloBot/")
 
 class PrivateResponse:
 	def __init__(self, triggers=[""], message="", guilds=[]):
