@@ -363,7 +363,7 @@ class SelectEditEmbed(ui.Select):
 		options = [SelectOption(label=e.name, description=f"Modifier {e.name}") for e in embed.fields]
 		options.insert(0, SelectOption(label=embed.title, description=f"Modifier l'Embed"))
 		# ~ Création du menu déroulant
-		super().__init__(placeholder="Supprimer un Champ", min_values=1, options=options)
+		super().__init__(placeholder="Modifier un Champ", min_values=1, options=options)
 
 	def select_field(self, value):
 		for i in range(len(self.embed.fields)):
@@ -383,8 +383,8 @@ class SelectEditEmbed(ui.Select):
 class SelectRemoveFieldEmbed(ui.Select):
 	def __init__(self, embed):
 		self.embed = embed
-		options = [SelectOption(label=e.name, description=f"Modifier {e.name}") for e in embed.fields]
-		options.insert(0, SelectOption(label=embed.title, description=f"Modifier l'Embed"))
+		options = [SelectOption(label=e.name, description=f"Supprimer {e.name}") for e in embed.fields]
+		options.insert(0, SelectOption(label=embed.title, description=f"Supprimer l'Embed"))
 		super().__init__(placeholder="Supprimer un Champ", min_values=1, options=options)
 
 	def select_field(self, value):
