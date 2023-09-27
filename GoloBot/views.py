@@ -353,26 +353,7 @@ class ModalEditEmbedFields(ui.Modal):
 
 	async def callback(self, interaction):
 		embed = interaction.message.embeds[0]
-		embed.set_field_at(self.field, name=self.children[0].value, value=self.children[1].value)
-		await interaction.response.edit_message(embed=embed, view=ViewEditEmbed(embed))
-
-class ModalRemoveFieldEmbed(ui.Modal):
-	def __init__(self, autocomplete, *args, **kwargs):
-		super().__init__(*args, **kwargs)
-		self.ac = autocomplete
-		self.add_item(ui.InputText(label="Nom", placeholder="Nom du Champ à supprimer"))
-
-	def index_from_name(self, name, fields):
-		name = self.ac.search(word=value, max_cost=10, size=1)[0][0]
-		for i in range(len(fields)):
-			field = fields[i]
-			if field.name == name:
-				return i
-
-	async def callback(self, interaction):
-		embed = interaction.message.embeds[0]
-		index = self.index_from_name(self.children[0].value, embed.fields)
-		embed.remove_field(index)
+		embed.set_field_at(self.field, name=self.children[0].value, value=self.children[1].value, inline=False)
 		await interaction.response.edit_message(embed=embed, view=ViewEditEmbed(embed))
 
 class SelectEditEmbed(ui.Select):
@@ -382,7 +363,7 @@ class SelectEditEmbed(ui.Select):
 		options = [SelectOption(label=e.name, description=f"Modifier {e.name}") for e in embed.fields]
 		options.insert(0, SelectOption(label=embed.title, description=f"Modifier l'Embed"))
 		# ~ Création du menu déroulant
-		super().__init__(placeholder="Modifier un Champ", min_values=1, options=options)
+		super().__init__(placeholder="Supprimer un Champ", min_values=1, options=options)
 
 	def select_field(self, value):
 		for i in range(len(self.embed.fields)):
