@@ -418,5 +418,6 @@ class ViewEditEmbed(MyView):
 	@ui.button(label="Envoyer", style=ButtonStyle.success)
 	async def button_send(self, button, interaction):
 		embed = interaction.message.embeds[0]
+		embed.timestamp = now()
 		await interaction.response.send_message(embed=embed)
 
