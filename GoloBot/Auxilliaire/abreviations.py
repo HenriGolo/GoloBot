@@ -113,4 +113,8 @@ Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']})""",
 				"Everyone",
 				"",
 				{"clan" : "Tag du clan dont la compo est définie",
-				"ships" : "Liste des navires désirés, séparer par ;"}]}
+				"ships" : "Liste des navires désirés, séparer par ;"}],
+		"embed" : ["Crée un nouvel embed, entièrement custimisable",
+				"Everyone",
+				"",
+				{"" : ""}]}

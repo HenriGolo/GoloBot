@@ -217,8 +217,7 @@ def insert(liste:list, pos:int, elt):
 def check_unicity(string:str, elt:str):
 	return len(string.split(elt)) == 2
 
-def init_autocomplete(file):
-	db = read_db(file)
+def init_autocomplete(db):
 	words = dict()
 	synonyms = dict()
 

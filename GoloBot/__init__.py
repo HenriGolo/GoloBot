@@ -574,6 +574,17 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 			with open(infos.stderr, 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
+	@commands.slash_command(description=cmds["embed"][0])
+	async def embed(self, ctx):
+		currentTime = now()
+		try:
+			# ~ await ctx.defer(ephemeral=True)
+			await ctx.send_modal(ModalNewEmbed(title="Nouvel Embed"))
+
+		except Exception:
+			with open(infos.stderr, 'a') as file:
+				file.write(f"\n{currentTime}\n{fail()}\n")
+
 # ~ Fonctions Random
 class Fun(commands.Cog):
 	def __init__(self, bot):
@@ -674,7 +685,7 @@ class Fun(commands.Cog):
 class WorldOfWarships(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
-		self.shipsAutoComp = init_autocomplete(infos.shipnames)
+		self.shipsAutoComp = init_autocomplete(read_db(infos.shipnames))
 
 	def getship(self, ship:str):
 		return self.shipsAutoComp.search(word=ship, max_cost=10, size=1)[0][0].title()
