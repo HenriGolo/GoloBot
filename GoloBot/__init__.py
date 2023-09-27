@@ -580,6 +580,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 		try:
 			# ~ await ctx.defer(ephemeral=True)
 			await ctx.send_modal(ModalNewEmbed(title="Nouvel Embed"))
+			print(f"\n{CurrentTime} {ctx.author.name} a commencé un nouvel embed\n")
 
 		except Exception:
 			with open(infos.stderr, 'a') as file:

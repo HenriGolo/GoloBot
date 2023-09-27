@@ -419,5 +419,6 @@ class ViewEditEmbed(MyView):
 	async def button_send(self, button, interaction):
 		embed = interaction.message.embeds[0]
 		embed.timestamp = now()
-		await interaction.response.send_message(embed=embed)
+		await interaction.channel.send(embed=embed)
+		await interaction.response.send_message(".", ephemeral=True, delete_after=0)
 
