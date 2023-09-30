@@ -683,6 +683,24 @@ class Fun(commands.Cog):
 			with open(infos.stderr, 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
+	@commands.slash_command(name="no_custom_messages", description=cmds["no_custom_messages"][0])
+	@default_permissions(administrator=True)
+	async def disablePR(self, ctx):
+		currentTime = now()
+		guild = ctx.guild
+		try:
+			await ctx.defer(ephemeral=True)
+			for pr in self.bot.PR:
+				pr.Dguilds.append(guild.id)
+			await self.bot.dev.send(f"Ajouter {guild.id} ({guild.name}) sur blacklist des PR à la demande de {ctx.author} ({ctx.author.id})")
+			await ctx.respond(f"""Les messages de réponses customs sont désormais désactivés sur ce serveur.
+Pour changer ça, envoyer un message privé au bot.""", ephemeral=True)
+			print(f"\n{currenTime} {ctx.author.name} a désactivé les PR de {guild.name}\n")
+
+		except Exception:
+			with open(infos.stderr, 'a') as file:
+				file.write(f"\n{currentTime}\n{fail()}\n")
+
 class WorldOfWarships(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot

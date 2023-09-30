@@ -54,10 +54,11 @@ class MyEmbed(Embed):
 		self.timestamp = now()
 
 class PrivateResponse:
-	def __init__(self, triggers=[""], message="", guilds=[]):
+	def __init__(self, triggers=[""], message="", allowed_guilds=[], denied_guilds=[]):
 		self.triggers = triggers # ~ Contenu d'un message pour activer la réponse
 		self.message = message # ~ Réponse à envoyer
-		self.guilds_ids = guilds # ~ Servers sur lesquels la réponse fonctionne ([] = tous)
+		self.Aguilds = allowed_guilds # ~ Servers sur lesquels la réponse fonctionne ([] = tous)
+		self.Dguilds = denied_guilds # ~ Servers sur lesquels la réponse est désactivée
 
 	def __str__(self):
 		return self.message
@@ -72,7 +73,9 @@ class PrivateResponse:
 		return True
 
 	def guilds(self, guild):
-		return self.guilds_ids == [] or guild.id in self.guilds_ids
+		allowed = self.Aguilds == [] or guild.id in self.Aguilds
+		denied = guild.id in self.Dguilds
+		return allowed and not denied
 
 # ~ Lis une DB
 def read_db(filename:str):
