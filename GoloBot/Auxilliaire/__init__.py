@@ -57,7 +57,7 @@ class PrivateResponse:
 	def __init__(self, triggers=[""], message="", guilds=[]):
 		self.triggers = triggers # ~ Contenu d'un message pour activer la réponse
 		self.message = message # ~ Réponse à envoyer
-		self.guilds = guilds # ~ Servers sur lesquels la réponse fonctionne ([] = tous)
+		self.guilds_ids = guilds # ~ Servers sur lesquels la réponse fonctionne ([] = tous)
 
 	def __str__(self):
 		return self.message
@@ -72,7 +72,7 @@ class PrivateResponse:
 		return True
 
 	def guilds(self, guild):
-		return self.guilds == [] or guild.id in self.guilds
+		return self.guilds_ids == [] or guild.id in self.guilds_ids
 
 # ~ Lis une DB
 def read_db(filename:str):

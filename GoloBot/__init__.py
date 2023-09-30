@@ -294,7 +294,7 @@ class Dev(commands.Cog):
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	# ~ Propose une suggestion
-	@commands.slash_command(name="suggestions", description=cmds["suggestions"][0])
+	@commands.slash_command(name="suggestion", description=cmds["suggestions"][0])
 	async def suggest(self, ctx):
 		currentTime = now()
 		try:
@@ -560,10 +560,10 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 			embed.set_thumbnail(url=user.avatar.url)
 			if not user.banner == None:
 				embed.add_field(name="Bannière", value=user.banner.url, inline=False)
-			embed.add_field(name="Date de Création", value=datetime.fromtimestamp(user.created_at), inline=False)
-			embed.add_field(name="Dans le serveur depuis", value=timeAccuracy(user.joined_at), inline=False)
+			embed.add_field(name="Date de Création", value=Timestamp(user.created_at).relative, inline=False)
+			embed.add_field(name="Dans le serveur depuis", value=Timestamp(user.joined_at).relative, inline=False)
 			if not user.premium_since == None:
-				embed.add_field(name="Booste le serveur depuis", value=user.premium_since, inline=False)
+				embed.add_field(name="Booste le serveur depuis", value=Timestamp(user.premium_since).relative, inline=False)
 			if ctx.channel.permissions_for(ctx.author).administrator:
 				roles = [r.mention for r in user.roles[1:]]
 				embed.add_field(name="Rôles", value=", ".join(roles), inline=False)
