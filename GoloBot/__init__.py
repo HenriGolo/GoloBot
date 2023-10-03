@@ -64,9 +64,6 @@ class General(commands.Cog):
 						if pr.trigger(msg.content) and pr.users(author) and pr.guilds(guild):
 							await msg.reply(str(pr))
 
-				with open(infos.log(msg.guild.name), 'a') as fichier:
-					fichier.write(f"\n{currentTime} #{msg.channel.name} :\n{msg.content}\n{len(msg.attachments)} pièces jointes\n\n")
-
 		except Exception:
 			with open(infos.stderr, 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
