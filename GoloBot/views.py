@@ -442,7 +442,7 @@ class SelectRemoveFieldEmbed(ui.Select):
 			await interaction.response.edit_message(delete_after=0)
 		else:
 			self.embed.remove_field(index)
-			await interaction.response.edit_message(embeds=self.embed, view=ViewEditEmbed(self.embeds, self.embed))
+			await interaction.response.edit_message(embeds=self.embeds, view=ViewEditEmbed(self.embeds, self.embed))
 
 class ViewEditEmbed(MyView):
 	def __init__(self, embeds, embed):
