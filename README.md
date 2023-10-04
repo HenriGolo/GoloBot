@@ -3,9 +3,8 @@
 Bot Discord développé par @henrigolo.
 
 Inviter le Bot Discord toujours à jour de la dernière version [juste ici](https://discord.com/api/oauth2/authorize?client_id=1045367982060220557&permissions=8&scope=bot%20applications.commands).
-Plutôt qu'héberger le votre.
 
-Me contacter -> envoyer un message privé au bot.
+Me contacter -> envoyer un message privé au bot ou rejoindre le [Serveur de Support](https://discord.gg/V2spkxSp8N).
 
 ---
 

@@ -111,7 +111,7 @@ class General(commands.Cog):
 		currentTime = now()
 		try:
 			await ctx.defer(ephemeral=True)
-			await ctx.respond(f"Le lien pour m'inviter : {infos.invitation}", ephemeral=True)
+			await ctx.respond(f"Inviter [GoloBot]({infos.invite_bot})\nRejoindre le [Serveur de Support]({infos.invite_server})", ephemeral=True)
 			print(f"\n{currentTime} {ctx.author.name} a demandé le lien d'invitation\n")
 
 		except Exception:
