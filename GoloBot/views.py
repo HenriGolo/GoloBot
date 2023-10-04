@@ -335,9 +335,9 @@ class ModalEditEmbed(ui.Modal):
 		self.embeds = embeds
 		self.embed = embed
 		old = [embed.title, embed.description, hex(embed.color.value)]
-		self.add_item(ui.InputText(label="Titre", placeholder=old[0], value=old[0], required=False))
-		self.add_item(ui.InputText(label="Description", placeholder=old[1], value=old[1], style=InputTextStyle.long, required=False))
-		self.add_item(ui.InputText(label="Couleur", placeholder=old[2], value=old[2], required=False))
+		self.add_item(ui.InputText(label="Titre", value=old[0], required=False))
+		self.add_item(ui.InputText(label="Description", value=old[1], style=InputTextStyle.long, required=False))
+		self.add_item(ui.InputText(label="Couleur", value=old[2], required=False))
 
 	async def callback(self, interaction):
 		title = self.children[0].value
@@ -358,8 +358,8 @@ class ModalEditEmbedFields(ui.Modal):
 		field = embed.fields[index]
 		old_name = field.name
 		old_value = field.value
-		self.add_item(ui.InputText(label="Nom", placeholder=old_name, value=old_name, required=False))
-		self.add_item(ui.InputText(label="Contenu", placeholder=old_value, value=old_value, style=InputTextStyle.long, required=False))
+		self.add_item(ui.InputText(label="Nom", value=old_name, required=False))
+		self.add_item(ui.InputText(label="Contenu", value=old_value, style=InputTextStyle.long, required=False))
 
 	async def callback(self, interaction):
 		self.embed.set_field_at(self.field, name=self.children[0].value, value=self.children[1].value, inline=False)
