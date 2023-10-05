@@ -577,13 +577,13 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 		currentTime = now()
 		try:
 			if edit == None:
-				await ctx.send_modal(ModalNewEmbed(title="Nouvel Embed"))
+				await ctx.send_modal(ModalNewEmbed(ctx.author.id, title="Nouvel Embed"))
 				print(f"\n{currentTime} {ctx.author.name} a commencé un nouvel embed\n")
 
 			else:
 				await ctx.defer(ephemeral=True)
 				msg = await ctx.channel.fetch_message(int(edit))
-				await msg.edit(view=ViewEditEmbed(msg.embeds, msg.embeds[-1]))
+				await msg.edit(view=ViewEditEmbed(msg.embeds, msg.embeds[-1], ctx.author.id))
 				await ctx.respond(".", delete_after=0)
 				print(f"\n{currentTime} {ctx.author.name} a modifié un embed (message id : {edit})\n")
 

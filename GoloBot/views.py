@@ -315,8 +315,9 @@ class ViewDM(MyView):
 		await interaction.response.edit_message(delete_after=0)
 
 class ModalNewEmbed(ui.Modal):
-	def __init__(self, *args, **kwargs):
+	def __init__(self, user, *args, **kwargs):
 		super().__init__(*args, **kwargs)
+		self.user = user
 		self.add_item(ui.InputText(label="Titre", required=False))
 		self.add_item(ui.InputText(label="Description", style=InputTextStyle.long, required=False))
 		self.add_item(ui.InputText(label="Couleur", placeholder="Couleur en Hexadécimal", value="5865F2", required=False))
@@ -326,14 +327,15 @@ class ModalNewEmbed(ui.Modal):
 		description = self.children[1].value
 		color = Colour(int(self.children[2].value, 16))
 		embed = MyEmbed(title=title, description=description, color=color)
-		view = ViewEditEmbed([embed], embed)
+		view = ViewEditEmbed([embed], embed, self.user)
 		await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
 class ModalEditEmbed(ui.Modal):
-	def __init__(self, embeds, embed, *args, **kwargs):
+	def __init__(self, embeds, embed, user, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.embeds = embeds
 		self.embed = embed
+		self.user = user
 		old = [embed.title, embed.description, hex(embed.color.value)]
 		self.add_item(ui.InputText(label="Titre", value=old[0], required=False))
 		self.add_item(ui.InputText(label="Description", value=old[1], style=InputTextStyle.long, required=False))
@@ -346,15 +348,16 @@ class ModalEditEmbed(ui.Modal):
 		self.embed.title = title
 		self.embed.description = description
 		self.embed.color = color
-		view = ViewEditEmbed(self.embeds, self.embed)
+		view = ViewEditEmbed(self.embeds, self.embed, self.user)
 		await interaction.response.edit_message(embeds=self.embeds, view=view)
 
 class ModalEditEmbedFields(ui.Modal):
-	def __init__(self, embeds, embed, index, *args, **kwargs):
+	def __init__(self, embeds, embed, index, user, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.embeds = embeds
 		self.embed = embed
 		self.field = index
+		self.user = user
 		field = embed.fields[index]
 		old_name = field.name
 		old_value = field.value
@@ -363,11 +366,12 @@ class ModalEditEmbedFields(ui.Modal):
 
 	async def callback(self, interaction):
 		self.embed.set_field_at(self.field, name=self.children[0].value, value=self.children[1].value, inline=False)
-		await interaction.response.edit_message(embeds=self.embeds, view=ViewEditEmbed(self.embeds, self.embed))
+		await interaction.response.edit_message(embeds=self.embeds, view=ViewEditEmbed(self.embeds, self.embed, self.user))
 
 class SelectEmbed(ui.Select):
-	def __init__(self, embeds):
+	def __init__(self, embeds, user):
 		self.embeds = embeds
+		self.user = user
 		options = [SelectOption(label=e.title, description=f"Modifier {e.title}") for e in embeds]
 		super().__init__(placeholder="Modifier un Embed", min_values=1, options=options)
 
@@ -378,11 +382,13 @@ class SelectEmbed(ui.Select):
 				return i
 
 	async def callback(self, interaction):
+		if not self.user == interaction.user.id:
+			return
 		index = self.select_embed(self.values[0])
-		await interaction.response.send_modal(ModalEditEmbed(self.embeds, self.embeds[index], title="Édition de l'Embed"))
+		await interaction.response.send_modal(ModalEditEmbed(self.embeds, self.embeds[index], self.user, title="Édition de l'Embed"))
 
 class SelectEditEmbed(ui.Select):
-	def __init__(self, embeds, embed):
+	def __init__(self, embeds, embed, user):
 		self.embeds = embeds
 		self.embed = embed
 		# ~ Création des options du menu déroulant
@@ -399,14 +405,16 @@ class SelectEditEmbed(ui.Select):
 		return -1
 
 	async def callback(self, interaction):
+		if not self.user == interaction.user.id:
+			return
 		index = self.select_field(self.values[0])
 		if index == -1:
-			await interaction.response.send_modal(ModalEditEmbed(self.embeds, self.embed, title="Édition de l'Embed"))
+			await interaction.response.send_modal(ModalEditEmbed(self.embeds, self.embed, self.user, title="Édition de l'Embed"))
 		else:
-			await interaction.response.send_modal(ModalEditEmbedFields(self.embeds, self.embed, index, title="Édition de Champ"))
+			await interaction.response.send_modal(ModalEditEmbedFields(self.embeds, self.embed, index, self.user, title="Édition de Champ"))
 
 class SelectRemoveEmbed(ui.Select):
-	def __init__(self, embeds):
+	def __init__(self, embeds, user):
 		self.embeds = embeds
 		options = [SelectOption(label=e.title, description=f"Supprimer {e.title}") for e in embeds]
 		super().__init__(placeholder="Supprimer un Embed", min_values=1, options=options)
@@ -417,14 +425,17 @@ class SelectRemoveEmbed(ui.Select):
 				return e
 
 	async def callback(self, interaction):
+		if not self.user == interaction.user.id:
+			return
 		embed = self.select_embed(self.values[0])
 		embeds = [e for e in self.embeds if e != embed]
 		await interaction.response.edit_message(embeds=embeds)
 
 class SelectRemoveFieldEmbed(ui.Select):
-	def __init__(self, embeds, embed):
+	def __init__(self, embeds, embed, user):
 		self.embeds = embeds
 		self.embed = embed
+		self.user = user
 		options = [SelectOption(label=e.name, description=f"Supprimer {e.name}") for e in embed.fields]
 		options.insert(0, SelectOption(label=embed.title, description=f"Supprimer l'Embed"))
 		super().__init__(placeholder="Supprimer un Champ", min_values=1, options=options)
@@ -437,37 +448,45 @@ class SelectRemoveFieldEmbed(ui.Select):
 		return -1
 
 	async def callback(self, interaction):
+		if not self.user == interaction.user.id:
+			return
 		index = self.select_field(self.values[0])
 		if index == -1:
 			await interaction.response.edit_message(delete_after=0)
 		else:
 			self.embed.remove_field(index)
-			await interaction.response.edit_message(embeds=self.embeds, view=ViewEditEmbed(self.embeds, self.embed))
+			await interaction.response.edit_message(embeds=self.embeds, view=ViewEditEmbed(self.embeds, self.embed, self.user))
 
 class ViewEditEmbed(MyView):
-	def __init__(self, embeds, embed):
+	def __init__(self, embeds, embed, user_id):
 		super().__init__()
 		self.embeds = embeds
 		self.embed = embed
-		self.add_item(SelectEmbed(embeds))
-		self.add_item(SelectEditEmbed(embeds, embed))
-		self.add_item(SelectRemoveEmbed(embeds))
-		self.add_item(SelectRemoveFieldEmbed(embeds, embed))
+		self.user = user_id
+		self.add_item(SelectEmbed(embeds, self.user))
+		self.add_item(SelectEditEmbed(embeds, embed, self.user))
+		self.add_item(SelectRemoveEmbed(embeds, self.user))
+		self.add_item(SelectRemoveFieldEmbed(embeds, embed, self.user))
 
 	@ui.button(label="Ajouter un Champ", style=ButtonStyle.primary)
 	async def button_addfield(self, button, interaction):
+		if not self.user == interaction.user.id:
+			return
 		self.embed.add_field(name=len(self.embed.fields), value="Nouveau", inline=False)
-		await interaction.response.edit_message(embeds=self.embeds, view=ViewEditEmbed(self.embeds, self.embed))
+		await interaction.response.edit_message(embeds=self.embeds, view=ViewEditEmbed(self.embeds, self.embed, self.user))
 
 	@ui.button(label="Ajouter un Embed", style=ButtonStyle.primary)
 	async def button_addembed(self, button, interaction):
+		if not self.user == interaction.user.id:
+			return
 		color = self.embeds[-1].color.value
 		self.embeds.append(MyEmbed(title=len(self.embeds), color=color))
-		# ~ await interaction.response.edit_message(embeds=self.embeds, view=ViewEditEmbed(self.embeds, self.embeds[-1]))
-		await interaction.response.send_modal(ModalEditEmbed(self.embeds, self.embeds[-1], title="Nouvel Embed"))
+		await interaction.response.send_modal(ModalEditEmbed(self.embeds, self.embeds[-1], self.user, title="Nouvel Embed"))
 
-	@ui.button(label="Envoyer", style=ButtonStyle.success)
+	@ui.button(label="Valider", style=ButtonStyle.success)
 	async def button_send(self, button, interaction):
+		if not self.user == interaction.user.id:
+			return
 		msg = interaction.message
 		for e in self.embeds:
 			e.timestamp = now()
@@ -476,4 +495,3 @@ class ViewEditEmbed(MyView):
 			await interaction.response.send_message(".", ephemeral=True, delete_after=0)
 		else:
 			await interaction.response.edit_message(embeds=self.embeds, view=None)
-
