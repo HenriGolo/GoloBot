@@ -572,6 +572,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	@commands.slash_command(description=cmds["embed"][0])
+	@option("edit", description=cmds["embed"][3]["edit"])
 	async def embed(self, ctx, edit=None):
 		currentTime = now()
 		try:
