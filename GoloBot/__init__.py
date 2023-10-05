@@ -572,12 +572,19 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	@commands.slash_command(description=cmds["embed"][0])
-	async def embed(self, ctx):
+	async def embed(self, ctx, edit=None):
 		currentTime = now()
 		try:
-			# ~ await ctx.defer(ephemeral=True)
-			await ctx.send_modal(ModalNewEmbed(title="Nouvel Embed"))
-			print(f"\n{CurrentTime} {ctx.author.name} a commencé un nouvel embed\n")
+			if edit == None:
+				await ctx.send_modal(ModalNewEmbed(title="Nouvel Embed"))
+				print(f"\n{currentTime} {ctx.author.name} a commencé un nouvel embed\n")
+
+			else:
+				await ctx.defer(ephemeral=True)
+				msg = await ctx.channel.fetch_message(int(edit))
+				await msg.edit(view=ViewEditEmbed(msg.embeds, msg.embeds[-1]))
+				await ctx.respond(".", delete_after=0)
+				print(f"\n{currentTime} {ctx.author.name} a modifié un embed (message id : {edit})\n")
 
 		except Exception:
 			with open(infos.stderr, 'a') as file:

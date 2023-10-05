@@ -468,8 +468,12 @@ class ViewEditEmbed(MyView):
 
 	@ui.button(label="Envoyer", style=ButtonStyle.success)
 	async def button_send(self, button, interaction):
+		msg = interaction.message
 		for e in self.embeds:
 			e.timestamp = now()
-		await interaction.channel.send(embeds=self.embeds)
-		await interaction.response.send_message(".", ephemeral=True, delete_after=0)
+		if msg.flags.ephemeral:
+			await interaction.channel.send(embeds=self.embeds)
+			await interaction.response.send_message(".", ephemeral=True, delete_after=0)
+		else:
+			await interaction.response.edit_message(embeds=self.embeds, view=None)
 
