@@ -383,6 +383,7 @@ class SelectEmbed(ui.Select):
 
 	async def callback(self, interaction):
 		if not self.user == interaction.user.id:
+			await interaction.response.send_message("Tu n'as pas la permission de mofifier cet embed", ephemeral=True)
 			return
 		index = self.select_embed(self.values[0])
 		await interaction.response.send_modal(ModalEditEmbed(self.embeds, self.embeds[index], self.user, title="Édition de l'Embed"))
@@ -406,6 +407,7 @@ class SelectEditEmbed(ui.Select):
 
 	async def callback(self, interaction):
 		if not self.user == interaction.user.id:
+			await interaction.response.send_message("Tu n'as pas la permission de mofifier cet embed", ephemeral=True)
 			return
 		index = self.select_field(self.values[0])
 		if index == -1:
@@ -426,6 +428,7 @@ class SelectRemoveEmbed(ui.Select):
 
 	async def callback(self, interaction):
 		if not self.user == interaction.user.id:
+			await interaction.response.send_message("Tu n'as pas la permission de mofifier cet embed", ephemeral=True)
 			return
 		embed = self.select_embed(self.values[0])
 		embeds = [e for e in self.embeds if e != embed]
@@ -449,6 +452,7 @@ class SelectRemoveFieldEmbed(ui.Select):
 
 	async def callback(self, interaction):
 		if not self.user == interaction.user.id:
+			await interaction.response.send_message("Tu n'as pas la permission de mofifier cet embed", ephemeral=True)
 			return
 		index = self.select_field(self.values[0])
 		if index == -1:
@@ -471,6 +475,7 @@ class ViewEditEmbed(MyView):
 	@ui.button(label="Ajouter un Champ", style=ButtonStyle.primary)
 	async def button_addfield(self, button, interaction):
 		if not self.user == interaction.user.id:
+			await interaction.response.send_message("Tu n'as pas la permission de mofifier cet embed", ephemeral=True)
 			return
 		self.embed.add_field(name=len(self.embed.fields), value="Nouveau", inline=False)
 		await interaction.response.edit_message(embeds=self.embeds, view=ViewEditEmbed(self.embeds, self.embed, self.user))
@@ -478,6 +483,7 @@ class ViewEditEmbed(MyView):
 	@ui.button(label="Ajouter un Embed", style=ButtonStyle.primary)
 	async def button_addembed(self, button, interaction):
 		if not self.user == interaction.user.id:
+			await interaction.response.send_message("Tu n'as pas la permission de mofifier cet embed", ephemeral=True)
 			return
 		color = self.embeds[-1].color.value
 		self.embeds.append(MyEmbed(title=len(self.embeds), color=color))
@@ -486,6 +492,7 @@ class ViewEditEmbed(MyView):
 	@ui.button(label="Valider", style=ButtonStyle.success)
 	async def button_send(self, button, interaction):
 		if not self.user == interaction.user.id:
+			await interaction.response.send_message("Tu n'as pas la permission de mofifier cet embed", ephemeral=True)
 			return
 		msg = interaction.message
 		for e in self.embeds:
