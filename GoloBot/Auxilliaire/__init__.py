@@ -265,3 +265,6 @@ async def usersInStr(string, bot):
 	users_ids = eltInStr(string, "<@", ">", to_type=int)
 	users = [await bot.fetch_user(u) for u in users_ids]
 	return users
+
+def clanships(clan):
+	return f"clan{clan}.txt"

@@ -16,19 +16,17 @@ Créer le module python avec `make build`.
 `import GoloBot` pour l'utiliser dans vos scripts python.
 
 `make launch` pour démarrer le bot en tâche de fond.
-Attention, un fichier `infos.py` doit être créé dans `Main/`.
-Vous pouvez y mettre toutes les infos que vous voulez uitliser de façon privée.
-Mais doit obligatoirement contenir :
+Attention, vous devez définir les variables suivantes dans votre environnement virtuel.
 
 Nom de la variable | Description | Format | Vide
 ---|---
 tokenDSC | Token de connexion à [Discord](https://discord.com/developers/applications) | string | nécessaire
 tokenWOWS | Token de connexion à [World of Warships](https://developers.wargaming.net/reference/all/wows/) | string | `""`
 ownerID | Votre identifiant discord | int | nécessaire
-invitation | Lien pour inviter votre bot | string | nécessaire
-whitelisted_users | Liste des id des User Discord auxquels vous accordez des permissions | list[int] | `[]`
+invite_bot | Lien pour inviter votre bot | string | `""`
+invite_server | Lien vers votre serveur de support | string | `""`
 stdout, stderr, dm | Chemins (en dur ou relatif) aux fichiers de log correspondants | string | nécessaire
 stats | Chemins (en dur ou relatif) vers la DB des stats des joueurs | string | nécessaire
 qpup | Chemins (en dur ou relatif) vers une DB de question / réponse | string | nécessaire
 shipnames | Chemins (en dur ou relatif) vers la DB de tous les noms de navires dans World of Warships | string | nécessaire
-pidfile, restart, bot | Chemins (en dur ou relatif) aux fichiers correspondants | string | nécessaire
+pidfile, restart, bot_path | Chemins (en dur ou relatif) aux fichiers correspondants | string | nécessaire

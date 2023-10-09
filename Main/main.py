@@ -12,7 +12,7 @@ class GoloBot(Bot):
 
 		# ~ Lecture les stats précédents sérialisées
 		self.stats = Stats()
-		self.stats.read(infos.stats)
+		self.stats.read(environ['stats'])
 		self.stats = self.stats
 		# ~ Jeux en cours
 		self.games = dict()
@@ -22,13 +22,7 @@ class GoloBot(Bot):
 			self.players[joueur.name] = joueur
 
 		# ~ Récupération de l'User du dev
-		self.dev = await self.fetch_user(infos.ownerID)
-
-		# ~ Création de la bot.whitelist des User avec des permissions sur le bot
-		wl = infos.whitelisted_users
-		self.whitelist = [self.dev]
-		for id in wl:
-			self.whitelist.append(await self.fetch_user(id))
+		self.dev = await self.fetch_user(environ['ownerID'])
 
 		# ~ Message de statut du bot
 		activity = Activity(name="GitHub",
@@ -38,12 +32,12 @@ class GoloBot(Bot):
 
 		# ~ View persistantes
 		self.add_view(ViewRoleReact())
-		self.add_view(ViewDM(bot))
+		self.add_view(ViewDM(self))
 
 		self.PR = [pr() for pr in PrivateResponse.__subclasses__()]
 
 		# ~ Gestion pour pid pour kill proprement
-		with open(infos.pidfile, "w") as file:
+		with open(environ['pidfile'], "w") as file:
 			file.write(str(getpid()))
 
 		print(f"{self.user} connecté !")
@@ -54,10 +48,10 @@ bot = GoloBot(intents=intents)
 
 # ~ Ajout des commandes
 for cog in commands.Cog.__subclasses__():
-	if cog.__name__ == "WorldOfWarships" and infos.tokenWOWS == "":
+	if cog.__name__ == "WorldOfWarships" and environ['tokenWOWS'] == "":
 		continue
 	bot.add_cog(cog(bot))
 
 # ~ Run
-bot.run(token=infos.tokenDSC)
+bot.run(token=environ['tokenDSC'])
 

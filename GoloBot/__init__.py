@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 from pytz import timezone
 
 # ~ Les commandes subprocess ne marchent potentiellement que sous UNIX
-from os import getpid
+from os import getpid, environ
 from subprocess import Popen
 import random
 
@@ -26,7 +26,7 @@ from GoloBot.WoWs.wowsAPI import * # ~ L'API de World of Warships adaptée pour 
 from GoloBot.views import * # ~ Les composants de l'UI custom
 
 # ~ Privé
-import infos # ~ Tokens entre autres, voir README.md
+# ~ import infos # ~ Tokens entre autres, voir README.md
 
 # ~ Code du bot
 class General(commands.Cog):
@@ -55,7 +55,7 @@ class General(commands.Cog):
 							embed=embed,
 							files=files,
 							view=ViewDM(bot=self.bot))
-					with open(infos.dm, 'a') as fichier:
+					with open(environ['dm'], 'a') as fichier:
 						fichier.write(f"\n{currentTime} {msg.author.name} a envoyé un DM :\n{msg.content}\n")
 					await msg.add_reaction("✅")
 			else:
@@ -65,7 +65,7 @@ class General(commands.Cog):
 							await msg.reply(str(pr))
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	# ~ Aide
@@ -102,7 +102,7 @@ class General(commands.Cog):
 			print(f"\n{currentTime} {ctx.author.name} a utilisé de l'aide\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	# ~ Renvoie un lien pour inviter le bot
@@ -111,11 +111,11 @@ class General(commands.Cog):
 		currentTime = now()
 		try:
 			await ctx.defer(ephemeral=True)
-			await ctx.respond(f"Inviter [GoloBot]({infos.invite_bot})\nRejoindre le [Serveur de Support]({infos.invite_server})", ephemeral=True)
+			await ctx.respond(f"Inviter [GoloBot]({environ['invite_bot']})\nRejoindre le [Serveur de Support]({environ['invite_server']})", ephemeral=True)
 			print(f"\n{currentTime} {ctx.author.name} a demandé le lien d'invitation\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	# ~ Renvoie le code source du bot
@@ -131,52 +131,30 @@ class General(commands.Cog):
 			print(f"\n{currentTime} {ctx.author.name} a récupéré le code source\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	# ~ Renvoie les logs
 	@commands.slash_command(description=cmds["get_logs"][0])
-	@option("files", description=cmds["get_logs"][3]["files"])
 	@option("last_x_lines", description=cmds["get_logs"][3]["last_x_lines o"])
 	@default_permissions(manage_messages=True)
-	async def get_logs(self, ctx, files, last_x_lines:int=50):
+	async def get_logs(self, ctx, last_x_lines:int=50):
 		currentTime = now()
 		try:
 			await ctx.defer(ephemeral=True)
-			fichiers = list()
-			sent = str()
-			reponse = ""
-			if "all" in files:
-				files = "guild ; dev ; dm ; stderr"
-			for fl in [e.strip() for e in files.split(";")]:
-				# ~ Logs du serveur accessible à tous
-				if fl == "guild":
-					file = None
-					if not ctx.guild == None:
-						file = infos.log(ctx.guild.name)
+			# ~ Commande réservée au dev
+			if not ctx.author == self.bot.dev:
+				await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
+				print(f"\n{currentTime} {ctx.author.name} a essayé d'envoyer un MP à travers le bot")
+				return
 
-				# ~ Autres logs, réservés aux gens dans la whitelist
-				elif not ctx.author in self.bot.whitelist:
-					continue
-				elif fl == "dev":
-					file = infos.stdout
-				elif fl == "dm":
-					file = infos.dm
-				elif fl == "stderr":
-					file = infos.stderr
-					# ~ Récupération des dernière lignes
-					# ~ Le [-1900:] s'assure que le message ne dépasse pas les 2000 caractères
-					reponse += f"Dernières {last_x_lines} lignes de **{file}** :\n{tail(file, last_x_lines)[-1900:]}"
-
-				# ~ On ajoute le fichier à la liste des renvois
-				if not file == None:
-					fichiers.append(File(fp=file, filename=file.split("/")[-1]))
-					sent += f"{file}, "
-			await ctx.respond(f"Voici les logs demandés\n{reponse}", files=fichiers, ephemeral=True)
+			file = File(fp=environ['stderr'], filename=environ['stderr'].split("/")[-1])
+			reponse = f"Dernières {last_x_lines} lignes de **{file}** :\n{tail(environ['stderr'], last_x_lines)[-1900:]}"
+			await ctx.respond(f"Voici les logs demandés\n{reponse}", files=[file], ephemeral=True)
 			print(f"\n{currentTime} Logs envoyés : {sent[:-2]}\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	@commands.slash_command(description=cmds["droprates"][0])
@@ -220,7 +198,7 @@ class General(commands.Cog):
 
 		# ~ Erreur dans la fonction
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 # ~ Fonctions Dev
@@ -244,7 +222,7 @@ class Dev(commands.Cog):
 
 		# ~ Erreur dans la fonction
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	# ~ Déconnecte le bot
@@ -267,7 +245,7 @@ class Dev(commands.Cog):
 
 		except Exception:
 			await ctx.respond(fail(), ephemeral=True)
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	# ~ Renvoie le ping et d'autres informations
@@ -287,7 +265,7 @@ class Dev(commands.Cog):
 			print(f"\n{currentTime} {ctx.author.name} a utilisé ping\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	# ~ Propose une suggestion
@@ -299,7 +277,7 @@ class Dev(commands.Cog):
 			print(f"\n{currentTime} {ctx.author.name} a fait une suggestion\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 # ~ Fonctions Admin
@@ -366,7 +344,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 			print(f"\n{currentTime} {ctx.author.name} a créé un sondage dans {channel.name}\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	# ~ Role react
@@ -398,7 +376,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 			print(f"\n{currentTime} Ajout d'un role réaction pour {','.join([e.name for e in roles])}\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	# ~ Nettoyage des messages d'un salon
@@ -456,7 +434,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 			print(f"\n{currentTime} {ctx.author.name} a clear {salon.name} de {cpt} messages\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	# ~ Bannir un Member
@@ -492,7 +470,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 				print(f"\n{currentTime} échec du ban de {user.name}, erreur :\n{error}\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	# ~ Mute un Member
@@ -542,7 +520,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 				print(f"\n{currentTime} échec du mute de {user.name}, erreur :\n{error}\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	# ~ Affiche les informations d'un Member
@@ -568,7 +546,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 			print(f"\n{currentTime} {ctx.author.name} a récupéré les infos de {user.name}\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	@commands.slash_command(description=cmds["embed"][0])
@@ -588,7 +566,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 				print(f"\n{currentTime} {ctx.author.name} a modifié un embed (message id : {edit})\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 # ~ Fonctions Random
@@ -619,7 +597,7 @@ class Fun(commands.Cog):
 			print(log)
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	# ~ QPUP, bon courage pour retrouver le lore ...
@@ -629,7 +607,7 @@ class Fun(commands.Cog):
 		currentTime = now()
 		try:
 			await ctx.defer()
-			self.bot.qpup = read_db(infos.qpup)
+			self.bot.qpup = read_db(environ['qpup'])
 			# ~ Boucle sur le nombre de questions à poser
 			for loop in range(nbquestions):
 				# ~ Tirage au sort d'une question
@@ -639,7 +617,7 @@ class Fun(commands.Cog):
 			print(f"\n{currentTime} Fin du QPUP démarré par {ctx.author}\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	# ~ 2048, le _ est nécessaire, une fonction ne commence pas à un chiffre
@@ -668,7 +646,7 @@ class Fun(commands.Cog):
 				file.write(f"\n{currentTime} {ctx.author.name} a lancé un 2048\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	# ~ Renvoie les stats sur les différents jeux
@@ -677,6 +655,7 @@ class Fun(commands.Cog):
 		currentTime = now()
 		try:
 			await ctx.defer()
+			botMember = await User2Member(ctx.guild, self.bot.user)
 			embed = MyEmbed(title="Stats", description=str(self.bot.stats), color=botMember.color)
 			for joueur in self.bot.stats.joueurs:
 				if joueur.name == ctx.author.mention:
@@ -685,7 +664,7 @@ class Fun(commands.Cog):
 			print(f"\n{currentTime} {ctx.author.name} a affiché ses stats\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	@commands.slash_command(name="no_custom_messages", description=cmds["no_custom_messages"][0])
@@ -703,13 +682,13 @@ Pour changer ça, envoyer un message privé au bot.""", ephemeral=True)
 			print(f"\n{currenTime} {ctx.author.name} a désactivé les PR de {guild.name}\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 class WorldOfWarships(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
-		self.shipsAutoComp = init_autocomplete(read_db(infos.shipnames))
+		self.shipsAutoComp = init_autocomplete(read_db(environ['shipnames']))
 
 	def getship(self, ship:str):
 		return self.shipsAutoComp.search(word=ship, max_cost=10, size=1)[0][0].title()
@@ -720,15 +699,14 @@ class WorldOfWarships(commands.Cog):
 		currentTime = now()
 		try:
 			await ctx.defer(ephemeral=True)
-			clanID = getClanID(infos.tokenWOWS, clan, self.bot.session)
-			clan = Clan(infos.tokenWOWS, clanID, self.bot.session)
-			file = infos.shiplist(clan.tag)
-			clan.serialise(file)
+			clanID = getClanID(environ['tokenWOWS'], clan, self.bot.session)
+			clan = Clan(environ['tokenWOWS'], clanID, self.bot.session)
+			clan.serialise(clanships(clan.tag))
 			await ctx.respond(f"Liste des ships du clan [{clan.tag}] actualisée", ephemeral=True)
 			print(f"\n{currentTime} {ctx.author.name} a lancé l'actualisation des ships du clan [{clan}]\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	@commands.slash_command(name="compo", description=cmds["compo"][0])
@@ -738,7 +716,7 @@ class WorldOfWarships(commands.Cog):
 		try:
 			await ctx.defer()
 			ships = dict()
-			players_db = read_db(infos.shiplist(clan))
+			players_db = read_db(clanships(clan))
 			players = convert_db_dict(players_db, 0)
 			for player in players:
 				for ship in player:
@@ -756,7 +734,7 @@ class WorldOfWarships(commands.Cog):
 			print(f"\n{currentTime} {ctx.author.name} a récupéré la compo du clan [{clan}]\n")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	@commands.slash_command(name="set_compo", description=cmds["set_compo"][0])
@@ -767,11 +745,10 @@ class WorldOfWarships(commands.Cog):
 		try:
 			await ctx.defer(ephemeral=True)
 			ships = [self.getship(e.strip()) for e in ships.split(';')]
-			file = infos.shiplist(clan)
-			modify_db(file, ["compo"], [ships])
+			modify_db(clanships(clan), ["compo"], [ships])
 			await ctx.respond(f"La composition pour le clan [{clan}] est maintenant *{'*, *'.join(ships)}*")
 			print(f"{currentTime} {ctx.author.name} a redéfni la compo pour le clan [{clan}]")
 
 		except Exception:
-			with open(infos.stderr, 'a') as file:
+			with open(environ['stderr'], 'a') as file:
 				file.write(f"\n{currentTime}\n{fail()}\n")

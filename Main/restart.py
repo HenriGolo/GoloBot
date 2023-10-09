@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from subprocess import Popen, DEVNULL
-from infos import bot, stdout, stderr
+from os import environ
 
-Popen([bot],
+Popen([environ['bot_path']],
 		stdin=DEVNULL,
-		stdout=open(stdout, 'a'),
-		stderr=open(stderr, 'a'),
+		stdout=open(environ['stdout'], 'a'),
+		stderr=open(environ['stderr'], 'a'),
 		start_new_session=True,
 		shell=True)
