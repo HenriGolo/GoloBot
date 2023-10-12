@@ -559,6 +559,12 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 				print(f"\n{currentTime} {ctx.author.name} a commencé un nouvel embed\n")
 
 			else:
+				# ~ Manque de permissions
+				if not ctx.channel.permissions_for(ctx.author).manage_messages:
+					await ctx.respond(f"Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
+					print(f"\n{currentTime} {ctx.author.name} a voulu modifié un embed\n")
+					return
+
 				await ctx.defer(ephemeral=True)
 				msg = await ctx.channel.fetch_message(int(edit))
 				await msg.edit(view=ViewEditEmbed(msg.embeds, msg.embeds[-1], ctx.author.id))
