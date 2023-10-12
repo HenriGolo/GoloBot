@@ -2,6 +2,9 @@
 from subprocess import Popen, DEVNULL
 from os import environ
 
+with open(environ['pidfile'], 'r') as file:
+	Popen(["kill", file.read()])
+
 Popen([environ['bot_path']],
 		stdin=DEVNULL,
 		stdout=open(environ['stdout'], 'a'),
