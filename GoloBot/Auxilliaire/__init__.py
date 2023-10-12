@@ -96,7 +96,8 @@ class Logger:
 			print(f"\n{time} {user} : {cname}.{func.__name__} dans {ctx.guild.name} avec comme arguments\n\t{signature}")
 
 			try:
-				value = await func(*args, **kwargs)
+				result = None
+				result = await func(*args, **kwargs)
 				print(f"{func.__name__} terminé en {now(True)-start}s")
 
 			except Exception:
@@ -104,7 +105,7 @@ class Logger:
 				with open(environ['stderr'], 'a') as file:
 					file.write(f"\n{start}\n{fail()}\n")
 
-			return value
+			return result
 		return wrapper_error
 
 	def modal_logger(func):
@@ -122,7 +123,8 @@ class Logger:
 			print(f"\n{time} {user} : {cname}.{func.__name__} dans {interaction.guild.name} avec comme arguments\n\t{signature}")
 
 			try:
-				value = await func(*args, **kwargs)
+				result = None
+				result = await func(*args, **kwargs)
 				print(f"{func.__name__} terminé en {now(True)-start}s")
 
 			except Exception as e:
@@ -130,7 +132,7 @@ class Logger:
 				with open(environ['stderr'], 'a') as file:
 					file.write(f"\n{start}\n{fail()}\n")
 
-			return value
+			return result
 		return wrapper_error
 
 	def button_logger(func):
@@ -148,14 +150,15 @@ class Logger:
 			print(f"\n{time} {user} : {cname}.{func.__name__} dans {interaction.guild.name} avec comme arguments\n\t{signature}")
 
 			try:
-				value = await func(*args, **kwargs)
+				result = None
+				result = await func(*args, **kwargs)
 				print(f"{func.__name__} terminé en {now(True)-start}s")
 
 			except Exception:
 				with open(environ['stderr'], 'a') as file:
 					file.write(f"\n{start}\n{fail()}\n")
 
-			return value
+			return result
 		return wrapper_error
 
 # ~ Lis une DB
@@ -313,7 +316,7 @@ def init_autocomplete(db):
 	return AutoComplete(words=words, synonyms=synonyms)
 
 def fail():
-	return format_exc() + "\n\n"
+	return f"\n{format_exc()}\n\n"
 
 def correspond(attendu:list, reponse:str):
 	articles = ["le", "la", "les", "l'", "un", "une", "des", "du", "de la"]

@@ -371,6 +371,7 @@ class SelectEditEmbed(ui.Select):
 	def __init__(self, embeds, embed, user):
 		self.embeds = embeds
 		self.embed = embed
+		self.user = user
 		# ~ Création des options du menu déroulant
 		options = [SelectOption(label=e.name, description=f"Modifier {e.name}") for e in embed.fields]
 		options.insert(0, SelectOption(label=embed.title, description=f"Modifier l'Embed"))
