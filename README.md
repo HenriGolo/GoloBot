@@ -30,3 +30,4 @@ stats | Chemins (en dur ou relatif) vers la DB des stats des joueurs | string | 
 qpup | Chemins (en dur ou relatif) vers une DB de question / réponse | string | nécessaire
 shipnames | Chemins (en dur ou relatif) vers la DB de tous les noms de navires dans World of Warships | string | nécessaire
 pidfile, restart, bot_path | Chemins (en dur ou relatif) aux fichiers correspondants | string | nécessaire
+error_msg | Message a envoyé en cas d'erreur | string | tout sauf `""`
