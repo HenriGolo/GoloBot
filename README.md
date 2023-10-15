@@ -19,7 +19,9 @@ Créer le module python avec `make build`.
 Attention, vous devez définir les variables suivantes dans votre environnement virtuel.
 
 Nom de la variable | Description | Format | Vide
+
 ---|---
+
 token | Token de connexion à [Discord](https://discord.com/developers/applications) | string | nécessaire
 ownerID | Votre identifiant discord | int | nécessaire
 invite_bot | Lien pour inviter votre bot | string | `""`
