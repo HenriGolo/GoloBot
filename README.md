@@ -20,8 +20,7 @@ Attention, vous devez définir les variables suivantes dans votre environnement 
 
 Nom de la variable | Description | Format | Vide
 ---|---
-tokenDSC | Token de connexion à [Discord](https://discord.com/developers/applications) | string | nécessaire
-tokenWOWS | Token de connexion à [World of Warships](https://developers.wargaming.net/reference/all/wows/) | string | `""`
+token | Token de connexion à [Discord](https://discord.com/developers/applications) | string | nécessaire
 ownerID | Votre identifiant discord | int | nécessaire
 invite_bot | Lien pour inviter votre bot | string | `""`
 invite_server | Lien vers votre serveur de support | string | `""`

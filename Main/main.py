@@ -53,5 +53,5 @@ for cog in commands.Cog.__subclasses__():
 	bot.add_cog(cog(bot))
 
 # ~ Run
-bot.run(token=environ['tokenDSC'])
+bot.run(token=environ['token'])
 

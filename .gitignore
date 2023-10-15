@@ -1,4 +1,5 @@
 Debug
+Aborted
 dist
 logs
 __pycache__
@@ -6,8 +7,6 @@ database.txt
 infos.py
 infos.txt
 qpup.txt
-WoWs/data_API.py
-WoWs/all_ships_names.txt
 discord.pid
 Main/Stats/players.txt
 Main/privatebot.py
