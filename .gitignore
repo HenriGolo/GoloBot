@@ -1,6 +1,6 @@
-Debug/*
-Aborted/*
-dist/*
+Debug
+Aborted
+dist
 logs
 __pycache__
 database.txt
