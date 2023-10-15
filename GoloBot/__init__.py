@@ -144,10 +144,11 @@ Rejoindre le [Serveur de Support]({environ['invite_server']})""", ephemeral=True
 				  75 : 0,
 				  90 : 0}
 		klist = [key for key in seuils]
+		klist.sort()
 		n = 1
 		b = Binomiale(n, p)
 		proba = b.proba_sup(1)
-		while proba < klist[-1]/100:
+		while proba*100 < klist[-1]:
 			for key in klist[:-1]:
 				if not seuils[key] == 0:
 					continue
@@ -163,10 +164,10 @@ Rejoindre le [Serveur de Support]({environ['invite_server']})""", ephemeral=True
 		title = f"Chances de drop {item}"
 		if not nom == "":
 			title += f" dans {nom}"
-		embed = MyEmbed(title=title, description=f"Pourcentage dans 1 conteneur : {pourcentage}", color=ctx.author.color)
+		embed = MyEmbed(title=title, description=f"Pourcentage dans 1 lootbox : {pourcentage}", color=ctx.author.color)
 		for key in seuils:
 			n = seuils[key]
-			embed.add_field(name=f"Au moins {key}% de chances", value=f"{n} conteneurs", inline=False)
+			embed.add_field(name=f"Au moins {key}% de chances", value=f"{n} lootboxes", inline=False)
 		await ctx.respond(embed=embed, ephemeral=(nom == "" or item == ""))
 
 # ~ Fonctions Dev
