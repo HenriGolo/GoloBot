@@ -27,6 +27,5 @@ invite_server | Lien vers votre serveur de support | string | `""`
 stdout, stderr, dm | Chemins (en dur ou relatif) aux fichiers de log correspondants | string | nécessaire
 stats | Chemins (en dur ou relatif) vers la DB des stats des joueurs | string | nécessaire
 qpup | Chemins (en dur ou relatif) vers une DB de question / réponse | string | nécessaire
-shipnames | Chemins (en dur ou relatif) vers la DB de tous les noms de navires dans World of Warships | string | nécessaire
 pidfile, restart, bot_path | Chemins (en dur ou relatif) aux fichiers correspondants | string | nécessaire
 error_msg | Message à envoyer en cas d'erreur | string | nécessaire
