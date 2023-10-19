@@ -104,7 +104,7 @@ class General(commands.Cog):
 	async def invite(self, ctx):
 		await ctx.defer(ephemeral=True)
 		await ctx.respond(f"""Inviter [GoloBot]({environ['invite_bot']})
-Rejoindre le [Serveur de Support]({environ['invite_server']})""", ephemeral=True)
+Rejoindre le <:discord:1164579176146288650> [Serveur de Support]({environ['invite_server']})""", ephemeral=True)
 
 	# ~ Renvoie le code source du bot
 	@commands.slash_command(description=cmds["code"][0])
@@ -112,7 +112,8 @@ Rejoindre le [Serveur de Support]({environ['invite_server']})""", ephemeral=True
 	async def code(self, ctx):
 		await ctx.defer(ephemeral=True)
 		embed = MyEmbed(title="Code Source",
-			description="Le code source du bot est disponible sur [github](https://github.com/HenriGolo/GoloBot/)",
+			description=f"Le code source du bot est disponible sur <:github:1164672088934711398> [github](https://github.com/HenriGolo/GoloBot/)\n\
+Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({environ['invite_server']})",
 			color=ctx.author.color)
 		await ctx.respond(embed=embed, ephemeral=True)
 
