@@ -248,6 +248,7 @@ class ViewQPUP(MyView):
 		msg = interaction.message
 		await interaction.response.send_modal(ModalQPUP(rep=self.rep, title=msg.content))
 
+# ~ Transmission d'un message privé par le bot
 class ModalDM(ui.Modal):
 	def __init__(self, bot, target=None, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -280,6 +281,7 @@ class ViewDM(MyView):
 
 	@ui.button(label="Répondre", custom_id="reponse")
 	@Logger.button_logger
+	# ~ Répondre au MP
 	async def reply_button(self, button, interaction):
 		self.target = await self.set_target(interaction.message.content)
 		modal = ModalDM(bot=self.bot, target=self.target, title=f"Votre Message pour {self.target.name}")
@@ -287,9 +289,11 @@ class ViewDM(MyView):
 
 	@ui.button(label="Supprimer", custom_id="supprimer", style=ButtonStyle.danger)
 	@Logger.button_logger
+	# ~ Supprimer le MP
 	async def delete_button(self, button, interaction):
 		await interaction.response.edit_message(delete_after=0)
 
+# ~ Création d'Embed
 class ModalNewEmbed(ui.Modal):
 	def __init__(self, msg, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -307,12 +311,14 @@ class ModalNewEmbed(ui.Modal):
 		view = ViewEditEmbed([embed], embed, self.msg)
 		await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
+# ~ Modification d'Embed déjà existant
 class ModalEditEmbed(ui.Modal):
-	def __init__(self, embeds, embed, msg, *args, **kwargs):
+	def __init__(self, embeds, embed, msg, send_new=False, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.embeds = embeds
 		self.embed = embed
 		self.msg = msg
+		self.send = send_new
 		old = [embed.title, embed.description, hex(embed.color.value)]
 		self.add_item(ui.InputText(label="Titre", value=old[0], required=False))
 		self.add_item(ui.InputText(label="Description", value=old[1], style=InputTextStyle.long, required=False))
@@ -327,8 +333,12 @@ class ModalEditEmbed(ui.Modal):
 		self.embed.description = description
 		self.embed.color = color
 		view = ViewEditEmbed(self.embeds, self.embed, self.msg)
-		await interaction.response.send_message(embeds=self.embeds, view=view, ephemeral=True)
+		if self.send:
+			await interaction.response.send_message(embeds=self.embeds, view=view, ephemeral=True)
+		else:
+			await interaction.response.edit_message(embeds=self.embeds, view=view)
 
+# ~ Modification des champs d'un Embed
 class ModalEditEmbedFields(ui.Modal):
 	def __init__(self, embeds, embed, index, msg, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -344,10 +354,13 @@ class ModalEditEmbedFields(ui.Modal):
 
 	@Logger.modal_logger
 	async def callback(self, interaction):
-		self.embed.set_field_at(self.field, name=self.children[0].value, value=self.children[1].value, inline=False)
+		name = self.children[0].value
+		value = self.children[1].value
+		self.embed.set_field_at(self.field, name=name, value=value, inline=False)
 		view = ViewEditEmbed(self.embeds, self.embed, self.msg)
 		await interaction.response.edit_message(embeds=self.embeds, view=view)
 
+# ~ Sélection de l'Embed à modifier
 class SelectEmbed(ui.Select):
 	def __init__(self, embeds, msg):
 		self.embeds = embeds
@@ -367,7 +380,8 @@ class SelectEmbed(ui.Select):
 		modal = ModalEditEmbed(self.embeds, self.embeds[index], self.msg, title="Édition de l'Embed")
 		await interaction.response.send_modal(modal)
 
-class SelectEditEmbed(ui.Select):
+# ~ Sélection du champ à modifier
+class SelectFieldEmbed(ui.Select):
 	def __init__(self, embeds, embed, msg):
 		self.embeds = embeds
 		self.embed = embed
@@ -383,20 +397,21 @@ class SelectEditEmbed(ui.Select):
 			field = self.embed.fields[i]
 			if value == field.name:
 				return i
-		return -1
 
 	@Logger.modal_logger
 	async def callback(self, interaction):
 		index = self.select_field(self.values[0])
-		if index == -1:
+		if index == None:
 			modal = ModalEditEmbed(self.embeds, self.embed, self.msg, title="Édition de l'Embed")
 		else:
 			modal = ModalEditEmbedFields(self.embeds, self.embed, index, self.msg, title="Édition de Champ")
 		await interaction.response.send_modal(modal)
 
+# ~ Sélection de l'Embed à supprimer
 class SelectRemoveEmbed(ui.Select):
 	def __init__(self, embeds, msg):
 		self.embeds = embeds
+		self.msg = msg
 		options = [SelectOption(label=e.title, description=f"Supprimer {e.title}") for e in embeds]
 		super().__init__(placeholder="Supprimer un Embed", min_values=1, options=options)
 
@@ -409,8 +424,10 @@ class SelectRemoveEmbed(ui.Select):
 	async def callback(self, interaction):
 		embed = self.select_embed(self.values[0])
 		embeds = [e for e in self.embeds if e != embed]
-		await interaction.response.edit_message(embeds=embeds)
+		view = ViewEditEmbed(embeds, embeds[0], self.msg)
+		await interaction.response.edit_message(embeds=embeds, view=view)
 
+# ~ Sélection du champ à supprimer
 class SelectRemoveFieldEmbed(ui.Select):
 	def __init__(self, embeds, embed, msg):
 		self.embeds = embeds
@@ -431,27 +448,33 @@ class SelectRemoveFieldEmbed(ui.Select):
 	async def callback(self, interaction):
 		index = self.select_field(self.values[0])
 		if index == None:
-			embeds = [e for e in self.embeds if e != self.embed]
-			view = ViewEditEmbed(embeds, embeds[0], self.msg)
-			await interaction.response.edit_message(embeds=embeds, view=view)
+			self.embeds = [e for e in self.embeds if e != self.embed]
+			if len(self.embeds) == 0:
+				await interaction.response.edit_message(delete_after=0)
+				return
+			view = ViewEditEmbed(self.embeds, self.embeds[0], self.msg)
 		else:
 			self.embed.remove_field(index)
 			view = ViewEditEmbed(self.embeds, self.embed, self.msg)
-			await interaction.response.edit_message(embeds=self.embeds, view=view)
+		await interaction.response.edit_message(embeds=self.embeds, view=view)
 
+# ~ View finale de la création / modification des Embeds
 class ViewEditEmbed(MyView):
 	def __init__(self, embeds, embed, msg_id):
 		super().__init__()
 		self.embeds = embeds
 		self.embed = embed
 		self.msg = msg_id
-		self.add_item(SelectEmbed(embeds, self.msg))
-		self.add_item(SelectEditEmbed(embeds, embed, self.msg))
-		self.add_item(SelectRemoveEmbed(embeds, self.msg))
+		if len(embeds) > 1:
+			self.add_item(SelectEmbed(embeds, self.msg))
+		self.add_item(SelectFieldEmbed(embeds, embed, self.msg))
+		if len(embeds) > 1:
+			self.add_item(SelectRemoveEmbed(embeds, self.msg))
 		self.add_item(SelectRemoveFieldEmbed(embeds, embed, self.msg))
 
 	@ui.button(label="Ajouter un Champ", style=ButtonStyle.primary)
 	@Logger.button_logger
+	# ~ Ajouter un Champ
 	async def button_addfield(self, button, interaction):
 		self.embed.add_field(name=f"Champ {len(self.embed.fields)}", value="Nouveau", inline=False)
 		view = ViewEditEmbed(self.embeds, self.embed, self.msg)
@@ -459,6 +482,7 @@ class ViewEditEmbed(MyView):
 
 	@ui.button(label="Ajouter un Embed", style=ButtonStyle.primary)
 	@Logger.button_logger
+	# ~ Ajouter un Embed
 	async def button_addembed(self, button, interaction):
 		color = self.embeds[-1].color.value
 		self.embeds.append(MyEmbed(title=f"Embed {len(self.embeds)}", color=color))
@@ -467,14 +491,14 @@ class ViewEditEmbed(MyView):
 
 	@ui.button(label="Valider", style=ButtonStyle.success)
 	@Logger.button_logger
+	# ~ Envoyer les Embeds
 	async def button_send(self, button, interaction):
 		msg = interaction.message
 		for e in self.embeds:
 			e.timestamp = now()
 		if self.msg == None:
 			await interaction.channel.send(embeds=self.embeds)
-			await interaction.response.send_message(".", ephemeral=True, delete_after=0)
 		else:
 			msg = await interaction.channel.fetch_message(int(self.msg))
 			await msg.edit(embeds=self.embeds, view=None)
-			await interaction.response.send_message(".", ephemeral=True, delete_after=0)
+		await interaction.response.send_message(".", ephemeral=True, delete_after=0)

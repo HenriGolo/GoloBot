@@ -460,7 +460,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 			msg = await ctx.channel.fetch_message(int(edit))
 			embeds = msg.embeds
 			embed = embeds[0]
-			await ctx.send_modal(ModalEditEmbed(embeds, embed, edit, title="Modifier l'Embed"))
+			await ctx.send_modal(ModalEditEmbed(embeds, embed, edit, send_new=True, title="Modifier l'Embed"))
 
 # ~ Fonctions Random
 class Fun(commands.Cog):
