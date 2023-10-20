@@ -1,6 +1,7 @@
 Debug
 Aborted
 Aborted/WoWs
+Stats
 dist
 logs
 __pycache__
@@ -9,5 +10,4 @@ infos.py
 infos.txt
 qpup.txt
 discord.pid
-Main/Stats
 Main/privatebot.py
