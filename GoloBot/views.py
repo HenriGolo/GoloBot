@@ -501,4 +501,4 @@ class ViewEditEmbed(MyView):
 		else:
 			msg = await interaction.channel.fetch_message(int(self.msg))
 			await msg.edit(embeds=self.embeds, view=None)
-		await interaction.response.send_message(".", ephemeral=True, delete_after=0)
+		await interaction.response.edit_message(delete_after=0)
