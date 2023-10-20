@@ -503,9 +503,6 @@ class Fun(commands.Cog):
 	@Logger.command_logger
 	async def _2048(self, ctx, size:int=4):
 		await ctx.defer()
-		# ~ Nouveau joueur
-		if not ctx.author.mention in self.bot.players:
-			self.bot.players[ctx.author.mention] = Joueur(nom=ctx.author.mention)
 		# ~ Création d'un 2048
 		game = Game2048(size=size)
 		game.duree = now()
@@ -518,18 +515,6 @@ class Fun(commands.Cog):
 		embed.add_field(name="Mouvements", value="\n".join(moves), inline=True)
 		embed.add_field(name="Score", value=game.score, inline=True)
 		await ctx.respond(embed=embed, view=View2048(self.bot))
-
-	# ~ Renvoie les stats sur les différents jeux
-	@commands.slash_command(name="stats_jeux", description=cmds["stats_jeux"][0])
-	@Logger.command_logger
-	async def stats_jeux(self, ctx):
-		await ctx.defer()
-		botMember = await User2Member(ctx.guild, self.bot.user)
-		embed = MyEmbed(title="Stats", description=str(self.bot.stats), color=botMember.color)
-		for joueur in self.bot.stats.joueurs:
-			if joueur.name == ctx.author.mention:
-				embed.add_field(name="Stats Personnelles", value=str(joueur))
-		await ctx.respond(embed=embed)
 
 	@commands.slash_command(name="no_custom_messages", description=cmds["no_custom_messages"][0])
 	@commands.has_permissions(administrator=True)

@@ -10,16 +10,8 @@ class GoloBot(Bot):
 		# ~ Création de session pour les requêtes
 		self.session = CustomSession()
 
-		# ~ Lecture les stats précédents sérialisées
-		self.stats = Stats()
-		self.stats.read(environ['stats'])
-		self.stats = self.stats
 		# ~ Jeux en cours
 		self.games = dict()
-		# ~ Remplissage notre dictionnaire de joueurs
-		self.players = dict()
-		for joueur in self.stats.joueurs:
-			self.players[joueur.name] = joueur
 
 		# ~ Récupération de l'User du dev
 		self.dev = await self.fetch_user(environ['ownerID'])

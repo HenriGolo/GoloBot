@@ -33,12 +33,7 @@ class View2048(MyView):
 					child.label = "Partie Terminée"
 				# ~ Dans tous les cas on désactive le bouton
 				child.disabled = True
-			# ~ Actualisation des stats
 			game.termine = True
-			game.duree = now() - game.duree
-			self.bot.players[user.mention] + game
-			self.bot.stats + self.bot.players[user.mention]
-			self.bot.stats.write(environ['stats'])
 
 		# ~ On itère sur les boutons de la View
 		for child in self.children:
@@ -73,10 +68,6 @@ class View2048(MyView):
 					child.label = "Partie Terminée"
 				child.disabled = True
 			game.termine = True
-			game.duree = now() - game.duree
-			self.bot.players[user.mention] + game
-			self.bot.stats + self.bot.players[user.mention]
-			self.bot.stats.write(environ['stats'])
 
 		for child in self.children:
 			if not child.label.lower() in toward:
@@ -108,10 +99,6 @@ class View2048(MyView):
 					child.label = "Partie Terminée"
 				child.disabled = True
 			game.termine = True
-			game.duree = now() - game.duree
-			self.bot.players[user.mention] + game
-			self.bot.stats + self.bot.players[user.mention]
-			self.bot.stats.write(environ['stats'])
 
 		for child in self.children:
 			if not child.label.lower() in toward:
@@ -143,10 +130,6 @@ class View2048(MyView):
 					child.label = "Partie Terminée"
 				child.disabled = True
 			game.termine = True
-			game.duree = now() - game.duree
-			self.bot.players[user.mention] + game
-			self.bot.stats + self.bot.players[user.mention]
-			self.bot.stats.write(environ['stats'])
 
 		for child in self.children:
 			if not child.label.lower() in toward:
@@ -181,9 +164,6 @@ class View2048(MyView):
 		game.gagne = "2048" in str(game)
 		game.duree = now() - game.duree
 
-		self.bot.players[user.mention] + game
-		self.bot.stats + self.bot.players[user.mention]
-		self.bot.stats.write(environ['stats'])
 		self.bot.games[user.mention] = [g for g in self.bot.games[user.mention] if g.jeu!="2048"]
 		await interaction.response.edit_message(view=self)
 
