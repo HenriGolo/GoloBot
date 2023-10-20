@@ -24,9 +24,6 @@ from GoloBot.Auxilliaire.games import * # ~ Jeux de plateau custom
 from GoloBot.Auxilliaire.aux_maths import * # ~ Outils mathématiques
 from GoloBot.views import * # ~ Les composants de l'UI custom
 
-# ~ Privé
-# ~ import infos # ~ Tokens entre autres, voir README.md
-
 # ~ Code du bot
 class General(commands.Cog):
 	def __init__(self, bot):
