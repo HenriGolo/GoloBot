@@ -38,7 +38,7 @@ class View2048(MyView):
 			game.duree = now() - game.duree
 			self.bot.players[user.mention] + game
 			self.bot.stats + self.bot.players[user.mention]
-			self.bot.stats.write(infos.stats)
+			self.bot.stats.write(environ['stats'])
 
 		# ~ On itère sur les boutons de la View
 		for child in self.children:
@@ -76,7 +76,7 @@ class View2048(MyView):
 			game.duree = now() - game.duree
 			self.bot.players[user.mention] + game
 			self.bot.stats + self.bot.players[user.mention]
-			self.bot.stats.write(infos.stats)
+			self.bot.stats.write(environ['stats'])
 
 		for child in self.children:
 			if not child.label.lower() in toward:
@@ -111,7 +111,7 @@ class View2048(MyView):
 			game.duree = now() - game.duree
 			self.bot.players[user.mention] + game
 			self.bot.stats + self.bot.players[user.mention]
-			self.bot.stats.write(infos.stats)
+			self.bot.stats.write(environ['stats'])
 
 		for child in self.children:
 			if not child.label.lower() in toward:
@@ -146,7 +146,7 @@ class View2048(MyView):
 			game.duree = now() - game.duree
 			self.bot.players[user.mention] + game
 			self.bot.stats + self.bot.players[user.mention]
-			self.bot.stats.write(infos.stats)
+			self.bot.stats.write(environ['stats'])
 
 		for child in self.children:
 			if not child.label.lower() in toward:
@@ -163,7 +163,7 @@ class View2048(MyView):
 		await interaction.response.edit_message(embed=embed, view=self)
 
 	# ~ Bouton d'arrêt
-	@ui.button(label="Arrêter", custom_id="stop", style=ButtonStyle.danger, emoji='❌')
+	@ui.button(label="Arrêter", custom_id="stop", style=ButtonStyle.danger, emoji='<a:denied:1164580451680256041>')
 	@Logger.button_logger
 	async def delete_button(self, button, interaction):
 		# ~ On déasctive tous les boutons
@@ -183,7 +183,7 @@ class View2048(MyView):
 
 		self.bot.players[user.mention] + game
 		self.bot.stats + self.bot.players[user.mention]
-		self.bot.stats.write(infos.stats)
+		self.bot.stats.write(environ['stats'])
 		self.bot.games[user.mention] = [g for g in self.bot.games[user.mention] if g.jeu!="2048"]
 		await interaction.response.edit_message(view=self)
 
@@ -282,7 +282,8 @@ class ViewDM(MyView):
 	@Logger.button_logger
 	async def reply_button(self, button, interaction):
 		self.target = await self.set_target(interaction.message.content)
-		await interaction.response.send_modal(ModalDM(bot=self.bot, target=self.target, title=f"Votre Message pour {self.target.name}"))
+		modal = ModalDM(bot=self.bot, target=self.target, title=f"Votre Message pour {self.target.name}")
+		await interaction.response.send_modal(modal)
 
 	@ui.button(label="Supprimer", custom_id="supprimer", style=ButtonStyle.danger)
 	@Logger.button_logger
@@ -344,7 +345,8 @@ class ModalEditEmbedFields(ui.Modal):
 	@Logger.modal_logger
 	async def callback(self, interaction):
 		self.embed.set_field_at(self.field, name=self.children[0].value, value=self.children[1].value, inline=False)
-		await interaction.response.edit_message(embeds=self.embeds, view=ViewEditEmbed(self.embeds, self.embed, self.msg))
+		view = ViewEditEmbed(self.embeds, self.embed, self.msg)
+		await interaction.response.edit_message(embeds=self.embeds, view=view)
 
 class SelectEmbed(ui.Select):
 	def __init__(self, embeds, msg):
@@ -362,7 +364,8 @@ class SelectEmbed(ui.Select):
 	@Logger.modal_logger
 	async def callback(self, interaction):
 		index = self.select_embed(self.values[0])
-		await interaction.response.send_modal(ModalEditEmbed(self.embeds, self.embeds[index], self.msg, title="Édition de l'Embed"))
+		modal = ModalEditEmbed(self.embeds, self.embeds[index], self.msg, title="Édition de l'Embed")
+		await interaction.response.send_modal(modal)
 
 class SelectEditEmbed(ui.Select):
 	def __init__(self, embeds, embed, msg):
@@ -386,9 +389,10 @@ class SelectEditEmbed(ui.Select):
 	async def callback(self, interaction):
 		index = self.select_field(self.values[0])
 		if index == -1:
-			await interaction.response.send_modal(ModalEditEmbed(self.embeds, self.embed, self.msg, title="Édition de l'Embed"))
+			modal = ModalEditEmbed(self.embeds, self.embed, self.msg, title="Édition de l'Embed")
 		else:
-			await interaction.response.send_modal(ModalEditEmbedFields(self.embeds, self.embed, index, self.msg, title="Édition de Champ"))
+			modal = ModalEditEmbedFields(self.embeds, self.embed, index, self.msg, title="Édition de Champ")
+		await interaction.response.send_modal(modal)
 
 class SelectRemoveEmbed(ui.Select):
 	def __init__(self, embeds, msg):
