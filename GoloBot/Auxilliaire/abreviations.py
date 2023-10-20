@@ -3,8 +3,8 @@ docs = {"pycord" : "https://docs.pycord.dev/en/stable/",
 		"crontab" : "https://www.man7.org/linux/man-pages/man5/crontab.5.html",
 		"cron" : "https://www.man7.org/linux/man-pages/man8/cron.8.html"}
 
-bool_reac = {True : "✅",
-			False : "❌"}
+bool_reac = {True : "<a:check:1164580201573912677>",
+			False : "<a:denied:1164580451680256041>"}
 
 cmds = {"aide" : ["Affiche la liste des commandes", # ~ description
 				"Everyone", # ~ permissions
