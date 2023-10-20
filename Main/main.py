@@ -52,4 +52,3 @@ for cog in commands.Cog.__subclasses__():
 
 # ~ Run
 bot.run(token=environ['token'])
-

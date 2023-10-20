@@ -457,14 +457,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 	@commands.has_permissions(manage_messages=True)
 	@Logger.command_logger
 	async def embed(self, ctx, edit=None):
-		if edit == None:
-			await ctx.send_modal(ModalNewEmbed(ctx.author.id, title="Nouvel Embed"))
-
-		else:
-			await ctx.defer(ephemeral=True)
-			msg = await ctx.channel.fetch_message(int(edit))
-			await msg.edit(view=ViewEditEmbed(msg.embeds, msg.embeds[-1], ctx.author.id))
-			await ctx.respond(".", delete_after=0)
+		await ctx.send_modal(ModalNewEmbed(edit, title="Nouvel Embed"))
 
 # ~ Fonctions Random
 class Fun(commands.Cog):
