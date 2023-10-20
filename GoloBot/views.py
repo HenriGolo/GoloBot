@@ -326,7 +326,7 @@ class ModalEditEmbed(ui.Modal):
 		self.embed.description = description
 		self.embed.color = color
 		view = ViewEditEmbed(self.embeds, self.embed, self.msg)
-		await interaction.response.edit_message(embeds=self.embeds, view=view)
+		await interaction.response.send_message(embeds=self.embeds, view=view, ephemeral=True)
 
 class ModalEditEmbedFields(ui.Modal):
 	def __init__(self, embeds, embed, index, msg, *args, **kwargs):
