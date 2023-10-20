@@ -4,7 +4,7 @@ import discord
 import time, datetime
 import subprocess
 import inspect
-from infos import token
+from os import environ
 
 intents = discord.Intents.all()
 bot = discord.Bot(intents=intents)
@@ -21,5 +21,5 @@ async def on_ready():
 	await bot.close()
 
 # bot launch
-bot.run(token=token)
+bot.run(token=environ['token'])
 logs.close()
