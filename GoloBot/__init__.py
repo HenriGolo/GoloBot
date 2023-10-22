@@ -67,32 +67,38 @@ class General(commands.Cog):
 	# ~ Aide
 	@commands.slash_command(description=cmds["aide"][0])
 	@option("commande", choices=[cmd for cmd in cmds], description=cmds["aide"][3]["commande o"])
-	@option("visible", choices=[True, False], description=cmds["aide"][3]["visible o"])
+	@option("visible", description=cmds["aide"][3]["visible o"])
 	@Logger.command_logger # ~ Decorator custom
 	async def aide(self, ctx, commande="aide", visible:bool=False):
-		authorUser = await Member2User(self.bot, ctx.author)
-		cmd = commande # ~ Abbréviation pour cause de flemme
 		await ctx.defer(ephemeral=not visible)
-		# ~ Informations sur la commande
-		embed = MyEmbed(title="Aide", color=ctx.author.color)
-		msg = f"""**__Description__** : {cmds[cmd][0]}
-**__Permissions nécessaires__** : {cmds[cmd][1]}
-**__Paramètres__** :\n"""
+		authorUser = await Member2User(self.bot, ctx.author)
+		# ~ Nom, ID et mention de la commande concernée
+		cmd = self.bot.get_application_command(commande)
+		name = cmd.qualified_name
+		id = cmd.qualified_id
+		mention = f"</{name}:{id}>"
+		# ~ Embed des informations sur la commande
+		embed = MyEmbed(title="Aide", description=mention, color=ctx.author.color)
+		embed.add_field(name="Description", value=cmds[name][0], inline=False)
+		embed.add_field(name="Permissions Nécessaires", value=cmds[name][1], inline=False)
 		# ~ Paramètres de la commande
-		for param in cmds[cmd][3]:
-			if len(param) == 0:
-				continue
-			msg += f"*{param[:-1]}"
-			if param[-1] == "o":
-				msg += ("(optionnel)")
+		parametres = [p for p in cmds[name][3] if not len(p) == 0]
+		params = list()
+		for p in parametres:
+			if p[-2:] == " o":
+				params.append(p[:-1] + "(optionnel)")
 			else:
-				msg += param[-1]
-			msg += f"* : {cmds[cmd][3][param]}.\n"
+				params.append(p)
+		affichage_params = "- " + "\n- ".join([f"""{params[i]} :
+	{cmds[name][3][parametres[i]]}""" for i in range(len(params))])
+		embed.add_field(name="Paramètres", value=affichage_params)
 		# ~ Dans un if car potentiellement non renseigné
-		aide_sup = cmds[cmd][2]
+		aide_sup = cmds[name][2]
 		if not aide_sup == "":
-			msg += f"\n**__Aide supplémentaire__** : {aide_sup}\n"
-		embed.add_field(name=f"/{cmd}", value=msg, inline=False)
+			embed.add_field(name="Aide Supplémentaire", value=aide_sup, inline=False)
+		embed.add_field(name="Encore des questions ?",
+			value=f"Le <:discord:1164579176146288650> [Serveur de Support]({environ['invite_server']}) est là pour ça",
+			inline=False)
 		await ctx.respond(embed=embed, ephemeral=not visible)
 
 	# ~ Renvoie un lien pour inviter le bot
@@ -100,8 +106,11 @@ class General(commands.Cog):
 	@Logger.command_logger
 	async def invite(self, ctx):
 		await ctx.defer(ephemeral=True)
-		await ctx.respond(f"""Inviter [GoloBot]({environ['invite_bot']})
-Rejoindre le <:discord:1164579176146288650> [Serveur de Support]({environ['invite_server']})""", ephemeral=True)
+		embed = MyEmbed(title=f"Inviter {self.bot.user.name}",
+			description=f"""Tu peux m'inviter avec [ce lien]({environ['invite_bot']})
+Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci]({environ['invite_server']})""",
+			color=ctx.author.color)
+		await ctx.respond(embed=embed, ephemeral=True)
 
 	# ~ Renvoie le code source du bot
 	@commands.slash_command(description=cmds["code"][0])
@@ -109,7 +118,7 @@ Rejoindre le <:discord:1164579176146288650> [Serveur de Support]({environ['invit
 	async def code(self, ctx):
 		await ctx.defer(ephemeral=True)
 		embed = MyEmbed(title="Code Source",
-			description=f"Le code source du bot est disponible sur <:github:1164672088934711398> [github](https://github.com/HenriGolo/GoloBot/)\n\
+			description=f"Le code source est disponible sur <:github:1164672088934711398> [Github]({environ['github']})\n\
 Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({environ['invite_server']})",
 			color=ctx.author.color)
 		await ctx.respond(embed=embed, ephemeral=True)
@@ -444,9 +453,10 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 		embed.add_field(name="Dans le serveur depuis", value=Timestamp(user.joined_at).relative, inline=False)
 		if not user.premium_since == None:
 			embed.add_field(name="Booste le serveur depuis", value=Timestamp(user.premium_since).relative, inline=False)
-		if ctx.channel.permissions_for(ctx.author).administrator:
+		if ctx.channel.permissions_for(ctx.author).manage_roles:
 			roles = [r.mention for r in user.roles[1:]]
-			embed.add_field(name="Rôles", value=", ".join(roles), inline=False)
+			roles.reverse()
+			embed.add_field(name="Rôles", value="- "+"\n- ".join(roles), inline=False)
 		await ctx.respond(embed=embed)
 
 	@commands.slash_command(description=cmds["embed"][0])
