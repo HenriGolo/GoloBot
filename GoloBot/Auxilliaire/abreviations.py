@@ -35,7 +35,7 @@ cmds = {"aide" : ["Affiche la liste des commandes.", # ~ description
 Dans le cas où `message_id` est renseigné, un nouveau message avec le même contenu sera envoyé et l'original sera supprimé.
 Si échec suivi d'une possibilité `Actualiser`, choisir `Actualiser` et continuer normalement.""",
 				{"roles" : "Mentions des rôles à attribuer, avec ou sans séparation.",
-				"message o" : "Texte custom pour le message de role react, doit contenir les mentions de tous les rôles à attribuer.",
+				"message o" : "Toutes les mentions des rôles à attribuer.",
 				"message_id o" : "Identifiant d'un message à utiliser. ⚠ le message sera supprimé puis envoyé par le bot."}],
 		"spam_emote" : ["Spamme une emote.",
 				"Everyone",
