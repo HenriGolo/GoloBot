@@ -22,6 +22,7 @@ from GoloBot.Auxilliaire import * # ~ Quelques fonctions utiles
 from GoloBot.Auxilliaire.abreviations import * # ~ Raccourcis et noms customs
 from GoloBot.Auxilliaire.games import * # ~ Jeux de plateau custom
 from GoloBot.Auxilliaire.aux_maths import * # ~ Outils mathématiques
+from GoloBot.Auxilliaire.converters import * # ~ Converters vers mes types custom
 from GoloBot.views import * # ~ Les composants de l'UI custom
 
 # ~ Code du bot
