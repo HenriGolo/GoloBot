@@ -65,9 +65,9 @@ class General(commands.Cog):
 				file.write(f"\n{currentTime}\n{fail()}\n")
 
 	# ~ Aide
-	@commands.slash_command(description=cmds["aide"][0])
-	@option("commande", choices=[cmd for cmd in cmds], description=cmds["aide"][3]["commande o"])
-	@option("visible", description=cmds["aide"][3]["visible o"])
+	@commands.slash_command(description=cmds["aide"].desc)
+	@option("commande", choices=[cmd for cmd in cmds], description=cmds["aide"].args["commande"].desc)
+	@option("visible", description=cmds["aide"].args["visible"].desc)
 	@Logger.command_logger # ~ Decorator custom
 	async def aide(self, ctx, commande="aide", visible:bool=False):
 		await ctx.defer(ephemeral=not visible)
@@ -77,32 +77,22 @@ class General(commands.Cog):
 		name = cmd.qualified_name
 		id = cmd.qualified_id
 		mention = f"</{name}:{id}>"
+		cmd = cmds[name]
 		# ~ Embed des informations sur la commande
 		embed = MyEmbed(title="Aide", description=mention, color=ctx.author.color)
-		embed.add_field(name="Description", value=cmds[name][0], inline=False)
-		embed.add_field(name="Permissions Nécessaires", value=cmds[name][1], inline=False)
-		# ~ Paramètres de la commande
-		parametres = [p for p in cmds[name][3] if not len(p) == 0]
-		params = list()
-		for p in parametres:
-			if p[-2:] == " o":
-				params.append(p[:-1] + "(optionnel)")
-			else:
-				params.append(p)
-		affichage_params = "- " + "\n- ".join([f"""{params[i]} :
-	{cmds[name][3][parametres[i]]}""" for i in range(len(params))])
-		embed.add_field(name="Paramètres", value=affichage_params)
+		embed.add_field(name="Description", value=cmd.desc, inline=False)
+		embed.add_field(name="Permissions Nécessaires", value=cmd.perms, inline=False)
+		embed.add_field(name="Paramètres", value=str(cmd))
 		# ~ Dans un if car potentiellement non renseigné
-		aide_sup = cmds[name][2]
-		if not aide_sup == "":
-			embed.add_field(name="Aide Supplémentaire", value=aide_sup, inline=False)
+		if not cmd.aide == "":
+			embed.add_field(name="Aide Supplémentaire", value=cmd.aide, inline=False)
 		embed.add_field(name="Encore des questions ?",
 			value=f"Le <:discord:1164579176146288650> [Serveur de Support]({environ['invite_server']}) est là pour ça",
 			inline=False)
 		await ctx.respond(embed=embed, ephemeral=not visible)
 
 	# ~ Renvoie un lien pour inviter le bot
-	@commands.slash_command(description=cmds["invite"][0])
+	@commands.slash_command(description=cmds["invite"].desc)
 	@Logger.command_logger
 	async def invite(self, ctx):
 		await ctx.defer(ephemeral=True)
@@ -113,7 +103,7 @@ Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci
 		await ctx.respond(embed=embed, ephemeral=True)
 
 	# ~ Renvoie le code source du bot
-	@commands.slash_command(description=cmds["code"][0])
+	@commands.slash_command(description=cmds["code"].desc)
 	@Logger.command_logger
 	async def code(self, ctx):
 		await ctx.defer(ephemeral=True)
@@ -124,8 +114,8 @@ Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({
 		await ctx.respond(embed=embed, ephemeral=True)
 
 	# ~ Renvoie les logs
-	@commands.slash_command(description=cmds["get_logs"][0])
-	@option("last_x_lines", description=cmds["get_logs"][3]["last_x_lines o"])
+	@commands.slash_command(description=cmds["get_logs"].desc)
+	@option("last_x_lines", description=cmds["get_logs"].args["last_x_lines"].desc)
 	@commands.has_permissions(manage_messages=True)
 	@Logger.command_logger
 	async def get_logs(self, ctx, last_x_lines:int=50):
@@ -139,12 +129,14 @@ Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({
 		reponse = f"Dernières {last_x_lines} lignes de **{file}** :\n{tail(environ['stderr'], last_x_lines)[-1900:]}"
 		await ctx.respond(f"Voici les logs demandés\n{reponse}", files=[file], ephemeral=True)
 
-	@commands.slash_command(description=cmds["droprates"][0])
-	@option("pourcentage", description=cmds["droprates"][3]["pourcentage"])
-	@option("nom", description=cmds["droprates"][3]["nom o"])
-	@option("item", description=cmds["droprates"][3]["item o"])
+	@commands.slash_command(description=cmds["droprates"].desc)
+	@option("pourcentage", description=cmds["droprates"].args["pourcentage"].desc)
+	@option("nb_item", description=cmds["droprates"].args["nb_item"].desc)
+	@option("nb_box", description=cmds["droprates"].args["nb_box"].desc)
+	@option("nom", description=cmds["droprates"].args["nom"].desc)
+	@option("item", description=cmds["droprates"].args["item"].desc)
 	@Logger.command_logger
-	async def droprates(self, ctx, pourcentage:float, nom="", item=""):
+	async def droprates(self, ctx, pourcentage:float, nb_item:CompNInt=1, nb_box:Splitter=None, nom="", item=""):
 		await ctx.defer(ephemeral=(nom == "" or item == ""))
 		p = pourcentage / 100
 		seuils = {50 : 0,
@@ -171,11 +163,49 @@ Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({
 		title = f"Chances de drop {item}"
 		if not nom == "":
 			title += f" dans {nom}"
-		embed = MyEmbed(title=title, description=f"Pourcentage dans 1 lootbox : {pourcentage}", color=ctx.author.color)
+		embeds = list()
+		embeds.append(MyEmbed(title=title, description=f"Pourcentage dans 1 lootbox : {pourcentage}", color=ctx.author.color))
+		embed = embeds[-1]
 		for key in seuils:
 			n = seuils[key]
 			embed.add_field(name=f"Au moins {key}% de chances", value=f"{n} lootboxes", inline=False)
-		await ctx.respond(embed=embed, ephemeral=(nom == "" or item == ""))
+
+		if nb_item.comp == "=":
+			embeds.append(MyEmbed(title=f"Chances de drop exactement {nb_item.int} {nom}"))
+			embed = embeds[-1]
+			for nb in [int(e) for e in nb_box]:
+				b = Binomiale(nb, p)
+				embed.add_field(name=f"Dans {nb} lootboxes", value=f"{b.proba(nb_item.int)} %")
+
+		if nb_item.comp == ">=":
+			embeds.append(MyEmbed(title=f"Chances de drop au moins {nb_item.int} {nom}"))
+			embed = embeds[-1]
+			for nb in [int(e) for e in nb_box]:
+				b = Binomiale(nb, p)
+				embed.add_field(name=f"Dans {nb} lootboxes", value=f"{b.proba_sup(nb_item.int)} %")
+
+		if nb_item.comp == "<=":
+			embeds.append(MyEmbed(title=f"Chances de drop au plus {nb_item.int} {nom}"))
+			embed = embeds[-1]
+			for nb in [int(e) for e in nb_box]:
+				b = Binomiale(nb, p)
+				embed.add_field(name=f"Dans {nb} lootboxes", value=f"{b.proba_inf(nb_item.int)} %")
+
+		if nb_item.comp == ">":
+			embeds.append(MyEmbed(title=f"Chances de drop strictement plus de {nb_item.int} {nom}"))
+			embed = embeds[-1]
+			for nb in [int(e) for e in nb_box]:
+				b = Binomiale(nb, p)
+				embed.add_field(name=f"Dans {nb} lootboxes", value=f"{b.proba_sup(nb_item.int +1)} %")
+
+		if nb_item.comp == "<":
+			embeds.append(MyEmbed(title=f"Chances de drop strictement moins de {nb_item.int} {nom}"))
+			embed = embeds[-1]
+			for nb in [int(e) for e in nb_box]:
+				b = Binomiale(nb, p)
+				embed.add_field(name=f"Dans {nb} lootboxes", value=f"{b.proba_inf(nb_item.int -1)} %")
+
+		await ctx.respond(embeds=embeds, ephemeral=(nom == "" or item == ""))
 
 # ~ Fonctions Dev
 class Dev(commands.Cog):
@@ -183,7 +213,7 @@ class Dev(commands.Cog):
 		self.bot = bot
 
 	# ~ Envoie un message privé à un User
-	@commands.slash_command(description=cmds["dm"][0])
+	@commands.slash_command(description=cmds["dm"].desc)
 	@Logger.command_logger
 	async def dm(self, ctx):
 		# ~ Commande réservée au dev
@@ -194,7 +224,7 @@ class Dev(commands.Cog):
 		await ctx.send_modal(ModalDM(bot=self.bot, title="Envoyer un message privé"))
 
 	# ~ Déconnecte le bot
-	@commands.slash_command(description=cmds["logout"][0])
+	@commands.slash_command(description=cmds["logout"].desc)
 	@Logger.command_logger
 	async def logout(self, ctx):
 		await ctx.defer(ephemeral=True)
@@ -210,7 +240,7 @@ class Dev(commands.Cog):
 		await self.bot.close()
 
 	# ~ Renvoie le ping et d'autres informations
-	@commands.slash_command(description=cmds["ping"][0])
+	@commands.slash_command(description=cmds["ping"].desc)
 	@Logger.command_logger
 	async def ping(self, ctx):
 		await ctx.defer(ephemeral=True)
@@ -224,7 +254,7 @@ class Dev(commands.Cog):
 		await ctx.respond(embed=embed, ephemeral=True)
 
 	# ~ Propose une suggestion
-	@commands.slash_command(name="suggestion", description=cmds["suggestions"][0])
+	@commands.slash_command(name="suggestion", description=cmds["suggestions"].desc)
 	@Logger.command_logger
 	async def suggest(self, ctx):
 		await ctx.send_modal(ModalDM(bot=self.bot, target=self.bot.dev, title="Suggestion"))
@@ -235,10 +265,10 @@ class Admin(commands.Cog):
 		self.bot = bot
 
 	# ~ Création de sondage
-	@commands.slash_command(description=cmds["poll"][0])
-	@option("question", description=cmds["poll"][3]["question"])
-	@option("reponses", description=cmds["poll"][3]["réponses"])
-	@option("salon", description=cmds["poll"][3]["salon o"])
+	@commands.slash_command(description=cmds["poll"].desc)
+	@option("question", description=cmds["poll"].args["question"].desc)
+	@option("reponses", description=cmds["poll"].args["réponses"].desc)
+	@option("salon", description=cmds["poll"].args["salon"].desc)
 	@Logger.command_logger
 	async def poll(self, ctx, question, reponses, salon:TextChannel=None):
 		authorUser = await Member2User(self.bot, ctx.author)
@@ -291,10 +321,10 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 		await ctx.respond("Sondage créé !", ephemeral=True)
 
 	# ~ Role react
-	@commands.slash_command(description=cmds["role_react"][0])
-	@option("roles", description=cmds["role_react"][3]["roles"])
-	@option("message", description=cmds["role_react"][3]["message o"])
-	@option("message_id", description=cmds["role_react"][3]["message_id o"])
+	@commands.slash_command(description=cmds["role_react"].desc)
+	@option("roles", description=cmds["role_react"].args["roles"].desc)
+	@option("message", description=cmds["role_react"].args["message"].desc)
+	@option("message_id", description=cmds["role_react"].args["message_id"].desc)
 	@commands.has_permissions(manage_roles=True)
 	@guild_only()
 	@Logger.command_logger
@@ -318,10 +348,10 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 			await ctx.respond(content=content, view=view)
 
 	# ~ Nettoyage des messages d'un salon
-	@commands.slash_command(description=cmds["clear"][0])
-	@option("nombre", description=cmds["clear"][3]["nombre"])
-	@option("salon", description=cmds["clear"][3]["salon o"])
-	@option("user", description=cmds["clear"][3]["user o"])
+	@commands.slash_command(description=cmds["clear"].desc)
+	@option("nombre", description=cmds["clear"].args["nombre"].desc)
+	@option("salon", description=cmds["clear"].args["salon"].desc)
+	@option("user", description=cmds["clear"].args["user"].desc)
 	@Logger.command_logger
 	async def clear(self, ctx, nombre:int, salon:TextChannel=None, user:User=None):
 		if salon == None:
@@ -367,9 +397,9 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 		await ctx.respond(f"{salon.mention} a été clear de {cpt} messages", ephemeral=True, delete_after=10)
 
 	# ~ Bannir un Member
-	@commands.slash_command(description=cmds["ban"][0])
-	@option("user", description=cmds["ban"][3]["user"])
-	@option("raison", description=cmds["ban"][3]["raison o"])
+	@commands.slash_command(description=cmds["ban"].desc)
+	@option("user", description=cmds["ban"].args["user"].desc)
+	@option("raison", description=cmds["ban"].args["raison"].desc)
 	@commands.has_permissions(ban_members=True)
 	@commands.bot_has_permissions(ban_members=True)
 	@Logger.command_logger
@@ -396,10 +426,10 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 			await ctx.respond(msg, ephemeral=True)
 
 	# ~ Mute un Member
-	@commands.slash_command(description=cmds["mute"][0])
-	@option("user", description=cmds["mute"][3]["user"])
-	@option("duree", description=cmds["mute"][3]["durée o"])
-	@option("raison", description=cmds["mute"][3]["raison o"])
+	@commands.slash_command(description=cmds["mute"].desc)
+	@option("user", description=cmds["mute"].args["user"].desc)
+	@option("duree", description=cmds["mute"].args["durée"].desc)
+	@option("raison", description=cmds["mute"].args["raison"].desc)
 	@commands.has_permissions(moderate_members=True)
 	@commands.bot_has_permissions(moderate_members=True)
 	@Logger.command_logger
@@ -439,8 +469,8 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 			await ctx.respond(msg, ephemeral=True)
 
 	# ~ Affiche les informations d'un Member
-	@commands.slash_command(description=cmds["user_info"][0])
-	@option("user", description=cmds["user_info"][3]["user"])
+	@commands.slash_command(description=cmds["user_info"].desc)
+	@option("user", description=cmds["user_info"].args["user"].desc)
 	@Logger.command_logger
 	async def user_info(self, ctx, user:Member):
 		await ctx.defer(ephemeral=True)
@@ -459,8 +489,8 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 			embed.add_field(name="Rôles", value="- "+"\n- ".join(roles), inline=False)
 		await ctx.respond(embed=embed)
 
-	@commands.slash_command(description=cmds["embed"][0])
-	@option("edit", description=cmds["embed"][3]["edit"])
+	@commands.slash_command(description=cmds["embed"].desc)
+	@option("edit", description=cmds["embed"].args["edit"].desc)
 	@commands.has_permissions(manage_messages=True)
 	@Logger.command_logger
 	async def embed(self, ctx, edit=None):
@@ -478,9 +508,9 @@ class Fun(commands.Cog):
 		self.bot = bot
 
 	# ~ Spamme un texte (emote ou autre) jusqu'à atteindre la limite de caractères
-	@commands.slash_command(description=cmds["spam_emote"][0])
-	@option("emote", description=cmds["spam_emote"][3]["emote o"])
-	@option("user", description=cmds["spam_emote"][3]["user o"])
+	@commands.slash_command(description=cmds["spam_emote"].desc)
+	@option("emote", description=cmds["spam_emote"].args["emote"].desc)
+	@option("user", description=cmds["spam_emote"].args["user"].desc)
 	@Logger.command_logger
 	async def spam_emote(self, ctx, emote="<:pepe_fuck:943761805703020614>", user:User=None):
 		await ctx.defer(ephemeral=True)
@@ -494,8 +524,8 @@ class Fun(commands.Cog):
 		await ctx.respond(emote, ephemeral=True)
 
 	# ~ QPUP, bon courage pour retrouver le lore ...
-	@commands.slash_command(description=cmds["qpup"][0])
-	@option("nbquestions", description=cmds["qpup"][3]["nbquestions o"])
+	@commands.slash_command(description=cmds["qpup"].desc)
+	@option("nbquestions", description=cmds["qpup"].args["nbquestions"].desc)
 	@Logger.command_logger
 	async def qpup(self, ctx, nbquestions:int=1):
 		await ctx.defer()
@@ -508,8 +538,8 @@ class Fun(commands.Cog):
 			await ctx.respond(self.bot.qpup[line][0], view=ViewQPUP(rep=self.bot.qpup[line][1]))
 
 	# ~ 2048, le _ est nécessaire, une fonction ne commence pas à un chiffre
-	@commands.slash_command(name="2048", description=cmds["2048"][0])
-	@option("size", description=cmds["2048"][3]["size o"])
+	@commands.slash_command(name="2048", description=cmds["2048"].desc)
+	@option("size", description=cmds["2048"].args["size"].desc)
 	@Logger.command_logger
 	async def _2048(self, ctx, size:int=4):
 		await ctx.defer()
@@ -526,7 +556,7 @@ class Fun(commands.Cog):
 		embed.add_field(name="Score", value=game.score, inline=True)
 		await ctx.respond(embed=embed, view=View2048(self.bot))
 
-	@commands.slash_command(name="no_custom_messages", description=cmds["no_custom_messages"][0])
+	@commands.slash_command(name="no_custom_messages", description=cmds["no_custom_messages"].desc)
 	@commands.has_permissions(administrator=True)
 	@Logger.command_logger
 	async def disablePR(self, ctx):
