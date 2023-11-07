@@ -23,14 +23,7 @@ dependencies = [
     "py-cord",
     "datetime",
     "pytz",
-    "os",
-    "subprocess",
-    "random",
-    "varname",
-    "collections",
-    "requests",
-    "traceback",
-    "functools"
+    "varname"
 ]
 
 [project.urls]
