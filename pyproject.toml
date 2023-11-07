@@ -21,7 +21,16 @@ dependencies = [
     "fast-autocomplete[levenshtein]",
     "requests",
     "py-cord",
-    "pytz"
+    "datetime",
+    "pytz",
+    "os",
+    "subprocess",
+    "random",
+    "varname",
+    "collections",
+    "requests",
+    "traceback",
+    "functools"
 ]
 
 [project.urls]
