@@ -1,12 +1,12 @@
 Debug
 Aborted
-Aborted/WoWs
 dist
 logs
 __pycache__
+
 database.txt
 infos.py
 infos.txt
 qpup.txt
 discord.pid
-Main/privatebot.py
+privatebot.py
