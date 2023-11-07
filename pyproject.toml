@@ -17,14 +17,14 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "fast_autocomplete",
     "fast-autocomplete[levenshtein]",
-    "requests",
+    "fast_autocomplete",
     "py-cord",
-    "datetime",
     "pytz",
-    "varname"
+    "requests",
+    "varname",
 ]
+
 
 [project.urls]
 "Homepage" = "https://github.com/HenriGolo/GoloBot"
