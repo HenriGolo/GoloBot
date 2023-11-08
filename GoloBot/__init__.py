@@ -232,7 +232,7 @@ class Admin(commands.Cog):
 	@option("reponses", description=cmds["poll"].args["réponses"].desc)
 	@option("salon", description=cmds["poll"].args["salon"].desc)
 	@Logger.command_logger
-	async def poll(self, ctx, question, reponses, salon:TextChannel=None):
+	async def poll(self, ctx, question, reponses:Splitter, salon:TextChannel=None):
 		authorUser = await Member2User(self.bot, ctx.author)
 		await ctx.defer()
 		if salon == None:
@@ -248,10 +248,8 @@ class Admin(commands.Cog):
 		# ~ Car les nombres, majuscules et minuscules ne sont pas accolés
 		alphabet = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲',
 					'🇳', '🇴', '🇵', '🇶', '🇷', '🇸', '🇹', '🇺', '🇻', '🇼', '🇽', '🇾', '🇿']
-		# ~ Ensemble des réponses possibles
-		reps = [e.strip() for e in reponses.split(';')]
 		# ~ Première lettre de chaque réponse
-		first_letters = "".join([s[0].lower() for s in reps])
+		first_letters = "".join([s[0].lower() for s in reponses])
 		# ~ Tableau de bool pour savoir si les premières lettres sont uniques
 		# ~ Au moins un doublon, ou une non lettre -> alphabet standard
 		if False in [check_unicity(first_letters, l) and 'a' <= l <= 'z' for l in first_letters]:
@@ -261,14 +259,14 @@ class Admin(commands.Cog):
 			a = ord('a')
 			used_alphaB = [alphabet[ord(i.lower())-a] for i in first_letters]
 		# ~ Trop de réponses à gérer
-		if len(reps) > len(alphabet):
+		if len(reponses) > len(alphabet):
 			await ctx.respond(f"Oula ... On va se calmer sur le nombre de réponses possibles, \
 j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premiers", ephemeral=True)
 
 		# ~ Préparation de l'affichage des réactions
 		choix = ''
 		for i in range(len(used_alphaB)):
-			choix += f"{used_alphaB[i]} {reps[i]}\n"
+			choix += f"{used_alphaB[i]} {reponses[i]}\n"
 
 		# ~ Création de l'embed
 		embed = MyEmbed(title="Sondage", description=f"Créé par {ctx.author.mention}", color=ctx.author.color)
