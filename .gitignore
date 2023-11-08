@@ -3,8 +3,8 @@ Aborted
 dist
 logs
 __pycache__
+Database
 
-database.txt
 infos.py
 infos.txt
 qpup.txt
