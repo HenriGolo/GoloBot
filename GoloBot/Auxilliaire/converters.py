@@ -1,10 +1,10 @@
 from discord.ext.commands import Converter
 from collections import namedtuple
 
+compint = namedtuple("CompNInt", ["comp", "int"])
 class CompNInt(Converter):
 	async def convert(self, ctx, arg):
 		default = ">="
-		compint = namedtuple("CompNInt", ["comp", "int"])
 		try:
 			comp = default
 			value = int(arg)

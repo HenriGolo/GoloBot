@@ -133,12 +133,10 @@ Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({
 
 	@commands.slash_command(description=cmds["droprates"].desc)
 	@option("pourcentage", description=cmds["droprates"].args["pourcentage"].desc)
-	@option("nb_item", description=cmds["droprates"].args["nb_item"].desc)
-	@option("nb_box", description=cmds["droprates"].args["nb_box"].desc)
 	@option("nom", description=cmds["droprates"].args["nom"].desc)
 	@option("item", description=cmds["droprates"].args["item"].desc)
 	@Logger.command_logger
-	async def droprates(self, ctx, pourcentage:float, nb_item:CompNInt=1, nb_box:Splitter=None, nom="", item=""):
+	async def droprates(self, ctx, pourcentage:float, nom="", item=""):
 		await ctx.defer(ephemeral=(nom == "" or item == ""))
 		p = pourcentage / 100
 		seuils = {50 : 0,
@@ -165,49 +163,11 @@ Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({
 		title = f"Chances de drop {item}"
 		if not nom == "":
 			title += f" dans {nom}"
-		embeds = list()
-		embeds.append(MyEmbed(title=title, description=f"Pourcentage dans 1 lootbox : {pourcentage}", color=ctx.author.color))
-		embed = embeds[-1]
+		embed = MyEmbed(title=title, description=f"Pourcentage dans 1 lootbox : {pourcentage}", color=ctx.author.color)
 		for key in seuils:
 			n = seuils[key]
-			embed.add_field(name=f"Au moins {key}% de chances", value=f"{n} lootboxes", inline=False)
-
-		if nb_item.comp == "=":
-			embeds.append(MyEmbed(title=f"Chances de drop exactement {nb_item.int} {nom}"))
-			embed = embeds[-1]
-			for nb in [int(e) for e in nb_box]:
-				b = Binomiale(nb, p)
-				embed.add_field(name=f"Dans {nb} lootboxes", value=f"{b.proba(nb_item.int)} %")
-
-		if nb_item.comp == ">=":
-			embeds.append(MyEmbed(title=f"Chances de drop au moins {nb_item.int} {nom}"))
-			embed = embeds[-1]
-			for nb in [int(e) for e in nb_box]:
-				b = Binomiale(nb, p)
-				embed.add_field(name=f"Dans {nb} lootboxes", value=f"{b.proba_sup(nb_item.int)} %")
-
-		if nb_item.comp == "<=":
-			embeds.append(MyEmbed(title=f"Chances de drop au plus {nb_item.int} {nom}"))
-			embed = embeds[-1]
-			for nb in [int(e) for e in nb_box]:
-				b = Binomiale(nb, p)
-				embed.add_field(name=f"Dans {nb} lootboxes", value=f"{b.proba_inf(nb_item.int)} %")
-
-		if nb_item.comp == ">":
-			embeds.append(MyEmbed(title=f"Chances de drop strictement plus de {nb_item.int} {nom}"))
-			embed = embeds[-1]
-			for nb in [int(e) for e in nb_box]:
-				b = Binomiale(nb, p)
-				embed.add_field(name=f"Dans {nb} lootboxes", value=f"{b.proba_sup(nb_item.int +1)} %")
-
-		if nb_item.comp == "<":
-			embeds.append(MyEmbed(title=f"Chances de drop strictement moins de {nb_item.int} {nom}"))
-			embed = embeds[-1]
-			for nb in [int(e) for e in nb_box]:
-				b = Binomiale(nb, p)
-				embed.add_field(name=f"Dans {nb} lootboxes", value=f"{b.proba_inf(nb_item.int -1)} %")
-
-		await ctx.respond(embeds=embeds, ephemeral=(nom == "" or item == ""))
+			embed.add_field(name=f"Au moins {key} % de chances", value=f"{n} lootboxes", inline=False)
+		await ctx.respond(embed=embed, ephemeral=(nom == "" or item == ""))
 
 # ~ Fonctions Dev
 class Dev(commands.Cog):
