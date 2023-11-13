@@ -12,7 +12,7 @@ class View2048(MyView):
 
 	# ~ Bouton "bouger vers le haut"
 	@ui.button(label="Haut", style=ButtonStyle.primary, emoji='⬆️')
-	@Logger.button_logger
+	@button_logger
 	async def up_button(self, button, interaction):
 		# ~ Récupération du joueur
 		user = interaction.user
@@ -54,7 +54,7 @@ class View2048(MyView):
 
 	# ~ Bouton "bouger vers le bas" -> idem que pour le haut
 	@ui.button(label="Bas", style=ButtonStyle.primary, emoji='⬇️')
-	@Logger.button_logger
+	@button_logger
 	async def down_button(self, button, interaction):
 		user = interaction.user
 		game = [g for g in self.bot.games[user.mention] if g.jeu=="2048"][-1]
@@ -85,7 +85,7 @@ class View2048(MyView):
 
 	# ~ Bouton "bouger vers la gauche" -> idem que pour le haut
 	@ui.button(label="Gauche", style=ButtonStyle.primary, emoji='⬅️')
-	@Logger.button_logger
+	@button_logger
 	async def left_button(self, button, interaction):
 		user = interaction.user
 		game = [g for g in self.bot.games[user.mention] if g.jeu=="2048"][-1]
@@ -116,7 +116,7 @@ class View2048(MyView):
 
 	# ~ Bouton "bouger vers la droite" -> idem que pour le haut
 	@ui.button(label="Droite", style=ButtonStyle.primary, emoji='➡️')
-	@Logger.button_logger
+	@button_logger
 	async def right_button(self, button, interaction):
 		user = interaction.user
 		game = [g for g in self.bot.games[user.mention] if g.jeu=="2048"][-1]
@@ -147,7 +147,7 @@ class View2048(MyView):
 
 	# ~ Bouton d'arrêt
 	@ui.button(label="Arrêter", custom_id="stop", style=ButtonStyle.danger, emoji='<a:denied:1164580451680256041>')
-	@Logger.button_logger
+	@button_logger
 	async def delete_button(self, button, interaction):
 		# ~ On déasctive tous les boutons
 		for child in self.children:
@@ -179,7 +179,7 @@ class SelectRoleReact(ui.Select):
 		super().__init__(placeholder="Choisir un rôle", min_values=1, options=options, custom_id="role_react")
 
 	# ~ C'est pas un modal, mais c'est le même format d'arguments
-	@Logger.modal_logger
+	@modal_logger
 	async def callback(self, interaction):
 		user = interaction.user
 		msg = interaction.message
@@ -210,7 +210,7 @@ class ModalQPUP(ui.Modal):
 		self.add_item(ui.InputText(label="Votre réponse"))
 		self.rep = rep
 
-	@Logger.modal_logger
+	@modal_logger
 	async def callback(self, interaction):
 		if correspond(self.children[0].value, self.rep):
 			await interaction.response.send_message(f"{interaction.user.mention} a trouvé la bonne réponse : {self.rep}")
@@ -223,7 +223,7 @@ class ViewQPUP(MyView):
 		self.rep = rep
 
 	@ui.button(label="Répondre")
-	@Logger.button_logger
+	@button_logger
 	async def button_callback(self, button, interaction):
 		msg = interaction.message
 		await interaction.response.send_modal(ModalQPUP(rep=self.rep, title=msg.content))
@@ -238,7 +238,7 @@ class ModalDM(ui.Modal):
 		if target == None:
 			self.add_item(ui.InputText(label="Pour"))
 
-	@Logger.modal_logger
+	@modal_logger
 	async def callback(self, interaction):
 		user = interaction.user
 		if self.target == None:
@@ -260,7 +260,7 @@ class ViewDM(MyView):
 		return targets[0]
 
 	@ui.button(label="Répondre", custom_id="reponse")
-	@Logger.button_logger
+	@button_logger
 	# ~ Répondre au MP
 	async def reply_button(self, button, interaction):
 		self.target = await self.set_target(interaction.message.content)
@@ -268,7 +268,7 @@ class ViewDM(MyView):
 		await interaction.response.send_modal(modal)
 
 	@ui.button(label="Supprimer", custom_id="supprimer", style=ButtonStyle.danger)
-	@Logger.button_logger
+	@button_logger
 	# ~ Supprimer le MP
 	async def delete_button(self, button, interaction):
 		await interaction.response.edit_message(delete_after=0)
@@ -282,7 +282,7 @@ class ModalNewEmbed(ui.Modal):
 		self.add_item(ui.InputText(label="Description", style=InputTextStyle.long, required=False))
 		self.add_item(ui.InputText(label="Couleur", placeholder="Couleur en Hexadécimal", value="5865F2", required=False))
 
-	@Logger.modal_logger
+	@modal_logger
 	async def callback(self, interaction):
 		title = self.children[0].value
 		description = self.children[1].value
@@ -304,7 +304,7 @@ class ModalEditEmbed(ui.Modal):
 		self.add_item(ui.InputText(label="Description", value=old[1], style=InputTextStyle.long, required=False))
 		self.add_item(ui.InputText(label="Couleur", value=old[2], required=False))
 
-	@Logger.modal_logger
+	@modal_logger
 	async def callback(self, interaction):
 		title = self.children[0].value
 		description = self.children[1].value
@@ -332,7 +332,7 @@ class ModalEditEmbedFields(ui.Modal):
 		self.add_item(ui.InputText(label="Nom", value=old_name, required=False))
 		self.add_item(ui.InputText(label="Contenu", value=old_value, style=InputTextStyle.long, required=False))
 
-	@Logger.modal_logger
+	@modal_logger
 	async def callback(self, interaction):
 		name = self.children[0].value
 		value = self.children[1].value
@@ -354,7 +354,7 @@ class SelectEmbed(ui.Select):
 			if value == embed.title:
 				return i
 
-	@Logger.modal_logger
+	@modal_logger
 	async def callback(self, interaction):
 		index = self.select_embed(self.values[0])
 		modal = ModalEditEmbed(self.embeds, self.embeds[index], self.msg, title="Édition de l'Embed")
@@ -378,7 +378,7 @@ class SelectFieldEmbed(ui.Select):
 			if value == field.name:
 				return i
 
-	@Logger.modal_logger
+	@modal_logger
 	async def callback(self, interaction):
 		index = self.select_field(self.values[0])
 		if index == None:
@@ -400,7 +400,7 @@ class SelectRemoveEmbed(ui.Select):
 			if e.title == value:
 				return e
 
-	@Logger.modal_logger
+	@modal_logger
 	async def callback(self, interaction):
 		embed = self.select_embed(self.values[0])
 		embeds = [e for e in self.embeds if e != embed]
@@ -424,7 +424,7 @@ class SelectRemoveFieldEmbed(ui.Select):
 				return i
 		return None
 
-	@Logger.modal_logger
+	@modal_logger
 	async def callback(self, interaction):
 		index = self.select_field(self.values[0])
 		if index == None:
@@ -453,7 +453,7 @@ class ViewEditEmbed(MyView):
 		self.add_item(SelectRemoveFieldEmbed(embeds, embed, self.msg))
 
 	@ui.button(label="Ajouter un Champ", style=ButtonStyle.primary)
-	@Logger.button_logger
+	@button_logger
 	# ~ Ajouter un Champ
 	async def button_addfield(self, button, interaction):
 		self.embed.add_field(name=f"Champ {len(self.embed.fields)}", value="Nouveau", inline=False)
@@ -461,7 +461,7 @@ class ViewEditEmbed(MyView):
 		await interaction.response.edit_message(embeds=self.embeds, view=view)
 
 	@ui.button(label="Ajouter un Embed", style=ButtonStyle.primary)
-	@Logger.button_logger
+	@button_logger
 	# ~ Ajouter un Embed
 	async def button_addembed(self, button, interaction):
 		color = self.embeds[-1].color.value
@@ -470,7 +470,7 @@ class ViewEditEmbed(MyView):
 		await interaction.response.send_modal(modal)
 
 	@ui.button(label="Valider", style=ButtonStyle.success)
-	@Logger.button_logger
+	@button_logger
 	# ~ Envoyer les Embeds
 	async def button_send(self, button, interaction):
 		msg = interaction.message

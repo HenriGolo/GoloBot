@@ -1,4 +1,6 @@
 from discord.ext.commands import Converter
+# On ne s'en sert pas ici, mais ce sont des converters aussi
+from discord import User, Member, TextChannel
 from collections import namedtuple
 
 compint = namedtuple("CompNInt", ["comp", "int"])
