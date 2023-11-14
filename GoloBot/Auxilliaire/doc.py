@@ -9,6 +9,11 @@ docs = {"pycord" : "https://docs.pycord.dev/en/stable/",
 bool_reac = {True : "<a:check:1164580201573912677>",
 			False : "<a:denied:1164580451680256041>"}
 
+# ~ Valeur par défaut des arguments
+base_value = ""
+# ~ Utilisé pour dire qu'un argument n'est pas optionel
+assert not base_value == None
+
 class Arg:
 	def __init__(self, name, description, **kwargs):
 		self.name = name
@@ -26,56 +31,70 @@ class Arg:
 			name += " (optionnel)"
 		affichage = f"""- {name}
 	{self.desc}"""
-		if not self.default == None:
+		if not self.default == base_value:
 			affichage += "\n\tValeur par défaut : "
 			affichage += str(self.default)
 		return affichage
+
+	def __eq__(self, other): # ~ self == other
+		if isinstance(other, self.__class__):
+			return self.name == other.name
+		return False
+	def __lt__(self, other): # ~ self < other
+		if isinstance(other, self.__class__):
+			if self.required == other.required:
+				return self.name < other.name
+			return self.required
+		return False
+	def __gt__(self, other): # ~ self > other
+		if isinstance(other, self.__class__):
+			if self.required == other.required:
+				return self.name > other.name
+			return self.required
+		return False
 
 class DocCommand:
 	def __init__(self, name:str, desc:str, perms, aide:str, args:list[Arg]):
 		self.name = name
 		self.desc = desc
-		if type(perms) == perm:
+		if isinstance(perms, perm):
 			self.perms = nameof(perms)
 		else:
 			self.perms = "Développeur"
 		self.aide = aide
+		args.sort()
 		self.args = {a.name : a for a in args}
 
 	def set_options(self):
 		self.options = [self.args[arg].option for arg in self.args]
 
 	def __str__(self):
-		return "\n".join([str(self.args[e]) for e in self.args if not e == empty])
-
-base_value = ""
-empty = Arg("", "", default=base_value)
-_ = [empty]
+		return "\n".join([str(self.args[e]) for e in self.args])
 
 cmds = {"aide" : DocCommand("aide",
 				"Affiche la liste des commandes.",
 				perm.none,
 				"",
-				[empty, # ~ Défini plus tard car besoin d'avoir la liste complète des commandes
-				Arg("visible", "Affiche la fenêtre d'aide à tout le monde. Désactivé par défaut.", default=False)]),
+				[Arg("commande", "défini plus tard, j'ai besoin de la liste de toutes les commandes"),
+				Arg("visible", "Affiche la fenêtre d'aide à tout le monde.", default=False)]),
 
 		"dm" : DocCommand("dm",
 				"Envoie un MP",
 				"dev",
 				"",
-				_),
+				[]),
 
 		"logout" : DocCommand("logout",
 				"Déconnecte le bot.",
 				"dev",
 				"",
-				_),
+				[]),
 
 		"ping" : DocCommand("ping",
 				"Ping et autres infos",
 				perm.none,
 				"Informations : latence du bot, running time ... ce genre de trucs.",
-				_),
+				[]),
 
 		"poll" : DocCommand("poll",
 				"Crée un sondage, séparer les réponses par un point virgule.",
@@ -130,7 +149,7 @@ Ne pas combiner, par exemple `3m30s` est invalide, utilisez `210s`.""",
 				"Affiche un lien pour inviter le bot.",
 				perm.none,
 				"",
-				_),
+				[]),
 
 		"code" : DocCommand("code",
 				"Lien vers GitHub pour accéder aux fichiers du bot.",
@@ -138,7 +157,7 @@ Ne pas combiner, par exemple `3m30s` est invalide, utilisez `210s`.""",
 				f"""Doc Pycord : [ici]({docs['pycord']}).
 Portail des Développeurs : [ici]({docs['discord developpers']}).
 Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']}).""",
-				_),
+				[]),
 
 		"get_logs" : DocCommand("get_logs",
 				"Envoie les logs des erreurs.",
@@ -162,13 +181,13 @@ Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']}).""",
 				"Démarre une partie de 2048.",
 				perm.none,
 				"",
-				[Arg("size", "Taille de la grille (par défaut 4).", default=4)]),
+				[Arg("size", "Taille de la grille.", default=4)]),
 
 		"suggestions" : DocCommand("suggestions",
 				"Envoie un MP au dev à propos d'une suggestion que vous avez.",
 				perm.none,
 				"Vous pouvze aussi passer par le Serveur de Support",
-				_),
+				[]),
 
 		"droprates" : DocCommand("droprates",
 				"Indique le nombre de lootbox attendu pour une certaine probabilité de drop.",
@@ -188,8 +207,8 @@ Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']}).""",
 				"Désactive les messages de réponses personnalisées sur ce serveur.",
 				perm.administrator,
 				"Désactive tout, pour en remettre seulement certaines en service, envoyer un MP au bot à ce sujet.",
-				_)}
+				[])}
 
-cmds["aide"].args["commande"] = Arg("commande", "Une commande en particulier. 'aide' par défaut.", default="aide", choices=[cmd for cmd in cmds])
+cmds["aide"].args["commande"] = Arg("commande", "Une commande en particulier.", default="aide", choices=[cmd for cmd in cmds])
 for cmd in cmds:
 	cmds[cmd].set_options()

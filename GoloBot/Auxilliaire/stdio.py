@@ -41,7 +41,7 @@ def write_db(filename:str, content:list, mode="w"):
 	with open(filename, mode) as file:
 		for line in content:
 			for elt in line:
-				if type(elt) in (list, tuple):
+				if isinstance(elt, (list, tuple)):
 					for e in elt:
 						file.write(f"{e};")
 				else:

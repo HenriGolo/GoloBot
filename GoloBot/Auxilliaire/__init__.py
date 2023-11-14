@@ -108,7 +108,7 @@ def convert_dict_db(dico:dict):
 	db = list()
 	for key in dico:
 		value = unpack(dico[key])
-		if type(value) == list:
+		if isinstance(value, list):
 			db.append([key]+value)
 		else:
 			db.append([key]+pack(value, 1))
@@ -131,7 +131,7 @@ def pack(item, n):
 
 # ~ Opération inverse de unpack
 def unpack(item):
-	if not type(item) == list:
+	if not isinstance(item, list):
 		return item
 	if len(item) > 1:
 		return item
