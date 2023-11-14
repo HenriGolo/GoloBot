@@ -1,46 +1,48 @@
 #!/usr/bin/env python3
-from GoloBot import * # ~ Contient tout ce qu'il faut, imports
-from privatebot import PrivateResponse # ~ Réponses custom à certains contenus de messages
+from GoloBot import *  # ~ Contient tout ce qu'il faut, imports
+from privatebot import PrivateResponse  # ~ Réponses custom à certains contenus de messages
+
 
 class GoloBot(Bot):
-	async def on_ready(self):
-		# ~ Heure de démarrage (no shit sherlock)
-		self.startTime = now()
+    async def on_ready(self):
+        # ~ Heure de démarrage (no shit sherlock)
+        self.startTime = now()
 
-		# ~ Création de session pour les requêtes
-		self.session = CustomSession()
+        # ~ Création de session pour les requêtes
+        self.session = CustomSession()
 
-		# ~ Jeux en cours
-		self.games = dict()
+        # ~ Jeux en cours
+        self.games = dict()
 
-		# ~ Récupération de l'User du dev
-		self.dev = await self.fetch_user(environ['ownerID'])
+        # ~ Récupération de l'User du dev
+        self.dev = await self.fetch_user(environ['ownerID'])
 
-		# ~ Message de statut du bot
-		activity = Activity(name="GitHub",
-							state="https://github.com/HenriGolo/GoloBot",
-							type=ActivityType.watching)
-		await self.change_presence(activity=activity)
+        # ~ Message de statut du bot
+        activity = Activity(name="GitHub",
+                            state="https://github.com/HenriGolo/GoloBot",
+                            type=ActivityType.watching)
+        await self.change_presence(activity=activity)
 
-		# ~ View persistantes
-		self.add_view(ViewRoleReact())
-		self.add_view(ViewDM(self))
+        # ~ View persistantes
+        self.add_view(ViewRoleReact())
+        self.add_view(ViewDM(self))
 
-		self.PR = [pr() for pr in PrivateResponse.__subclasses__()]
+        self.PR = [pr() for pr in PrivateResponse.__subclasses__()]
 
-		# ~ Gestion pour pid pour kill proprement
-		with open(environ['pidfile'], "w") as file:
-			file.write(str(getpid()))
+        # ~ Gestion pour pid pour kill proprement
+        with open(environ['pidfile'], "w") as file:
+            file.write(str(getpid()))
 
-		print(f"{self.user} connecté !")
+        print(f"{self.user} connecté !")
+
 
 # ~ Création Bot
 intents = Intents.all()
 bot = GoloBot(intents=intents)
 
 # ~ Ajout des commandes
-for cog in commands.Cog.__subclasses__():
-	bot.add_cog(cog(bot))
+for cog in commands.Cog.__subclasses__:
+    bot.add_cog(cog(bot))
 
 # ~ Run
 bot.run(token=environ['token'])
