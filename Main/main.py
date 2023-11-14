@@ -7,7 +7,7 @@ from privatebot import PrivateResponse  # ~ Réponses custom à certains contenu
 
 class GoloBot(Bot):
     def __init__(self, description=None, *args, **kwargs):
-        super().__init__(description, args, kwargs)
+        super().__init__(description, *args, **kwargs)
         self.startTime = None
         self.session = None
         self.games = None
@@ -51,7 +51,7 @@ intents = Intents.all()
 bot = GoloBot(intents=intents)
 
 # ~ Ajout des commandes
-for cog in commands.Cog.__subclasses__:
+for cog in commands.Cog.__subclasses__():
     bot.add_cog(cog(bot))
 
 # ~ Run
