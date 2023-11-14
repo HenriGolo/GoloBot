@@ -4,6 +4,14 @@ from privatebot import PrivateResponse  # ~ Réponses custom à certains contenu
 
 
 class GoloBot(Bot):
+    def __init__(self, description=None, *args, **kwargs):
+        super().__init__(description, args, kwargs)
+        self.startTime = None
+        self.session = None
+        self.games = None
+        self.dev = None
+        self.PR = None
+
     async def on_ready(self):
         # ~ Heure de démarrage (no shit sherlock)
         self.startTime = now()
@@ -18,10 +26,10 @@ class GoloBot(Bot):
         self.dev = await self.fetch_user(environ['ownerID'])
 
         # ~ Message de statut du bot
-        activity = Activity(name="GitHub",
+        activite = Activity(name="GitHub",
                             state="https://github.com/HenriGolo/GoloBot",
                             type=ActivityType.watching)
-        await self.change_presence(activity=activity)
+        await self.change_presence(activity=activite)
 
         # ~ View persistantes
         self.add_view(ViewRoleReact())
@@ -30,8 +38,8 @@ class GoloBot(Bot):
         self.PR = [pr() for pr in PrivateResponse.__subclasses__()]
 
         # ~ Gestion pour pid pour kill proprement
-        with open(environ['pidfile'], "w") as file:
-            file.write(str(getpid()))
+        with open(environ['pidfile'], "w") as pid:
+            pid.write(str(getpid()))
 
         print(f"{self.user} connecté !")
 
