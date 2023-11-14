@@ -1,5 +1,6 @@
 import unittest
 
+
 class TestMisc(unittest.TestCase):
 
     def test_import(self):
@@ -19,6 +20,7 @@ class TestMisc(unittest.TestCase):
         self.assertEqual(factorielle(2), 2)
         self.assertEqual(factorielle(3), 6)
         self.assertEqual(factorielle(10), 3628800)
+
 
 if __name__ == '__main__':
     unittest.main()

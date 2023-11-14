@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from os import getpid
+
 from GoloBot import *  # ~ Contient tout ce qu'il faut, imports
 from privatebot import PrivateResponse  # ~ Réponses custom à certains contenus de messages
 
