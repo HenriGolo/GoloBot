@@ -7,7 +7,7 @@
 # ~ Discord, la base
 from discord import *
 from discord.ext import commands
-import random
+from random import randrange
 
 # ~ Mes propres fichiers python
 from GoloBot.Auxilliaire import *  # ~ Quelques fonctions utiles
@@ -463,7 +463,7 @@ class Fun(commands.Cog):
         # ~ Boucle sur le nombre de questions à poser
         for loop in range(nbquestions):
             # ~ Tirage au sort d'une question
-            line = random.randrange(len(self.bot.qpup))
+            line = randrange(len(self.bot.qpup))
             # ~ Envoi de la question
             await ctx.respond(self.bot.qpup[line][0], view=ViewQPUP(rep=self.bot.qpup[line][1]))
 
