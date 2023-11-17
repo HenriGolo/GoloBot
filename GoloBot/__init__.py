@@ -4,6 +4,7 @@
 
 # Discord, la base
 from discord import *
+from discord.ext import commands
 
 from GoloBot.Auxilliaire import *  # Quelques fonctions utiles
 from GoloBot.Auxilliaire.aux_maths import *  # Outils mathématiques
