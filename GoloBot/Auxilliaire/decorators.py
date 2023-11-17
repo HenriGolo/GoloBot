@@ -1,7 +1,8 @@
+from functools import wraps
+from os import environ
+
 from GoloBot.Auxilliaire import *
 from GoloBot.Auxilliaire.doc import cmds
-from os import environ
-from functools import wraps
 
 
 def command_logger(func):
@@ -97,7 +98,7 @@ dans {interaction.guild.name} avec comme arguments\n\t{signature}")
     return wrapper_error
 
 
-# ~ Applique une liste de décorateurs
+# Applique une liste de décorateurs
 def apply_list(decorators):
     def wrapper(f):
         for d in reversed(decorators):
@@ -109,6 +110,6 @@ def apply_list(decorators):
 
 def customSlash(func):
     name = func.__name__.strip('_')
-    func = apply_list(cmds[name].options)(func)
     func = command_logger(func)
+    func = apply_list(cmds[name].options)(func)
     return func

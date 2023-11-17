@@ -1,52 +1,48 @@
-#!/usr/bin/env python3
+# Code Principal
 
-# ~ Code Principal
+# Bibliothèques
 
-# ~ Bibliothèques
-
-# ~ Discord, la base
+# Discord, la base
 from discord import *
-from discord.ext import commands
-from random import randrange
 
-# ~ Mes propres fichiers python
-from GoloBot.Auxilliaire import *  # ~ Quelques fonctions utiles
-from GoloBot.Auxilliaire.doc import *  # ~ Raccourcis et noms customs
-from GoloBot.Auxilliaire.games import *  # ~ Jeux de plateau custom
-from GoloBot.Auxilliaire.aux_maths import *  # ~ Outils mathématiques
-from GoloBot.Auxilliaire.converters import *  # ~ Converters vers mes types custom
-from GoloBot.Auxilliaire.decorators import *  # ~ Decorateurs custom
-from GoloBot.views import *  # ~ Les composants de l'UI custom
+from GoloBot.Auxilliaire import *  # Quelques fonctions utiles
+from GoloBot.Auxilliaire.aux_maths import *  # Outils mathématiques
+from GoloBot.Auxilliaire.converters import *  # Converters vers mes types custom
+from GoloBot.Auxilliaire.decorators import *  # Decorateurs custom
+from GoloBot.Auxilliaire.doc import *  # Raccourcis et noms customs
+from GoloBot.Auxilliaire.games import *  # Jeux de plateau custom
+from GoloBot.views import *  # Les composants de l'UI custom
 
 
-# ~ Code du bot
+# Code du bot
 class General(commands.Cog):
-    def __init__(self, used_bot):
-        self.bot = used_bot
+    def __init__(self, bot):
+        self.bot = bot
 
-    # ~ Gestion des messages
+    # Gestion des messages
     @commands.Cog.listener()
     async def on_message(self, msg):
         currentTime = now()
         try:
-            # ~ Message d'un bot -> inutile
+            # Message d'un bot → inutile
             if msg.author.bot:
                 return
 
-            # ~ Message privé -> transmission au dev
+            # Message privé → transmission au dev
             if msg.channel.type == ChannelType.private:
                 if not msg.author == self.bot.dev:
                     embed = MyEmbed(title="Nouveau Message", description=msg.content, color=msg.author.color)
-                    # ~ Transmission des pièces jointes
+                    # Transmission des pièces jointes
                     files = [await fichier.to_file() for fichier in msg.attachments]
                     await self.bot.dev.send(f"Reçu de {msg.author.mention}",
                                             embed=embed,
                                             files=files,
-                                            view=ViewDM(used_bot=self.bot))
+                                            view=ViewDM(bot=self.bot))
                     with open(environ['dm'], 'a') as fichier:
                         fichier.write(f"\n{currentTime} {msg.author.name} a envoyé un DM :\n{msg.content}\n")
-                    await msg.add_reaction("✅")
+                    await msg.add_reaction(bool_reac[True])
             else:
+                # S'obtient avec un '@silent' devant le message
                 if not msg.flags.suppress_notifications:
                     for pr in self.bot.PR:
                         if pr.trigger(msg.content) and pr.users(msg.author) and pr.guilds(msg.guild):
@@ -56,24 +52,24 @@ class General(commands.Cog):
             with open(environ['stderr'], 'a') as stderr:
                 stderr.write(f"\n{currentTime}\n{fail()}\n")
 
-    # ~ Aide
+    # Aide
     @commands.slash_command(description=cmds["aide"].desc)
     @customSlash
     async def aide(self, ctx, commande: str, visible: bool):
         await ctx.defer(ephemeral=not visible)
         authorUser = await Member2User(self.bot, ctx.author)
-        # ~ Nom, ID et mention de la commande concernée
+        # Nom, ID et mention de la commande concernée
         commande = self.bot.get_application_command(commande)
         name = commande.qualified_name
         cmd_id = commande.qualified_id
         mention = f"</{name}:{cmd_id}>"
         commande = cmds[name]
-        # ~ Embed des informations sur la commande
+        # Embed des informations sur la commande
         embed = MyEmbed(title="Aide", description=mention, color=ctx.author.color)
         embed.add_field(name="Description", value=commande.desc, inline=False)
         embed.add_field(name="Permissions Nécessaires", value=commande.perms, inline=False)
         embed.add_field(name="Paramètres", value=str(commande))
-        # ~ Dans un if car potentiellement non renseigné
+        # Dans un if, car potentiellement non renseigné
         if not commande.aide == "":
             embed.add_field(name="Aide Supplémentaire", value=commande.aide, inline=False)
         embed.add_field(name="Encore des questions ?",
@@ -81,7 +77,7 @@ class General(commands.Cog):
                         inline=False)
         await ctx.respond(embed=embed, ephemeral=not visible)
 
-    # ~ Renvoie un lien pour inviter le bot
+    # Renvoie un lien pour inviter le bot
     @commands.slash_command(description=cmds["invite"].desc)
     @customSlash
     async def invite(self, ctx):
@@ -92,7 +88,7 @@ Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci
                         color=ctx.author.color)
         await ctx.respond(embed=embed, ephemeral=True)
 
-    # ~ Renvoie le code source du bot
+    # Renvoie le code source du bot
     @commands.slash_command(description=cmds["code"].desc)
     @customSlash
     async def code(self, ctx):
@@ -103,21 +99,7 @@ Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({
                         color=ctx.author.color)
         await ctx.respond(embed=embed, ephemeral=True)
 
-    # ~ Renvoie les logs
-    @commands.slash_command(description=cmds["get_logs"].desc)
-    @commands.has_permissions(manage_messages=True)
-    @customSlash
-    async def get_logs(self, ctx, last_x_lines: int):
-        await ctx.defer(ephemeral=True)
-        # ~ Commande réservée au dev
-        if not ctx.author == self.bot.dev:
-            await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
-            raise Exception("N'est pas dev")
-
-        stderr = File(fp=environ['stderr'], filename=environ['stderr'].split("/")[-1])
-        reponse = f"Dernières {last_x_lines} lignes de **{stderr}** :\n{tail(environ['stderr'], last_x_lines)[-1900:]}"
-        await ctx.respond(f"Voici les logs demandés\n{reponse}", files=[stderr], ephemeral=True)
-
+    # Quelques stats sur le nombre de box à ouvrir pour espérer un certain pourcentage
     @commands.slash_command(description=cmds["droprates"].desc)
     @customSlash
     async def droprates(self, ctx, pourcentage: float, nom: str, item: str):
@@ -138,7 +120,7 @@ Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({
                 if proba * 100 >= key:
                     seuils[key] = n
 
-            # ~ Incrémentation compteur
+            # Incrémentation compteur
             n += 1
             b = Binomiale(n, p)
             proba = b.proba_sup(1)
@@ -154,28 +136,28 @@ Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({
         await ctx.respond(embed=embed, ephemeral=(nom == "" or item == ""))
 
 
-# ~ Fonctions Dev
+# Fonctions Dev
 class Dev(commands.Cog):
     def __init__(self, used_bot):
         self.bot = used_bot
 
-    # ~ Envoie un message privé à un User
+    # Envoie un message privé à un User
     @commands.slash_command(description=cmds["dm"].desc)
     @customSlash
     async def dm(self, ctx):
-        # ~ Commande réservée au dev
+        # Commande réservée au dev
         if not ctx.author == self.bot.dev:
             await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
             raise Exception("N'est pas dev")
 
         await ctx.send_modal(ModalDM(bot=self.bot, title="Envoyer un message privé"))
 
-    # ~ Déconnecte le bot
+    # Déconnecte le bot
     @commands.slash_command(description=cmds["logout"].desc)
     @customSlash
     async def logout(self, ctx):
         await ctx.defer(ephemeral=True)
-        # ~ Commande réservée aux User dans la whitelist
+        # Commande réservée aux User dans la whitelist
         if not ctx.author == self.bot.dev:
             if ctx.author in self.bot.whitelist:
                 pass
@@ -185,10 +167,10 @@ class Dev(commands.Cog):
                 raise Exception("N'est pas dev")
 
         await ctx.respond(f"En ligne depuis : {Timestamp(self.bot.startTime).relative}", ephemeral=True)
-        # ~ Déconnecte le bot
+        # Déconnecte le bot
         await self.bot.close()
 
-    # ~ Renvoie le ping et d'autres informations
+    # Renvoie le ping et d'autres informations
     @commands.slash_command(description=cmds["ping"].desc)
     @customSlash
     async def ping(self, ctx):
@@ -202,19 +184,33 @@ class Dev(commands.Cog):
             embed.add_field(name="Websocket", value=self.bot.ws, inline=False)
         await ctx.respond(embed=embed, ephemeral=True)
 
-    # ~ Propose une suggestion
+    # Propose une suggestion
     @commands.slash_command(description=cmds["suggestions"].desc)
     @customSlash
     async def suggestions(self, ctx):
         await ctx.send_modal(ModalDM(bot=self.bot, target=self.bot.dev, title="Suggestion"))
 
+    # Renvoie les logs
+    @commands.slash_command(description=cmds["get_logs"].desc)
+    @commands.has_permissions(manage_messages=True)
+    @customSlash
+    async def get_logs(self, ctx, last_x_lines: int):
+        await ctx.defer(ephemeral=True)
+        # Commande réservée au dev
+        if not ctx.author == self.bot.dev:
+            await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
+            raise Exception("N'est pas dev")
+        stderr = File(fp=environ['stderr'], filename=environ['stderr'].split("/")[-1])
+        reponse = f"Dernières {last_x_lines} lignes de **{stderr}** :\n{tail(environ['stderr'], last_x_lines)[-1900:]}"
+        await ctx.respond(f"Voici les logs demandés\n{reponse}", files=[stderr], ephemeral=True)
 
-# ~ Fonctions Admin
+
+# Fonctions Admin
 class Admin(commands.Cog):
     def __init__(self, used_bot):
         self.bot = used_bot
 
-    # ~ Création de sondage
+    # Création de sondage
     @commands.slash_command(description=cmds["poll"].desc)
     @customSlash
     async def poll(self, ctx, question: str, reponses: Splitter, salon: TextChannel):
@@ -223,47 +219,47 @@ class Admin(commands.Cog):
         if salon == "":
             salon = ctx.channel
 
-        # ~ Discord oblige de répondre aux appels de commande
+        # Discord oblige de répondre aux appels de commande
         await ctx.respond("Sondage en cours de création", ephemeral=True, delete_after=2)
 
-        # ~ Préparation les réactions
-        # ~ Étant donné le passage par l'ASCII, ajouter des réactions nécessite un changement de la procédure
-        # ~ Car les nombres, majuscules et minuscules ne sont pas accolés
+        # Préparation les réactions
+        # Étant donné le passage par l'ASCII, ajouter des réactions nécessite un changement de la procédure
+        # Car les nombres, majuscules et minuscules ne sont pas accolés
         alphabet = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲',
                     '🇳', '🇴', '🇵', '🇶', '🇷', '🇸', '🇹', '🇺', '🇻', '🇼', '🇽', '🇾', '🇿']
-        # ~ Première lettre de chaque réponse
+        # Première lettre de chaque réponse
         first_letters = "".join([s[0].lower() for s in reponses])
-        # ~ Tableau de bool pour savoir si les premières lettres sont uniques
-        # ~ Au moins un doublon, ou une non-lettre -> alphabet standard
+        # Tableau de bool pour savoir si les premières lettres sont uniques
+        # Au moins un doublon, ou une non-lettre → alphabet standard
         if False in [check_unicity(first_letters, l) and 'a' <= l <= 'z' for l in first_letters]:
             used_alphaB = alphabet[:len(reponses)]
-        # ~ Que des lettres uniques, on répond avec les lettres correspondantes
+        # Que des lettres uniques, on répond avec les lettres correspondantes
         else:
             a = ord('a')
             used_alphaB = [alphabet[ord(i.lower()) - a] for i in first_letters]
-        # ~ Trop de réponses à gérer
+        # Trop de réponses à gérer
         if len(reponses) > len(alphabet):
             await ctx.respond(f"Oula ... On va se calmer sur le nombre de réponses possibles, \
 j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premiers", ephemeral=True)
 
-        # ~ Préparation de l'affichage des réactions
+        # Préparation de l'affichage des réactions
         choix = ''
         for i in range(len(used_alphaB)):
             choix += f"{used_alphaB[i]} {reponses[i]}\n"
 
-        # ~ Création de l'embed
+        # Création de l'embed
         embed = MyEmbed(title="Sondage", description=f"Créé par {ctx.author.mention}", color=ctx.author.color)
         embed.add_field(name="Question :", value=question, inline=False)
         embed.add_field(name="Réponses", value=choix, inline=False)
 
-        # ~ Envoi avec les réactions
+        # Envoi avec les réactions
         sondage = await salon.send(embed=embed)
         for i in range(len(used_alphaB)):
             emote = used_alphaB[i]
             await sondage.add_reaction(emote)
         await ctx.respond("Sondage créé !", ephemeral=True)
 
-    # ~ Role react
+    # Role react
     @commands.slash_command(description=cmds["role_react"].desc)
     @commands.has_permissions(manage_roles=True)
     @guild_only()
@@ -287,7 +283,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
                 content = message
             await ctx.respond(content=content, view=view)
 
-    # ~ Nettoyage des messages d'un salon
+    # Nettoyage des messages d'un salon
     @commands.slash_command(description=cmds["clear"].desc)
     @customSlash
     async def clear(self, ctx, nombre: int, salon: TextChannel, user: User):
@@ -305,7 +301,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 {now()} message de {msg.author} supprimé dans #{salon.name} :
     {msg.content}
 """)
-                    # ~ Erreur la plus probable : message de l'humain, pas du bot
+                    # Erreur la plus probable : message de l'humain, pas du bot
                     except:
                         pass
 
@@ -313,7 +309,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
                 logs.write(f"\n{now()} Les derniers messages envoyés à {ctx.author.name} on été effacés\n")
             return
 
-        # ~ Manque de permissions
+        # Manque de permissions
         if not ctx.channel.permissions_for(ctx.author).manage_messages:
             await ctx.respond(f"Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
             raise Exception("Manque de permissions")
@@ -333,14 +329,14 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
         await ctx.respond(f"{salon.mention} a été clear de {cpt} messages", ephemeral=True, delete_after=10)
 
-    # ~ Bannir un Member
+    # Bannir un Member
     @commands.slash_command(description=cmds["ban"].desc)
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
     @customSlash
     async def ban(self, ctx, user: Member, raison: str):
         await ctx.defer(ephemeral=True)
-        # ~ Rôle de la cible trop élevé
+        # Rôle de la cible trop élevé
         if user.top_role >= ctx.author.top_role:
             await ctx.respond(f"Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
             await self.bot.dev.send(f"{ctx.author.mention} a voulu ban {user.mention} de {ctx.guild}")
@@ -361,7 +357,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
                 msg += "(message d'erreur envoyé au dev en copie)"
             await ctx.respond(msg, ephemeral=True)
 
-    # ~ Mute un Member
+    # Mute un Member
     @commands.slash_command(description=cmds["mute"].desc)
     @commands.has_permissions(moderate_members=True)
     @commands.bot_has_permissions(moderate_members=True)
@@ -369,7 +365,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
     async def mute(self, ctx, user: Member, duree: str, raison: str):
         await ctx.defer(ephemeral=True)
         tps = now()
-        # ~ Interprétation de la durée donnée
+        # Interprétation de la durée donnée
         if duree[-1] == "s":
             tps += timedelta(seconds=int(duree[:-1]))
         elif duree[-1] == "m":
@@ -382,7 +378,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             await ctx.respond(f"{duree} n'a pas le bon format, `/aide mute` pour plus d'infos", ephemeral=True)
             return
 
-        # ~ Rôle trop élevé
+        # Rôle trop élevé
         if user.top_role >= ctx.author.top_role:
             await ctx.respond(f"Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
             await ctx.author.timeout(until=tps, reason=f"A voulu mute {user.name}")
@@ -402,7 +398,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
                 msg += "(message d'erreur envoyé au dev en copie)"
             await ctx.respond(msg, ephemeral=True)
 
-    # ~ Affiche les informations d'un Member
+    # Affiche les informations d'un Member
     @commands.slash_command(description=cmds["user_info"].desc)
     @customSlash
     async def user_info(self, ctx, user: Member):
@@ -435,12 +431,49 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             await ctx.send_modal(ModalEditEmbed(embeds, embed, edit, send_new=True, title="Modifier l'Embed"))
 
 
-# ~ Fonctions Random
-class Fun(commands.Cog):
+# Fonctions Random
+class MiniGames(commands.Cog):
     def __init__(self, used_bot):
         self.bot = used_bot
 
-    # ~ Spamme un texte (emote ou autre) jusqu'à atteindre la limite de caractères
+    # QPUP, bon courage pour retrouver le lore ...
+    @commands.slash_command(description=cmds["qpup"].desc)
+    @customSlash
+    async def qpup(self, ctx, nbquestions: int):
+        await ctx.defer()
+        self.bot.qpup = read_db(environ['qpup'])
+        # Boucle sur le nombre de questions à poser
+        for loop in range(nbquestions):
+            # Tirage au sort d'une question
+            line = randrange(len(self.bot.qpup))
+            # Envoi de la question
+            await ctx.respond(self.bot.qpup[line][0], view=ViewQPUP(rep=self.bot.qpup[line][1]))
+
+    # 2048, le _ est nécessaire, une fonction ne commence pas à un chiffre
+    @commands.slash_command(name="2048", description=cmds["2048"].desc)
+    @customSlash
+    async def _2048(self, ctx, size: int):
+        await ctx.defer()
+        # Création d'un 2048
+        game = Game2048(size=size)
+        game.duree = now()
+        add_dict(self.bot.games, ctx.author.mention, game)
+        embed = MyEmbed(title="2048", color=ctx.author.color)
+        # Envoie du jeu formatté en python ou n'importe quel autre langage
+        # pour colorer les chiffres et ajouter un effet visuel
+        embed.add_field(name=f"Partie de {ctx.author.name}", value=f"```python\n{game}```", inline=True)
+        moves = [f"{to} : {bool_reac[game.canMove(to)]}" for to in toward]
+        embed.add_field(name="Mouvements", value="\n".join(moves), inline=True)
+        embed.add_field(name="Score", value=game.score, inline=True)
+        await ctx.respond(embed=embed, view=View2048(self.bot))
+
+
+class Troll(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        super().__init__()
+
+    # Spamme un texte (emote ou autre) jusqu'à atteindre la limite de caractères
     @commands.slash_command(description=cmds["spam_emote"].desc)
     @customSlash
     async def spam_emote(self, ctx, emote: str, user: User):
@@ -454,37 +487,7 @@ class Fun(commands.Cog):
         await ctx.channel.send(msg)
         await ctx.respond(emote, ephemeral=True)
 
-    # ~ QPUP, bon courage pour retrouver le lore ...
-    @commands.slash_command(description=cmds["qpup"].desc)
-    @customSlash
-    async def qpup(self, ctx, nbquestions: int):
-        await ctx.defer()
-        self.bot.qpup = read_db(environ['qpup'])
-        # ~ Boucle sur le nombre de questions à poser
-        for loop in range(nbquestions):
-            # ~ Tirage au sort d'une question
-            line = randrange(len(self.bot.qpup))
-            # ~ Envoi de la question
-            await ctx.respond(self.bot.qpup[line][0], view=ViewQPUP(rep=self.bot.qpup[line][1]))
-
-    # ~ 2048, le _ est nécessaire, une fonction ne commence pas à un chiffre
-    @commands.slash_command(name="2048", description=cmds["2048"].desc)
-    @customSlash
-    async def _2048(self, ctx, size: int):
-        await ctx.defer()
-        # ~ Création d'un 2048
-        game = Game2048(size=size)
-        game.duree = now()
-        add_dict(self.bot.games, ctx.author.mention, game)
-        embed = MyEmbed(title="2048", color=ctx.author.color)
-        # ~ Envoie du jeu formatté en python ou n'importe quel autre langage
-        # ~ pour colorer les chiffres et ajouter un effet visuel
-        embed.add_field(name=f"Partie de {ctx.author.name}", value=f"```python\n{game}```", inline=True)
-        moves = [f"{to} : {bool_reac[game.canMove(to)]}" for to in toward]
-        embed.add_field(name="Mouvements", value="\n".join(moves), inline=True)
-        embed.add_field(name="Score", value=game.score, inline=True)
-        await ctx.respond(embed=embed, view=View2048(self.bot))
-
+    # Désactive les réponses custom dans le serveur
     @commands.slash_command(description=cmds["disable_custom_responses"].desc)
     @commands.has_permissions(administrator=True)
     @customSlash
@@ -496,4 +499,4 @@ class Fun(commands.Cog):
         await self.bot.dev.send(
             f"Ajouter {serveur.id} ({serveur.name}) sur blacklist des PR à la demande de {ctx.author} ({ctx.author.id})")
         await ctx.respond(f"""Les messages de réponses customs sont désormais désactivés sur ce serveur.
-Pour changer ça, envoyer un message privé au bot.""", ephemeral=True)
+    Pour changer ça, envoyer un message privé au bot.""", ephemeral=True)

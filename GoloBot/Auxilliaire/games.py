@@ -1,7 +1,7 @@
 from math import log2
+from random import randrange
 
 from GoloBot.Auxilliaire import *
-from random import randrange
 
 
 class Coordonnees:
@@ -26,7 +26,7 @@ toward = {"haut": Coordonnees([-1, 0]),
           "droite": Coordonnees([0, 1])}
 
 
-# ~ On définit un type Case générique
+# On définit un type Case générique
 class Case:
     def __init__(self, value=0, grid_size=4, coos=Coordonnees([1, 1]), vide=" ", bord=None):
         self.coos = coos
@@ -47,10 +47,10 @@ class Case:
         return self.value == self.bord
 
 
-# ~ On définit un type Grid générique
+# On définit un type Grid générique
 class Grid:
     def __init__(self, size: int = 6, vide="", bord=None):
-        # ~ Pour des raisons pratiques, on rajoute un contour
+        # Pour des raisons pratiques, on rajoute un contour
         self.size = size - 2
         self.vide = vide
         self.bord = bord
@@ -66,7 +66,7 @@ class Grid:
                         Case(value=self.bord, grid_size=size, coos=Coordonnees([i, j]), vide=self.vide, bord=self.bord))
             self.grid.append(l)
 
-    # ~ N'est pas censé être utilisé, ne sert qu'au débug
+    # N'est pas censé être utilisé, ne sert qu'au débug
     def __str__(self):
         sep = ("+--" + "-" * 15) * (self.size + 2) + "+\n| "
         affichage = sep
@@ -94,7 +94,7 @@ class Grid:
         return self[pos[0]][pos[1]]
 
     def read(self, matrice: list[list]):
-        # ~ Si la matrice n'est pas carré, on arrête
+        # Si la matrice n'est pas carré, on arrête
         if not len(matrice) == len(matrice[0]):
             return
         self.size = len(matrice)
@@ -112,7 +112,7 @@ class Grid:
             self.grid.append(l)
 
 
-# ~ On définit un type 2048 contenant les règles du jeu
+# On définit un type 2048 contenant les règles du jeu
 class Game2048:
     def __init__(self, size: int = 4):
         self.grid = Grid(size=size + 2, vide="", bord=None)
@@ -133,7 +133,7 @@ class Game2048:
         return affichage[:-3]
 
     def _score(self):
-        # ~ Calculs d'après https://medium.com/@kotamori/total-score-formula-of-the-2048-game-d9a8c9a1f1ac
+        # Calculs d'après https://medium.com/@kotamori/total-score-formula-of-the-2048-game-d9a8c9a1f1ac
         score = 0
         for i in range(1, 1 + self.grid.size):
             for j in range(1, 1 + self.grid.size):
@@ -178,7 +178,7 @@ class Game2048:
         c3 = case2.coos.pos in adjacents
         return c1 and c2 and c3
 
-    def fusion(self, case1, case2):  # ~ Fusionne case1 vers case2
+    def fusion(self, case1, case2):  # Fusionne case1 vers case2
         if self.canFuse(case1, case2):
             case2.value *= 2
             case1.value = self.grid.vide
@@ -199,7 +199,7 @@ class Game2048:
         if not self.canMove(to):
             return
 
-        # ~ while self.canMove(to):
+        # while self.canMove(to):
         while self.canMove(to):
             if to == "haut":
                 for i in range(1, 1 + self.grid.size):

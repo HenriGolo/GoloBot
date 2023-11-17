@@ -6,55 +6,55 @@ class MyView(ui.View):
         self.disable_all_items()
 
 
-# ~ Les boutons pour le jeu de 2048
+# Les boutons pour le jeu de 2048
 class View2048(MyView):
-    def __init__(self, used_bot):
-        self.bot = used_bot
+    def __init__(self, bot):
+        self.bot = bot
         super().__init__()
 
-    # ~ Bouton "bouger vers le haut"
+    # Bouton "bouger vers le haut"
     @ui.button(label="Haut", style=ButtonStyle.primary, emoji='⬆️')
     @button_logger
     async def up_button(self, button, interaction):
-        # ~ Récupération du joueur
+        # Récupération du joueur
         joueur = interaction.user
-        # ~ Récupération de la dernière partie de 2048 du joueur
+        # Récupération de la dernière partie de 2048 du joueur
         game = [g for g in self.bot.games[joueur.mention] if g.jeu == "2048"][-1]
-        # ~ Voir board_bot.games.py
+        # Voir board_bot.games.py
         game.moveAll("haut")
         if not game.gagne:
-            # ~ Détecte la présence d'un 2048 sur le plateau
+            # Détecte la présence d'un 2048 sur le plateau
             game.gagne = "2048" in str(game)
 
-        # ~ Partie perdue
+        # Partie perdue
         if not game.canMoveAll():
-            # ~ On itère sur tous les boutons de la View
+            # On itère sur tous les boutons de la View
             for child in self.children:
-                # ~ Si le bouton n'est pas directionnel
+                # Si le bouton n'est pas directionnel
                 if not child.label.lower() in toward:
                     child.label = "Partie Terminée"
-                # ~ Dans tous les cas on désactive le bouton
+                # Dans tous les cas, on désactive le bouton
                 child.disabled = True
             game.termine = True
 
-        # ~ On itère sur les boutons de la View
+        # On itère sur les boutons de la View
         for child in self.children:
-            # ~ Bouton non directionnel
+            # Bouton non directionnel
             if not child.label.lower() in toward:
                 continue
-            # ~ Bouton directionnel -> désactiver si mouvement impossible
+            # Bouton directionnel → désactiver si mouvement impossible
             child.disabled = not game.canMove(child.label.lower())
 
         embed = MyEmbed(title="2048", color=joueur.color)
-        # ~ On envoie le jeu formatté pour du python (ou n'importe quel autre langage)
-        # ~ pour colorer les chiffres et ajouter un effet visuel
+        # On envoie le jeu formatté pour du python (ou n'importe quel autre langage)
+        # pour colorer les chiffres et ajouter un effet visuel
         embed.add_field(name=f"Partie de {joueur.name}", value=f"```python\n{game}```", inline=True)
         moves = [f"{to} : {bool_reac[game.canMove(to)]}" for to in toward]
         embed.add_field(name="Mouvements", value="\n".join(moves), inline=True)
         embed.add_field(name="Score", value=game.score, inline=True)
         await interaction.response.edit_message(embed=embed, view=self)
 
-    # ~ Bouton "bouger vers le bas" -> idem que pour le haut
+    # Bouton "bouger vers le bas" → idem que pour le haut
     @ui.button(label="Bas", style=ButtonStyle.primary, emoji='⬇️')
     @button_logger
     async def down_button(self, button, interaction):
@@ -77,15 +77,15 @@ class View2048(MyView):
             child.disabled = not game.canMove(child.label.lower())
 
         embed = MyEmbed(title="2048", color=joueur.color)
-        # ~ On envoie le jeu formatté pour du python ou n'importe quel autre langage
-        # ~ pour colorer les chiffres et ajouter un effet visuel
+        # On envoie le jeu formatté pour du python ou n'importe quel autre langage
+        # pour colorer les chiffres et ajouter un effet visuel
         embed.add_field(name=f"Partie de {joueur.name}", value=f"```python\n{game}```", inline=True)
         moves = [f"{to} : {bool_reac[game.canMove(to)]}" for to in toward]
         embed.add_field(name="Mouvements", value="\n".join(moves), inline=True)
         embed.add_field(name="Score", value=game.score, inline=True)
         await interaction.response.edit_message(embed=embed, view=self)
 
-    # ~ Bouton "bouger vers la gauche" -> idem que pour le haut
+    # Bouton "bouger vers la gauche" → idem que pour le haut
     @ui.button(label="Gauche", style=ButtonStyle.primary, emoji='⬅️')
     @button_logger
     async def left_button(self, button, interaction):
@@ -108,15 +108,15 @@ class View2048(MyView):
             child.disabled = not game.canMove(child.label.lower())
 
         embed = MyEmbed(title="2048", color=joueur.color)
-        # ~ On envoie le jeu formatté pour du python ou n'importe quel autre langage
-        # ~ pour colorer les chiffres et ajouter un effet visuel
+        # On envoie le jeu formatté pour du python ou n'importe quel autre langage
+        # pour colorer les chiffres et ajouter un effet visuel
         embed.add_field(name=f"Partie de {joueur.name}", value=f"```python\n{game}```", inline=True)
         moves = [f"{to} : {bool_reac[game.canMove(to)]}" for to in toward]
         embed.add_field(name="Mouvements", value="\n".join(moves), inline=True)
         embed.add_field(name="Score", value=game.score, inline=True)
         await interaction.response.edit_message(embed=embed, view=self)
 
-    # ~ Bouton "bouger vers la droite" -> idem que pour le haut
+    # Bouton "bouger vers la droite" → idem que pour le haut
     @ui.button(label="Droite", style=ButtonStyle.primary, emoji='➡️')
     @button_logger
     async def right_button(self, button, interaction):
@@ -139,30 +139,30 @@ class View2048(MyView):
             child.disabled = not game.canMove(child.label.lower())
 
         embed = MyEmbed(title="2048", color=joueur.color)
-        # ~ On envoie le jeu formatté pour du python ou n'importe quel autre langage
-        # ~ pour colorer les chiffres et ajouter un effet visuel
+        # On envoie le jeu formatté pour du python ou n'importe quel autre langage
+        # pour colorer les chiffres et ajouter un effet visuel
         embed.add_field(name=f"Partie de {joueur.name}", value=f"```python\n{game}```", inline=True)
         moves = [f"{to} : {bool_reac[game.canMove(to)]}" for to in toward]
         embed.add_field(name="Mouvements", value="\n".join(moves), inline=True)
         embed.add_field(name="Score", value=game.score, inline=True)
         await interaction.response.edit_message(embed=embed, view=self)
 
-    # ~ Bouton d'arrêt
+    # Bouton d'arrêt
     @ui.button(label="Arrêter", custom_id="stop", style=ButtonStyle.danger, emoji='<a:denied:1164580451680256041>')
     @button_logger
     async def delete_button(self, button, interaction):
-        # ~ On désactive tous les boutons
+        # On désactive tous les boutons
         for child in self.children:
             child.disabled = True
         button.label = "Partie Terminée"
         joueur = interaction.user
 
-        # ~ On supprime la partie de la liste des parties en cours
+        # On supprime la partie de la liste des parties en cours
         game = [g for g in self.bot.games[joueur.mention] if g.jeu == "2048"][-1]
-        # ~ False -> abandon, True -> bloqué
-        # ~ Normalement, True est impossible car détecté par les boutons directionnels
+        # False → abandon, True → bloqué
+        # Normalement, True est impossible, car détecté par les boutons directionnels
         game.termine = not game.canMoveAll()
-        # ~ Détection de victoire
+        # Détection de victoire
         game.gagne = "2048" in str(game)
         game.duree = now() - game.duree
 
@@ -170,18 +170,18 @@ class View2048(MyView):
         await interaction.response.edit_message(view=self)
 
 
-# ~ Menu déroulant pour le role react
+# Menu déroulant pour le role react
 class SelectRoleReact(ui.Select):
     def __init__(self, roles: list[Role]):
         self.roles = roles
-        # ~ Création des options du menu déroulant
+        # Création des options du menu déroulant
         choix = [SelectOption(label=e.name, description=f"Récupérer / Enlever {e.name}") for e in roles]
         if not choix:
             choix = [SelectOption(label="Actualiser", description="Actualise la liste")]
-        # ~ Création du menu déroulant
+        # Création du menu déroulant
         super().__init__(placeholder="Choisir un rôle", min_values=1, options=choix, custom_id="role_react")
 
-    # ~ Ce n'est pas un modal, mais c'est le même format d'arguments
+    # Ce n'est pas un modal, mais c'est le même format d'arguments
     @modal_logger
     async def callback(self, interaction):
         user = interaction.user
@@ -208,7 +208,7 @@ class ViewRoleReact(MyView):
         self.add_item(SelectRoleReact(roles=roles))
 
 
-# ~ QPUP (non vous n'aurez pas le lore)
+# QPUP (non, vous n'aurez pas le lore)
 class ModalQPUP(ui.Modal):
     def __init__(self, rep, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -236,7 +236,7 @@ class ViewQPUP(MyView):
         await interaction.response.send_modal(ModalQPUP(rep=self.rep, title=msg.content))
 
 
-# ~ Transmission d'un message privé par le bot
+# Transmission d'un message privé par le bot
 class ModalDM(ui.Modal):
     def __init__(self, bot, target=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -260,10 +260,10 @@ class ModalDM(ui.Modal):
 
 
 class ViewDM(MyView):
-    def __init__(self, used_bot):
+    def __init__(self, bot):
         super().__init__(timeout=None)
         self.target = None
-        self.bot = used_bot
+        self.bot = bot
 
     async def set_target(self, content):
         targets = await usersInStr(content, self.bot)
@@ -271,7 +271,7 @@ class ViewDM(MyView):
 
     @ui.button(label="Répondre", custom_id="reponse")
     @button_logger
-    # ~ Répondre au MP
+    # Répondre au MP
     async def reply_button(self, button, interaction):
         self.target = await self.set_target(interaction.message.content)
         modal = ModalDM(bot=self.bot, target=self.target, title=f"Votre Message pour {self.target.name}")
@@ -279,12 +279,12 @@ class ViewDM(MyView):
 
     @ui.button(label="Supprimer", custom_id="supprimer", style=ButtonStyle.danger)
     @button_logger
-    # ~ Supprimer le MP
+    # Supprimer le MP
     async def delete_button(self, button, interaction):
         await interaction.response.edit_message(delete_after=0)
 
 
-# ~ Création d'Embed
+# Création d'Embed
 class ModalNewEmbed(ui.Modal):
     def __init__(self, msg, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -304,7 +304,7 @@ class ModalNewEmbed(ui.Modal):
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
 
-# ~ Modification d'Embed déjà existant
+# Modification d'un Embed déjà existant
 class ModalEditEmbed(ui.Modal):
     def __init__(self, embeds, embed, msg, send_new=False, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -332,7 +332,7 @@ class ModalEditEmbed(ui.Modal):
             await interaction.response.edit_message(embeds=self.embeds, view=view)
 
 
-# ~ Modification des champs d'un Embed
+# Modification des champs d'un Embed
 class ModalEditEmbedFields(ui.Modal):
     def __init__(self, embeds, embed, index, msg, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -355,7 +355,7 @@ class ModalEditEmbedFields(ui.Modal):
         await interaction.response.edit_message(embeds=self.embeds, view=view)
 
 
-# ~ Sélection de l'Embed à modifier
+# Sélection de l'Embed à modifier
 class SelectEmbed(ui.Select):
     def __init__(self, embeds, msg):
         self.embeds = embeds
@@ -376,16 +376,16 @@ class SelectEmbed(ui.Select):
         await interaction.response.send_modal(modal)
 
 
-# ~ Sélection du champ à modifier
+# Sélection du champ à modifier
 class SelectFieldEmbed(ui.Select):
     def __init__(self, embeds, embed, msg):
         self.embeds = embeds
         self.embed = embed
         self.msg = msg
-        # ~ Création des options du menu déroulant
+        # Création des options du menu déroulant
         options = [SelectOption(label=e.name, description=f"Modifier {e.name}") for e in embed.fields]
         options.insert(0, SelectOption(label=embed.title, description=f"Modifier l'Embed"))
-        # ~ Création du menu déroulant
+        # Création du menu déroulant
         super().__init__(placeholder="Modifier un Champ", min_values=1, options=options)
 
     def select_field(self, value):
@@ -404,7 +404,7 @@ class SelectFieldEmbed(ui.Select):
         await interaction.response.send_modal(modal)
 
 
-# ~ Sélection de l'Embed à supprimer
+# Sélection de l'Embed à supprimer
 class SelectRemoveEmbed(ui.Select):
     def __init__(self, embeds, msg):
         self.embeds = embeds
@@ -425,7 +425,7 @@ class SelectRemoveEmbed(ui.Select):
         await interaction.response.edit_message(embeds=embeds, view=view)
 
 
-# ~ Sélection du champ à supprimer
+# Sélection du champ à supprimer
 class SelectRemoveFieldEmbed(ui.Select):
     def __init__(self, embeds, embed, msg):
         self.embeds = embeds
@@ -457,7 +457,7 @@ class SelectRemoveFieldEmbed(ui.Select):
         await interaction.response.edit_message(embeds=self.embeds, view=view)
 
 
-# ~ View finale de la création / modification des Embeds
+# View finale de la création / modification des Embeds
 class ViewEditEmbed(MyView):
     def __init__(self, embeds, embed, msg_id):
         super().__init__()
@@ -473,7 +473,7 @@ class ViewEditEmbed(MyView):
 
     @ui.button(label="Ajouter un Champ", style=ButtonStyle.primary)
     @button_logger
-    # ~ Ajouter un Champ
+    # Ajouter un Champ
     async def button_addfield(self, button, interaction):
         self.embed.add_field(name=f"Champ {len(self.embed.fields)}", value="Nouveau", inline=False)
         view = ViewEditEmbed(self.embeds, self.embed, self.msg)
@@ -481,7 +481,7 @@ class ViewEditEmbed(MyView):
 
     @ui.button(label="Ajouter un Embed", style=ButtonStyle.primary)
     @button_logger
-    # ~ Ajouter un Embed
+    # Ajouter un Embed
     async def button_addembed(self, button, interaction):
         color = self.embeds[-1].color.value
         self.embeds.append(MyEmbed(title=f"Embed {len(self.embeds)}", color=color))
@@ -490,7 +490,7 @@ class ViewEditEmbed(MyView):
 
     @ui.button(label="Valider", style=ButtonStyle.success)
     @button_logger
-    # ~ Envoyer les Embeds
+    # Envoyer les Embeds
     async def button_send(self, button, interaction):
         msg = interaction.message
         for e in self.embeds:

@@ -9,9 +9,9 @@ docs = {"pycord": "https://docs.pycord.dev/en/stable/",
 bool_reac = {True: "<a:check:1164580201573912677>",
              False: "<a:denied:1164580451680256041>"}
 
-# ~ Valeur par défaut des arguments
+# Valeur par défaut des arguments
 base_value = ""
-# ~ Utilisé pour dire qu'un argument n'est pas optionel
+# Utilisé pour dire qu'un argument n'est pas optionel
 assert base_value is not None
 
 
@@ -19,7 +19,7 @@ class Arg:
     def __init__(self, name, description, **kwargs):
         self.name = name
         self.desc = description
-        # ~ Vive le sucre syntaxique
+        # Vive le sucre syntaxique
         self.default = kwargs["default"] = kwargs.get("default", None)
         self.required = kwargs["required"] = kwargs.get("required", self.default is None)
 
@@ -37,19 +37,19 @@ class Arg:
             affichage += str(self.default)
         return affichage
 
-    def __eq__(self, other):  # ~ self == other
+    def __eq__(self, other):  # self == other
         if isinstance(other, self.__class__):
             return self.name == other.name
         return False
 
-    def __lt__(self, other):  # ~ self < other
+    def __lt__(self, other):  # self < other
         if isinstance(other, self.__class__):
             if self.required == other.required:
                 return self.name < other.name
             return self.required
         return False
 
-    def __gt__(self, other):  # ~ self > other
+    def __gt__(self, other):  # self > other
         if isinstance(other, self.__class__):
             if self.required == other.required:
                 return self.name > other.name

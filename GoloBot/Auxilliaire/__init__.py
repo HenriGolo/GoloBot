@@ -1,42 +1,39 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
-
-# ~ auxilliaire.py
-# ~ DB = DataBase
-
-from subprocess import check_output
-from fast_autocomplete import AutoComplete
-from datetime import datetime, timedelta
-from requests import Session
 from collections import namedtuple
+from datetime import datetime, timedelta
+from subprocess import check_output
 from traceback import format_exc
+
 from discord import Embed
-from GoloBot.Auxilliaire.stdio import *  # ~ Mes fonctions pour stocker des données
+from fast_autocomplete import AutoComplete
+from requests import Session
+
+from GoloBot.Auxilliaire.stdio import *  # Mes fonctions pour stocker des données
 
 
 class CustomSession:
+
     def __init__(self):
         self.s = Session()
-        self.responses = dict()
+        self.cache = dict()
         self.data = namedtuple("RequestResult", ["result", "time"])
 
     def __str__(self):
-        return f"{str(self.s)}\n{[key for key in self.responses]}"
+        return f"{str(self.s)}\n{[key for key in self.cache]}"
 
     def __len__(self):
-        return len(self.responses)
+        return len(self.cache)
 
     def get(self, request, timeout=timedelta(hours=1)):
         t = datetime.now().replace(microsecond=0)
         try:
-            resp = self.responses[request]
+            resp = self.cache[request]
             if t - resp.time > timeout:
-                raise KeyError  # ~ Va se faire attraper par le except
+                raise KeyError  # Va se faire attraper par l'except
             return resp.result
 
         except KeyError:
             r = self.s.get(request)
-            self.responses[request] = self.data(r, t)
+            self.cache[request] = self.data(r, t)
             return r
 
 
@@ -60,10 +57,10 @@ class MyEmbed(Embed):
 
 class PrivateResponse:
     def __init__(self, triggers=("",), message="", allowed_guilds=(), denied_guilds=()):
-        self.triggers = triggers  # ~ Contenu d'un message pour activer la réponse
-        self.message = message  # ~ Réponse à envoyer
-        self.Aguilds = allowed_guilds  # ~ Servers sur lesquels la réponse fonctionne ([] = tous)
-        self.Dguilds = denied_guilds  # ~ Servers sur lesquels la réponse est désactivée
+        self.triggers = triggers  # Contenu d'un message pour activer la réponse
+        self.message = message  # Réponse à envoyer
+        self.Aguilds = allowed_guilds  # Servers sur lesquels la réponse fonctionne ([] = tous)
+        self.Dguilds = denied_guilds  # Servers sur lesquels la réponse est désactivée
 
     def __str__(self):
         return self.message
@@ -84,15 +81,15 @@ class PrivateResponse:
         return allowed and not denied
 
 
-# ~ Commande bash tail avec un peu de traitement
+# Commande bash tail avec un peu de traitement
 def tail(file: str, lastN=10):
     cmd = check_output(["tail", file, "-n", str(lastN)])
-    # ~ On doit convertir l'output de check_output (de type bytes) vers un str
+    # On doit convertir l'output de check_output (de type bytes) vers un str
     cmd = str(cmd, 'UTF-8')
     return cmd
 
 
-# ~ Recherche récursive d'un élément dans une matrice
+# Recherche récursive d'un élément dans une matrice
 def rec_in(matrice: list[list], elt):
     for line in matrice:
         if elt in line:
@@ -100,7 +97,7 @@ def rec_in(matrice: list[list], elt):
     return False
 
 
-# ~ Convertit une DB en dictionnaire
+# Convertit une DB en dictionnaire
 def convert_db_dict(database: list[list], colonne: int):
     dico = dict()
     for line in database:
@@ -122,9 +119,9 @@ def convert_dict_db(dico: dict):
     return db
 
 
-# ~ Dictionnaire de la forme {key : list()}
-# ~ Ajoute un élément à la liste d'une certaine clé
-# ~ Crée cette clé si inexistante
+# Dictionnaire de la forme {key : list()}
+# Ajoute un élément à la liste d'une certaine clé
+# Crée cette clé si inexistante
 def add_dict(dico: dict, key, elt):
     try:
         dico[key].append(elt)
@@ -132,14 +129,14 @@ def add_dict(dico: dict, key, elt):
         dico[key] = [elt]
 
 
-# ~ Enveloppe item dans n listes
+# Enveloppe item dans n listes
 def pack(item, n):
     if n == 0:
         return item
     return pack([item], n - 1)
 
 
-# ~ Opération inverse de unpack
+# Opération inverse d'unpack
 def unpack(item):
     if not isinstance(item, list):
         return item
@@ -195,13 +192,13 @@ async def Member2User(bot, member):
     return await bot.fetch_user(member.id)
 
 
-# ~ Récupère toutes les sous-chaînes encadrées par start et end
+# Récupère toutes les sous-chaînes encadrées par start et end
 def eltInStr(string, start, end, to_type=str):
     sep = [e.split(end) for e in string.split(start)]
     return [to_type(e[0]) for e in sep[1:]]
 
 
-# ~ Message.role_mentions existe, mais parfois ne marche pas complétement
+# Message.role_mentions existe, mais parfois ne marche pas complétement
 def rolesInStr(string, guild):
     roles_ids = eltInStr(string, "<@&", ">", to_type=int)
     roles = [guild.get_role(r) for r in roles_ids]

@@ -1,4 +1,4 @@
-# ~ Lis une DB
+# Lis une DB
 def read_db(filename: str):
     database = list()
     with open(filename, 'r') as file:
@@ -25,8 +25,8 @@ def read_db(filename: str):
     return database
 
 
-# ~ Copie une DB en supprimant une ligne
-# ~ nom de fichier + début de la ligne à supprimer
+# Copie une DB en supprimant une ligne
+# nom de fichier + début de la ligne à supprimer
 def copy_without(filename: str, line_start: str):
     with open(filename, "r") as file:
         lines = file.readlines()
@@ -37,8 +37,8 @@ def copy_without(filename: str, line_start: str):
                 file.write(line)
 
 
-# ~ Écris dans une DB, mode "w" ou "a" sinon erreur
-# ~ nom de fichier + liste de listes
+# Écris dans une DB, mode "w" ou "a" sinon erreur
+# nom de fichier + liste de listes
 def write_db(filename: str, content: list, mode="w"):
     with open(filename, mode) as file:
         for line in content:
@@ -52,10 +52,10 @@ def write_db(filename: str, content: list, mode="w"):
             file.write("\n")
 
 
-# ~ Modifie les lignes d'une DB existante
-# ~ nom de fichier + premier élément de l'ancienne db + nouvelle ligne de la db
-# ~ new_lines de la forme ["+", [machin]] va ajouter machin après l'ancien contenu de la ligne
-# ~ Les anciens débuts de lignes sont supprimés
+# Modifie les lignes d'une DB existante
+# nom de fichier + premier élément de l'ancienne db + nouvelle ligne de la db
+# new_lines de la forme ["+", [machin]] va ajouter machin après l'ancien contenu de la ligne
+# Les anciens débuts de lignes sont supprimés
 def modify_db(filename: str, old_starts: list, new_lines: list):
     db = read_db(filename)
     new_db = list()
