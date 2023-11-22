@@ -1,3 +1,4 @@
+#Dossiers
 Debug
 Aborted
 dist
@@ -5,6 +6,7 @@ logs
 __pycache__
 Database
 
+#Fichiers
 infos.py
 infos.txt
 qpup.txt

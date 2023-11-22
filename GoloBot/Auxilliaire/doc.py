@@ -1,4 +1,5 @@
-from discord import option, Permissions as perm
+from discord import Permissions as perm
+from discord.commands import option
 from varname import nameof
 
 docs = {"pycord": "https://docs.pycord.dev/en/stable/",
@@ -79,7 +80,7 @@ class DocCommand:
 
 cmds = {"aide": DocCommand("aide",
                            "Affiche la liste des commandes.",
-                           perm.none,
+                           perm.none(),
                            "",
                            [Arg("commande", "défini plus tard, j'ai besoin de la liste de toutes les commandes"),
                             Arg("visible", "Affiche la fenêtre d'aide à tout le monde.", default=False)]),
@@ -98,13 +99,13 @@ cmds = {"aide": DocCommand("aide",
 
         "ping": DocCommand("ping",
                            "Ping et autres infos",
-                           perm.none,
+                           perm.none(),
                            "Informations : latence du bot, running time ... ce genre de trucs.",
                            []),
 
         "poll": DocCommand("poll",
                            "Crée un sondage, séparer les réponses par un point virgule.",
-                           perm.none,
+                           perm.none(),
                            "",
                            [Arg("question", "Question à poser dans le sondage."),
                             Arg("réponses", "Réponses possibles dans le sondage, séparer par un point virgule."),
@@ -124,7 +125,7 @@ Si échec suivi d'une possibilité `Actualiser`, choisir `Actualiser` et continu
 
         "spam_emote": DocCommand("spam_emote",
                                  "Spamme une emote.",
-                                 perm.none,
+                                 perm.none(),
                                  "",
                                  [Arg("emote",
                                       "Une emote qui va être spam pour atteindre la limite de 2000 caractères.",
@@ -158,13 +159,13 @@ Ne pas combiner, par exemple `3m30s` est invalide, utilisez `210s`.""",
 
         "invite": DocCommand("invite",
                              "Affiche un lien pour inviter le bot.",
-                             perm.none,
+                             perm.none(),
                              "",
                              []),
 
         "code": DocCommand("code",
                            "Lien vers GitHub pour accéder aux fichiers du bot.",
-                           perm.none,
+                           perm.none(),
                            f"""Doc Pycord : [ici]({docs['pycord']}).
 Portail des Développeurs : [ici]({docs['discord developpers']}).
 Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']}).""",
@@ -178,31 +179,31 @@ Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']}).""",
 
         "qpup": DocCommand("qpup",
                            "Lance le quiz Questions Pour Un Poulet !",
-                           perm.none,
+                           perm.none(),
                            "Tellement de lore derrière ce nom ... Même avec le nom vous devinerez pas ...",
                            [Arg("nbquestions", "Nombre de questions désirées.", default=1)]),
 
         "user_info": DocCommand("user_info",
                                 "Donne des informations sur la personne demandée.",
-                                perm.none,
+                                perm.none(),
                                 "Nom, date de création du compte, membre du serveur depuis <date>, rôles (si permission `Gérer les Rôles`))",
                                 [Arg("user", "Utilisateur ciblé.")]),
 
         "2048": DocCommand("2048",
                            "Démarre une partie de 2048.",
-                           perm.none,
+                           perm.none(),
                            "",
                            [Arg("size", "Taille de la grille.", default=4)]),
 
         "suggestions": DocCommand("suggestions",
                                   "Envoie un MP au dev à propos d'une suggestion que vous avez.",
-                                  perm.none,
+                                  perm.none(),
                                   "Vous pouvze aussi passer par le Serveur de Support",
                                   []),
 
         "droprates": DocCommand("droprates",
                                 "Indique le nombre de lootbox attendu pour une certaine probabilité de drop.",
-                                perm.none,
+                                perm.none(),
                                 "Renseigner le nom de la lootbox **et** l'item voulu va afficher la fenêtre de résultats à tout le monde.",
                                 [Arg("pourcentage", "Pourcentage de drop de l'item désiré."),
                                  Arg("nom", "Nom de la lootbox.", default=base_value),
@@ -210,7 +211,7 @@ Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']}).""",
 
         "embed": DocCommand("emebd",
                             "Crée un nouvel embed, entièrement customisable.",
-                            perm.none,
+                            perm.none(),
                             "Si modification d'un Embed existant : aucune modification n'est effective avant de valider à la toute fin.",
                             [Arg("edit", "ID du message à modifier.", default=base_value)]),
 

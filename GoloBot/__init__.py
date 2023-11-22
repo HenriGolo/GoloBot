@@ -1,10 +1,10 @@
 # Code Principal
-
 # Bibliothèques
+import datetime
 
 # Discord, la base
 from discord import *
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 from GoloBot.Auxilliaire import *  # Quelques fonctions utiles
 from GoloBot.Auxilliaire.aux_maths import *  # Outils mathématiques
@@ -267,8 +267,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
     @customSlash
     async def role_react(self, ctx, roles: str, message: str, message_id: str):
         if roles == "" and message == "" and message_id == "":
-            await ctx.respond("Veuillez renseigner au moins un paramètre")
-            return
+            return await ctx.respond("Veuillez renseigner au moins un paramètre")
 
         await ctx.defer()
         roles = rolesInStr(roles, ctx.guild)
@@ -363,32 +362,19 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
     @commands.has_permissions(moderate_members=True)
     @commands.bot_has_permissions(moderate_members=True)
     @customSlash
-    async def mute(self, ctx, user: Member, duree: str, raison: str):
+    async def mute(self, ctx, user: Member, duree: Duree, raison: str):
         await ctx.defer(ephemeral=True)
-        tps = now()
-        # Interprétation de la durée donnée
-        if duree[-1] == "s":
-            tps += timedelta(seconds=int(duree[:-1]))
-        elif duree[-1] == "m":
-            tps += timedelta(minutes=int(duree[:-1]))
-        elif duree[-1] == "h":
-            tps += timedelta(hours=int(duree[:-1]))
-        elif duree[-1] == "j" or duree[:-1] == "d":
-            tps += timedelta(days=int(duree[:-1]))
-        else:
-            await ctx.respond(f"{duree} n'a pas le bon format, `/aide mute` pour plus d'infos", ephemeral=True)
-            return
-
+        end_mute = now() + duree
         # Rôle trop élevé
         if user.top_role >= ctx.author.top_role:
             await ctx.respond(f"Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
-            await ctx.author.timeout(until=tps, reason=f"A voulu mute {user.name}")
+            await ctx.author.timeout(until=end_mute, reason=f"A voulu mute {user.name}")
             raise Exception("Rôle trop faible")
 
         try:
             who = f" (demandé par {ctx.author.name})"
             raison += who
-            await user.timeout(until=tps, reason=raison)
+            await user.timeout(until=end_mute, reason=raison)
             await ctx.respond(f"{user.mention} a été mute, raison : **{raison[:-len(who)]}**", ephemeral=True)
 
         except Exception as error:

@@ -8,7 +8,7 @@ version = "0.0.1"
 authors = [
   { name="Henri Golo", email="henri.golo.313f@gmail.com" },
 ]
-description = "Henri Golo's Discord bot"
+description = "Discord bot for basic moderation tools and some other fun commands"
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
@@ -18,7 +18,6 @@ classifiers = [
 ]
 dependencies = [
     "fast-autocomplete[levenshtein]",
-    "fast_autocomplete",
     "py-cord",
     "pytz",
     "requests",

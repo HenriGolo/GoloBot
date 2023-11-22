@@ -1,7 +1,7 @@
 update : pull build start
 
 start :
-	./Main/restart.py
+	Main/restart.py
 
 pull :
 	git pull

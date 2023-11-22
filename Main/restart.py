@@ -2,10 +2,12 @@
 from os import environ
 from subprocess import Popen, DEVNULL
 
-with open(environ['pidfile'], 'r') as file:
+# kill ancien bot, si existant
+with open(environ['pidfile'], 'r') as pid:
     try:
-        Popen(["kill", file.read()])
+        Popen(["kill", pid.read()])
     finally:
+        # lancement du bot
         Popen([environ['bot_path']],
               stdin=DEVNULL,
               stdout=open(environ['stdout'], 'a'),

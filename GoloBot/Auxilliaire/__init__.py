@@ -177,7 +177,7 @@ def correspond(attendu: list, reponse: str):
     return True
 
 
-def now(ms=False):
+def now(ms: bool = False):
     time = datetime.now()
     if not ms:
         time.replace(microsecond=0)
