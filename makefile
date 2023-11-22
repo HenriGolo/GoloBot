@@ -12,3 +12,9 @@ build :
 
 test : build
 	python3 -m unittest discover --start-directory Tests
+
+clean :
+	pip freeze > piplist.txt
+	pip uninstall -r piplist.txt -y
+	rm piplist.txt
+	pip install build
