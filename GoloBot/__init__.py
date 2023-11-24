@@ -494,7 +494,7 @@ class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command(description="play")
+    @commands.slash_command(description=cmds["play"].desc)
     @guild_only()
     async def play(self, ctx, search: str):
         await ctx.defer()
@@ -521,7 +521,7 @@ class Music(commands.Cog):
         elif song.origin == Origins.Playlist:
             await ctx.invoke(self.playlist)
 
-    @commands.slash_command(description="playlist")
+    @commands.slash_command(description=cmds["playlist"].desc)
     @guild_only()
     async def playlist(self, ctx):
         try:
@@ -549,7 +549,7 @@ class Music(commands.Cog):
         else:
             await ctx.respond(embed=embed)
 
-    @commands.slash_command(description="stop")
+    @commands.slash_command(description=cmds["stop"].desc)
     @guild_only()
     async def stop(self, ctx):
         await ctx.defer(ephemeral=True)
@@ -561,7 +561,7 @@ class Music(commands.Cog):
         await ctx.guild.voice_client.disconnect()
         await ctx.respond(f"Arrêt de la musique {self.bot.bools[False]}")
 
-    @commands.slash_command(description="skip")
+    @commands.slash_command(description=cmds["skip"].desc)
     @guild_only()
     async def skip(self, ctx):
         await ctx.defer(ephemeral=True)
@@ -578,7 +578,7 @@ class Music(commands.Cog):
         ctx.guild.voice_client.stop()
         await ctx.respond(f"Passage à la musique suivante {self.bot.emotes['skip']}")
 
-    @commands.slash_command(description="song info")
+    @commands.slash_command(description=cmds["songinfo"].desc)
     @guild_only()
     async def songinfo(self, ctx):
         await ctx.defer(ephemeral=True)
@@ -589,7 +589,7 @@ class Music(commands.Cog):
             return
         await ctx.respond(embed=song.info.format_output("Infos", color=ctx.author.color))
 
-    @commands.slash_command(description="history")
+    @commands.slash_command(description=cmds["history"].desc)
     @guild_only()
     async def history(self, ctx):
         await ctx.defer(ephemeral=True)
@@ -597,7 +597,7 @@ class Music(commands.Cog):
             return
         await ctx.respond(guild_to_audiocontroller[ctx.guild].track_history())
 
-    @commands.slash_command(description="volume")
+    @commands.slash_command(description=cmds["volume"].desc)
     @guild_only()
     async def volume(self, ctx, volume: float):
         await ctx.defer(ephemeral=True)
