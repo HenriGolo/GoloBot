@@ -12,6 +12,7 @@ from GoloBot.Auxilliaire.converters import *  # Converters vers mes types custom
 from GoloBot.Auxilliaire.decorators import *  # Decorateurs custom
 from GoloBot.Auxilliaire.doc import *  # Raccourcis et noms customs
 from GoloBot.Auxilliaire.games import *  # Jeux de plateau custom
+from GoloBot.Musique import *  # Adapté de https://github.com/Raptor123471/DingoLingo
 from GoloBot.views import *  # Les composants de l'UI custom
 
 
@@ -41,7 +42,7 @@ class General(commands.Cog):
                                             view=ViewDM(bot=self.bot))
                     with open(environ['dm'], 'a') as fichier:
                         fichier.write(f"\n{currentTime} {msg.author.name} a envoyé un DM :\n{msg.content}\n")
-                    await msg.add_reaction(bool_reac[True])
+                    await msg.add_reaction(self.bot.bools[True])
             else:
                 # S'obtient avec un '@silent' devant le message
                 if not msg.flags.suppress_notifications:
@@ -151,7 +152,7 @@ class Dev(commands.Cog):
             await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
             raise Exception("N'est pas dev")
 
-        await ctx.send_modal(ModalDM(bot=self.bot, title="Envoyer un message privé"))
+        await ctx.respond_modal(ModalDM(bot=self.bot, title="Envoyer un message privé"))
 
     # Déconnecte le bot
     @commands.slash_command(description=cmds["logout"].desc)
@@ -189,7 +190,7 @@ class Dev(commands.Cog):
     @commands.slash_command(description=cmds["suggestions"].desc)
     @customSlash
     async def suggestions(self, ctx):
-        await ctx.send_modal(ModalDM(bot=self.bot, target=self.bot.dev, title="Suggestion"))
+        await ctx.respond_modal(ModalDM(bot=self.bot, target=self.bot.dev, title="Suggestion"))
 
     # Renvoie les logs
     @commands.slash_command(description=cmds["get_logs"].desc)
@@ -410,12 +411,12 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
     @customSlash
     async def embed(self, ctx, edit: str):
         if edit == base_value:
-            await ctx.send_modal(ModalNewEmbed(edit, title="Nouvel Embed"))
+            await ctx.respond_modal(ModalNewEmbed(edit, title="Nouvel Embed"))
         else:
             msg = await ctx.channel.fetch_message(int(edit))
             embeds = msg.embeds
             embed = embeds[0]
-            await ctx.send_modal(ModalEditEmbed(embeds, embed, edit, send_new=True, title="Modifier l'Embed"))
+            await ctx.respond_modal(ModalEditEmbed(embeds, embed, edit, send_new=True, title="Modifier l'Embed"))
 
 
 # Fonctions Random
@@ -449,7 +450,7 @@ class MiniGames(commands.Cog):
         # Envoie du jeu formatté en python ou n'importe quel autre langage
         # pour colorer les chiffres et ajouter un effet visuel
         embed.add_field(name=f"Partie de {ctx.author.name}", value=f"```python\n{game}```", inline=True)
-        moves = [f"{to} : {bool_reac[game.canMove(to)]}" for to in toward]
+        moves = [f"{to} : {self.bot.bools[game.canMove(to)]}" for to in toward]
         embed.add_field(name="Mouvements", value="\n".join(moves), inline=True)
         embed.add_field(name="Score", value=game.score, inline=True)
         await ctx.respond(embed=embed, view=View2048(self.bot))
@@ -487,3 +488,123 @@ class Troll(commands.Cog):
             f"Ajouter {serveur.id} ({serveur.name}) sur blacklist des PR à la demande de {ctx.author} ({ctx.author.id})")
         await ctx.respond(f"""Les messages de réponses customs sont désormais désactivés sur ce serveur.
     Pour changer ça, envoyer un message privé au bot.""", ephemeral=True)
+
+
+class Music(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.slash_command(description="play")
+    @guild_only()
+    async def play(self, ctx, search: str):
+        await ctx.defer()
+        audiocontroller = guild_to_audiocontroller[ctx.guild]
+        if await is_connected(ctx) is None:
+            if not await audiocontroller.uconnect(ctx):
+                return
+        if not await play_check(ctx):
+            return
+
+        # reset timer
+        audiocontroller.timer.cancel()
+        audiocontroller.timer = Timer(audiocontroller.timeout_handler)
+        song = await audiocontroller.process_song(search)
+        if song is None:
+            return await ctx.respond("Échec de récupération de la vidéo.")
+
+        if song.origin == Origins.Default:
+            if audiocontroller.current_song is not None and len(audiocontroller.playlist.playque) == 0:
+                await ctx.respond(embed=song.info.format_output("En cours", color=ctx.author.color))
+            else:
+                await ctx.respond(embed=song.info.format_output("Ajouté à la playlist", color=ctx.author.color))
+
+        elif song.origin == Origins.Playlist:
+            await ctx.invoke(self.playlist)
+
+    @commands.slash_command(description="playlist")
+    @guild_only()
+    async def playlist(self, ctx):
+        try:
+            await ctx.defer(ephemeral=True)
+        except:
+            pass
+        if not await play_check(ctx):
+            return
+        if ctx.guild.voice_client is None or not ctx.guild.voice_client.is_playing():
+            await ctx.respond(f"La playlist est vide {self.bot.bools[False]}")
+            return
+
+        playlist = guild_to_audiocontroller[ctx.guild].playlist
+        embed = MyEmbed(title=f"À venir ({len(playlist.playque)} en tout)", color=ctx.author.color)
+        current = guild_to_audiocontroller[ctx.guild].current_song
+        if current:
+            current = current.info.format_output("En Cours", color=ctx.author.color)
+        for counter, song in enumerate(list(playlist.playque)[:5], start=1):
+            if song.info.title is not None:
+                embed.add_field(name=f"{counter}.", value=f"[{song.info.title}]({song.info.webpage_url})", inline=False)
+            else:
+                embed.add_field(name=f"{counter}.", value=song.info.webpage_url, inline=False)
+        if current:
+            await ctx.respond(embeds=[current, embed])
+        else:
+            await ctx.respond(embed=embed)
+
+    @commands.slash_command(description="stop")
+    @guild_only()
+    async def stop(self, ctx):
+        await ctx.defer(ephemeral=True)
+        if not await play_check(ctx):
+            return
+        audiocontroller = guild_to_audiocontroller[ctx.guild]
+        audiocontroller.playlist.loop = False
+        await guild_to_audiocontroller[ctx.guild].stop_player()
+        await ctx.guild.voice_client.disconnect()
+        await ctx.respond(f"Arrêt de la musique {self.bot.bools[False]}")
+
+    @commands.slash_command(description="skip")
+    @guild_only()
+    async def skip(self, ctx):
+        await ctx.defer(ephemeral=True)
+        if not await play_check(ctx):
+            return
+        audiocontroller = guild_to_audiocontroller[ctx.guild]
+        audiocontroller.playlist.loop = False
+        audiocontroller.timer.cancel()
+        audiocontroller.timer = Timer(audiocontroller.timeout_handler)
+        if ctx.guild.voice_client is None or (
+                not ctx.guild.voice_client.is_paused() and not ctx.guild.voice_client.is_playing()):
+            await ctx.respond(f"La playlist est vide {self.bot.bools[False]}")
+            return
+        ctx.guild.voice_client.stop()
+        await ctx.respond(f"Passage à la musique suivante {self.bot.emotes['skip']}")
+
+    @commands.slash_command(description="song info")
+    @guild_only()
+    async def songinfo(self, ctx):
+        await ctx.defer(ephemeral=True)
+        if not await play_check(ctx):
+            return
+        song = guild_to_audiocontroller[ctx.guild].current_song
+        if song is None:
+            return
+        await ctx.respond(embed=song.info.format_output("Infos", color=ctx.author.color))
+
+    @commands.slash_command(description="history")
+    @guild_only()
+    async def history(self, ctx):
+        await ctx.defer(ephemeral=True)
+        if not await play_check(ctx):
+            return
+        await ctx.respond(guild_to_audiocontroller[ctx.guild].track_history())
+
+    @commands.slash_command(description="volume")
+    @guild_only()
+    async def volume(self, ctx, volume: float):
+        await ctx.defer(ephemeral=True)
+        if not await play_check(ctx):
+            return
+
+        if not 0 < volume <= 100:
+            return await ctx.respond(f"{volume} n'est pas compris entre 1 et 100")
+        guild_to_audiocontroller[ctx.guild].volume = volume
+        await ctx.respond(f"Nouveau volume défini sur {volume}")

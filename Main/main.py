@@ -17,15 +17,18 @@ class GoloBot(AutoShardedBot):
         self.leave_voice.start()
         self.startTime = None
         self.dev = None
+        self.emotes = None
+        self.bools = None
 
     def __str__(self):
         return self.user.name
 
-    @tasks.loop(minutes=10)
+    @tasks.loop(seconds=10)
     async def leave_voice(self):
         for vc in self.voice_clients:
             # Le bot est tout seul dans le vocal
             if len(vc.channel.members) == 1:
+                await guild_to_audiocontroller[vc.guild].stop_player()
                 await vc.disconnect()
 
     async def on_ready(self):
@@ -38,14 +41,25 @@ class GoloBot(AutoShardedBot):
                             state="https://github.com/HenriGolo/GoloBot",
                             type=ActivityType.watching)
         await self.change_presence(activity=activity)
+        # Emojis personnalisés
+        GoloBotGuild = await self.fetch_guild(1158154606124204072)
+        self.emotes = {e.name: str(e) for e in GoloBotGuild.emojis}
+        self.bools = {True: self.emotes['check'], False: self.emotes['denied']}
         # View persistantes
         self.add_view(ViewRoleReact())
         self.add_view(ViewDM(self))
+        # Setup de la Musique
+        for guild in self.guilds:
+            await register(self, guild)
         # Gestion du PID pour kill proprement
         with open(environ['pidfile'], 'w') as pid:
             pid.write(str(getpid()))
-        # c'est bon, on est prêts
+        # c'est bon, on est prêt
         print(f"{self} connecté !")
+
+    @staticmethod
+    async def on_guild_join(guild):
+        await register(self, guild)
 
 
 # Création du Bot

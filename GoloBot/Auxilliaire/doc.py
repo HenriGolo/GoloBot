@@ -7,9 +7,6 @@ docs = {"pycord": "https://docs.pycord.dev/en/stable/",
         "crontab": "https://www.man7.org/linux/man-pages/man5/crontab.5.html",
         "cron": "https://www.man7.org/linux/man-pages/man8/cron.8.html"}
 
-bool_reac = {True: "<a:check:1164580201573912677>",
-             False: "<a:denied:1164580451680256041>"}
-
 # Valeur par défaut des arguments
 base_value = ""
 # Utilisé pour dire qu'un argument n'est pas optionel
@@ -82,7 +79,7 @@ cmds = {"aide": DocCommand("aide",
                            "Affiche la liste des commandes.",
                            perm.none(),
                            "",
-                           [Arg("commande", "défini plus tard, j'ai besoin de la liste de toutes les commandes"),
+                           [Arg("commande", "Une commande en particulier.", default="aide"),
                             Arg("visible", "Affiche la fenêtre d'aide à tout le monde.", default=False)]),
 
         "dm": DocCommand("dm",
@@ -219,9 +216,42 @@ Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']}).""",
                                                "Désactive les messages de réponses personnalisées sur ce serveur.",
                                                perm.administrator,
                                                "Désactive tout, pour en remettre seulement certaines en service, envoyer un MP au bot à ce sujet.",
-                                               [])}
+                                               []),
+        "play": DocCommand("play",
+                           "Joue une musiqe / playlist à partir d'une recherche / url",
+                           perm.none(),
+                           "Sources supportées : YouTube, Twitter, SoundCloud, BandCamp",
+                           [Arg("search", "Mots clé ou URL de la vidéo / playlist à jouer")]),
+        "playlist": DocCommand("playlist",
+                               "Affiche la playlist en cours",
+                               perm.none(),
+                               "",
+                               []),
+        "stop": DocCommand("stop",
+                           "Arrête la musique et déconnecte le bot.",
+                           perm.none(),
+                           "",
+                           []),
+        "skip": DocCommand("skip",
+                           "Joue la prochaine musique de la playlist.",
+                           perm.none(),
+                           "",
+                           []),
+        "songinfo": DocCommand("songinfo",
+                               "Des informations sur la musique en cours.",
+                               perm.none(),
+                               "Provenance et durée de la musique.",
+                               []),
+        "history": DocCommand("history",
+                              "Affiche l'historique des musiques jouées.",
+                              perm.none(),
+                              "",
+                              []),
+        "volume": DocCommand("volume",
+                             "Change le volume de la musique",
+                             perm.none(),
+                             "",
+                             [Arg("volume", "Compris entre 1 et 100 (inclus)")])}
 
-cmds["aide"].args["commande"] = Arg("commande", "Une commande en particulier.", default="aide",
-                                    choices=[cmd for cmd in cmds])
 for cmd in cmds:
     cmds[cmd].set_options()

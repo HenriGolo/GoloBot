@@ -49,7 +49,7 @@ class View2048(MyView):
         # On envoie le jeu formatté pour du python (ou n'importe quel autre langage)
         # pour colorer les chiffres et ajouter un effet visuel
         embed.add_field(name=f"Partie de {joueur.name}", value=f"```python\n{game}```", inline=True)
-        moves = [f"{to} : {bool_reac[game.canMove(to)]}" for to in toward]
+        moves = [f"{to} : {self.bot.bools[game.canMove(to)]}" for to in toward]
         embed.add_field(name="Mouvements", value="\n".join(moves), inline=True)
         embed.add_field(name="Score", value=game.score, inline=True)
         await interaction.response.edit_message(embed=embed, view=self)
@@ -80,7 +80,7 @@ class View2048(MyView):
         # On envoie le jeu formatté pour du python ou n'importe quel autre langage
         # pour colorer les chiffres et ajouter un effet visuel
         embed.add_field(name=f"Partie de {joueur.name}", value=f"```python\n{game}```", inline=True)
-        moves = [f"{to} : {bool_reac[game.canMove(to)]}" for to in toward]
+        moves = [f"{to} : {self.bot.bools[game.canMove(to)]}" for to in toward]
         embed.add_field(name="Mouvements", value="\n".join(moves), inline=True)
         embed.add_field(name="Score", value=game.score, inline=True)
         await interaction.response.edit_message(embed=embed, view=self)
@@ -111,7 +111,7 @@ class View2048(MyView):
         # On envoie le jeu formatté pour du python ou n'importe quel autre langage
         # pour colorer les chiffres et ajouter un effet visuel
         embed.add_field(name=f"Partie de {joueur.name}", value=f"```python\n{game}```", inline=True)
-        moves = [f"{to} : {bool_reac[game.canMove(to)]}" for to in toward]
+        moves = [f"{to} : {self.bot.bools[game.canMove(to)]}" for to in toward]
         embed.add_field(name="Mouvements", value="\n".join(moves), inline=True)
         embed.add_field(name="Score", value=game.score, inline=True)
         await interaction.response.edit_message(embed=embed, view=self)
@@ -142,7 +142,7 @@ class View2048(MyView):
         # On envoie le jeu formatté pour du python ou n'importe quel autre langage
         # pour colorer les chiffres et ajouter un effet visuel
         embed.add_field(name=f"Partie de {joueur.name}", value=f"```python\n{game}```", inline=True)
-        moves = [f"{to} : {bool_reac[game.canMove(to)]}" for to in toward]
+        moves = [f"{to} : {self.bot.bools[game.canMove(to)]}" for to in toward]
         embed.add_field(name="Mouvements", value="\n".join(moves), inline=True)
         embed.add_field(name="Score", value=game.score, inline=True)
         await interaction.response.edit_message(embed=embed, view=self)

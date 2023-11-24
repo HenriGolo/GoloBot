@@ -18,10 +18,12 @@ classifiers = [
 ]
 dependencies = [
     "fast-autocomplete[levenshtein]",
-    "py-cord",
+    "py-cord[voice]",
     "pytz",
     "requests",
-    "varname"
+    "varname",
+    "yt_dlp",
+    "youtube_search"
 ]
 
 

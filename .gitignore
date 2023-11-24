@@ -4,7 +4,6 @@ Aborted
 dist
 logs
 __pycache__
-Database
 .idea
 
 #Fichiers
@@ -13,3 +12,4 @@ infos.txt
 qpup.txt
 discord.pid
 privatebot.py
+cookies.txt

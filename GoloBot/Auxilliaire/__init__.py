@@ -7,11 +7,10 @@ from discord import Embed
 from fast_autocomplete import AutoComplete
 from requests import Session
 
-from GoloBot.Auxilliaire.stdio import *  # Mes fonctions pour stocker des données
+from GoloBot.Auxilliaire.settings import *  # Stcokage de données de config
 
 
 class CustomSession:
-
     def __init__(self):
         self.s = Session()
         self.cache = dict()
@@ -97,28 +96,6 @@ def rec_in(matrice: list[list], elt):
     return False
 
 
-# Convertit une DB en dictionnaire
-def convert_db_dict(database: list[list], colonne: int):
-    dico = dict()
-    for line in database:
-        key = line[colonne]
-        for i in range(len(line)):
-            if not i == colonne:
-                add_dict(dico, key, line[i])
-    return dico
-
-
-def convert_dict_db(dico: dict):
-    db = list()
-    for key in dico:
-        value = unpack(dico[key])
-        if isinstance(value, list):
-            db.append([key] + value)
-        else:
-            db.append([key] + pack(value, 1))
-    return db
-
-
 # Dictionnaire de la forme {key : list()}
 # Ajoute un élément à la liste d'une certaine clé
 # Crée cette clé si inexistante
@@ -138,7 +115,7 @@ def pack(item, n):
 
 # Opération inverse d'unpack
 def unpack(item):
-    if not isinstance(item, list):
+    if not isinstance(item, (list, tuple)):
         return item
     if len(item) > 1:
         return item

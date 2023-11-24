@@ -80,3 +80,25 @@ def modify_db(filename: str, old_starts: list, new_lines: list):
             new_db.append([old_starts[i], new_lines[i + int(new_lines[0] == "+")]])
             found[i] = True
     write_db(filename, new_db)
+
+
+# Convertit une DB en dictionnaire
+def convert_db_dict(database: list[list], colonne: int):
+    dico = dict()
+    for line in database:
+        key = line[colonne]
+        for i in range(len(line)):
+            if not i == colonne:
+                add_dict(dico, key, line[i])
+    return dico
+
+
+def convert_dict_db(dico: dict):
+    db = list()
+    for key in dico:
+        value = unpack(dico[key])
+        if isinstance(value, list):
+            db.append([key] + value)
+        else:
+            db.append([key] + pack(value, 1))
+    return db
