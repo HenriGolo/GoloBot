@@ -30,7 +30,7 @@ class Arg:
             name += " (optionnel)"
         affichage = f"""- {name}
     {self.desc}"""
-        if not self.default == base_value:
+        if self.default is not None:
             affichage += "\n\tValeur par défaut : "
             affichage += str(self.default)
         return affichage
