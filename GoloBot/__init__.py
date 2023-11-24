@@ -496,6 +496,7 @@ class Music(commands.Cog):
 
     @commands.slash_command(description=cmds["play"].desc)
     @guild_only()
+    @customSlash
     async def play(self, ctx, search: str):
         await ctx.defer()
         audiocontroller = guild_to_audiocontroller[ctx.guild]
@@ -523,6 +524,7 @@ class Music(commands.Cog):
 
     @commands.slash_command(description=cmds["playlist"].desc)
     @guild_only()
+    @customSlash
     async def playlist(self, ctx):
         try:
             await ctx.defer(ephemeral=True)
@@ -551,6 +553,7 @@ class Music(commands.Cog):
 
     @commands.slash_command(description=cmds["stop"].desc)
     @guild_only()
+    @customSlash
     async def stop(self, ctx):
         await ctx.defer(ephemeral=True)
         if not await play_check(ctx):
@@ -563,6 +566,7 @@ class Music(commands.Cog):
 
     @commands.slash_command(description=cmds["skip"].desc)
     @guild_only()
+    @customSlash
     async def skip(self, ctx):
         await ctx.defer(ephemeral=True)
         if not await play_check(ctx):
@@ -580,6 +584,7 @@ class Music(commands.Cog):
 
     @commands.slash_command(description=cmds["songinfo"].desc)
     @guild_only()
+    @customSlash
     async def songinfo(self, ctx):
         await ctx.defer(ephemeral=True)
         if not await play_check(ctx):
@@ -591,6 +596,7 @@ class Music(commands.Cog):
 
     @commands.slash_command(description=cmds["history"].desc)
     @guild_only()
+    @customSlash
     async def history(self, ctx):
         await ctx.defer(ephemeral=True)
         if not await play_check(ctx):
@@ -599,6 +605,7 @@ class Music(commands.Cog):
 
     @commands.slash_command(description=cmds["volume"].desc)
     @guild_only()
+    @customSlash
     async def volume(self, ctx, volume: float):
         await ctx.defer(ephemeral=True)
         if not await play_check(ctx):

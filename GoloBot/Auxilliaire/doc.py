@@ -221,7 +221,7 @@ Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']}).""",
                            "Joue une musiqe / playlist à partir d'une recherche / url.",
                            perm.none(),
                            "Sources supportées : YouTube, Twitter, SoundCloud, BandCamp",
-                           [Arg("search", "Mots clé ou URL de la vidéo / playlist à jouer")]),
+                           [Arg("search", "Mots clé ou URL de la vidéo / playlist à jouer.")]),
         "playlist": DocCommand("playlist",
                                "Affiche la playlist en cours.",
                                perm.none(),
@@ -251,7 +251,7 @@ Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']}).""",
                              "Change le volume de la musique.",
                              perm.none(),
                              "",
-                             [Arg("volume", "Compris entre 1 et 100 (inclus)")])}
+                             [Arg("volume", "Compris entre 1 et 100 (inclus).")])}
 
 for cmd in cmds:
     cmds[cmd].set_options()
