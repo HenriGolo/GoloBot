@@ -152,7 +152,7 @@ class Dev(commands.Cog):
             await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
             raise Exception("N'est pas dev")
 
-        await ctx.respond_modal(ModalDM(bot=self.bot, title="Envoyer un message privé"))
+        await ctx.send_modal(ModalDM(bot=self.bot, title="Envoyer un message privé"))
 
     # Déconnecte le bot
     @commands.slash_command(description=cmds["logout"].desc)
@@ -190,7 +190,7 @@ class Dev(commands.Cog):
     @commands.slash_command(description=cmds["suggestions"].desc)
     @customSlash
     async def suggestions(self, ctx):
-        await ctx.respond_modal(ModalDM(bot=self.bot, target=self.bot.dev, title="Suggestion"))
+        await ctx.send_modal(ModalDM(bot=self.bot, target=self.bot.dev, title="Suggestion"))
 
     # Renvoie les logs
     @commands.slash_command(description=cmds["get_logs"].desc)
@@ -411,12 +411,12 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
     @customSlash
     async def embed(self, ctx, edit: str):
         if edit == base_value:
-            await ctx.respond_modal(ModalNewEmbed(edit, title="Nouvel Embed"))
+            await ctx.send_modal(ModalNewEmbed(edit, title="Nouvel Embed"))
         else:
             msg = await ctx.channel.fetch_message(int(edit))
             embeds = msg.embeds
             embed = embeds[0]
-            await ctx.respond_modal(ModalEditEmbed(embeds, embed, edit, send_new=True, title="Modifier l'Embed"))
+            await ctx.send_modal(ModalEditEmbed(embeds, embed, edit, send_new=True, title="Modifier l'Embed"))
 
 
 # Fonctions Random
