@@ -92,6 +92,9 @@ def identify_playlist(url):
 async def play_check(ctx):
     sett = guild_to_settings[ctx.guild]
     author_voice = ctx.author.voice
+    if ctx.guild.voice_client is None:
+        await ctx.respond("Tu dois être dans le même vocal que le bot pour utiliser cette commande.", ephemeral=True)
+        return False
     bot_vc = ctx.guild.voice_client.channel
     if author_voice is None:
         await ctx.respond("Tu dois être dans le même vocal que le bot pour utiliser cette commande.", ephemeral=True)
