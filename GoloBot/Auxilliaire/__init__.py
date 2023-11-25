@@ -80,6 +80,25 @@ class PrivateResponse:
         return allowed and not denied
 
 
+class Completer(AutoComplete):
+    def search(self, word, max_cost=None, size=1):
+        if max_cost is None:
+            max_cost = len(sum([w.split("_") for w in word.split(" ")], []))
+        return super().search(word=word, max_cost=max_cost, size=size)
+
+    @staticmethod
+    def from_db(db):
+        words = dict()
+        synonyms = dict()
+
+        for data in db:
+            words[data[0].lower()] = dict()
+            if not data[1] == ['']:
+                synonyms[data[0].lower()] = [e.lower() for e in data[1]]
+
+        return Completer(words=words, synonyms=synonyms)
+
+
 # Commande bash tail avec un peu de traitement
 def tail(file: str, lastN=10):
     cmd = check_output(["tail", file, "-n", str(lastN)])
@@ -128,18 +147,6 @@ def insert(liste: list, pos: int, elt):
 
 def check_unicity(string: str, elt: str):
     return len(string.split(elt)) == 2
-
-
-def init_autocomplete(db):
-    words = dict()
-    synonyms = dict()
-
-    for data in db:
-        words[data[0].lower()] = dict()
-        if not data[1] == ['']:
-            synonyms[data[0].lower()] = [e.lower() for e in data[1]]
-
-    return AutoComplete(words=words, synonyms=synonyms)
 
 
 def fail():

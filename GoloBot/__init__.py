@@ -59,6 +59,8 @@ class General(commands.Cog):
     @customSlash
     async def aide(self, ctx, commande: str, visible: bool):
         await ctx.defer(ephemeral=not visible)
+        if not commande in cmds:
+            commande = self.bot.commands_names.search(commande)[0][0]
         authorUser = await Member2User(self.bot, ctx.author)
         # Nom, ID et mention de la commande concernée
         commande = self.bot.get_application_command(commande)

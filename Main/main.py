@@ -15,6 +15,10 @@ class GoloBot(AutoShardedBot):
         self.PR = [pr() for pr in PrivateResponse.__subclasses__()]
         # Quitte tous les vocaux où le bot est solo toutes les 10 mins
         self.leave_voice.start()
+        # Plus de 25 commandes, seul moyen d'avoir une forme d'autocomplétion
+        words = {cmd: {} for cmd in cmds}
+        synonyms = {cmd: {" ".join(cmd.split(" "))} for cmd in cmds}
+        self.commands_names = Completer(words=words, synonyms=synonyms)
         self.startTime = None
         self.dev = None
         self.emotes = None
