@@ -274,10 +274,6 @@ class AudioController:
             self.guild.voice_client.stop()
 
     async def timeout_handler(self):
-        if len(self.guild.voice_client.channel.voice_states) == 1:
-            await self.udisconnect()
-            return
-
         sett = guild_to_settings[self.guild]
         if not sett.get('vc_timeout'):
             self.timer = Timer(self.timeout_handler)  # restart timer
