@@ -61,8 +61,7 @@ class GoloBot(AutoShardedBot):
         # c'est bon, on est prêt
         print(f"{self} connecté !")
 
-    @staticmethod
-    async def on_guild_join(guild):
+    async def on_guild_join(self, guild):
         await register(self, guild)
 
 
