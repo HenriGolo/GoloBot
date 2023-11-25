@@ -64,9 +64,9 @@ class PrivateResponse:
     def __str__(self):
         return self.message
 
-    def trigger(self, content):
+    def trigger(self, content: str):
         for t in self.triggers:
-            if t in content:
+            if t.lower() in content.lower():
                 return True
         return False
 
@@ -75,7 +75,7 @@ class PrivateResponse:
         return True
 
     def guilds(self, guild):
-        allowed = self.Aguilds == [] or guild.id in self.Aguilds
+        allowed = self.Aguilds == () or guild.id in self.Aguilds
         denied = guild.id in self.Dguilds
         return allowed and not denied
 
