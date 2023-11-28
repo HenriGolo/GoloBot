@@ -72,10 +72,22 @@ class PrivateResponse:
         self.Aguilds = allowed_guilds  # Servers sur lesquels la réponse fonctionne ([] = tous)
         self.Dguilds = denied_guilds  # Servers sur lesquels la réponse est désactivée
 
+    @staticmethod
+    def remove_pattern(pattern, string):
+        occs = re.findall(pattern, string)
+        retour = string
+        for o in occs:
+            retour = "".join(retour.split(o))
+        return retour
+
     def __str__(self):
         return self.message
 
-    def trigger(self, content: str):
+    def trigger(self, content: str, rmurl: bool = True, rmmention: bool = True):
+        if rmurl:
+            content = self.remove_pattern(url, content)
+        if rmmention:
+            content = self.remove_pattern(all_mentions, content)
         for t in self.triggers:
             if t.lower() in content.lower():
                 return True
