@@ -10,8 +10,7 @@ from requests import Session
 
 from GoloBot.Auxilliaire.settings import *  # Stockage de données de config
 
-
-url = re.compile(r'http[a-zA-Z0-9:/.#]*')
+url = re.compile(r'https?://[a-zA-Z0-9/.#-]*')
 all_mentions = re.compile(r'<[@#!&]+[0-9]*>')
 user_mentions = re.compile(r'<@[0-9]*>')
 role_mentions = re.compile(r'<@&[0-9]*>')
@@ -65,12 +64,15 @@ class MyEmbed(Embed):
         self.timestamp = now()
 
 
-class PrivateResponse:
-    def __init__(self, triggers=("",), message="", allowed_guilds=(), denied_guilds=()):
-        self.triggers = triggers  # Contenu d'un message pour activer la réponse
-        self.message = message  # Réponse à envoyer
-        self.Aguilds = allowed_guilds  # Servers sur lesquels la réponse fonctionne ([] = tous)
-        self.Dguilds = denied_guilds  # Servers sur lesquels la réponse est désactivée
+class Trigger:
+    def __init__(self, trigger: str, rmurl: bool = True, rmention: bool = True, rmoji: bool = False):
+        self.trigger = trigger
+        self.rmurl = rmurl
+        self.rmention = rmention
+        self.rmoji = rmoji
+
+    def __str__(self):
+        return self.trigger
 
     @staticmethod
     def remove_pattern(pattern, string):
@@ -80,16 +82,34 @@ class PrivateResponse:
             retour = "".join(retour.split(o))
         return retour
 
+    def check(self, string: str):
+        if self.rmurl:
+            string = self.remove_pattern(url, string)
+        if self.rmention:
+            string = self.remove_pattern(all_mentions, string)
+        if not self.rmoji:
+            # Présent dans le nom, mais pas dans l'id
+            emotes = re.findall(emoji, string)
+            for e in emotes:
+                if str(self).strip(':') in e.split(':')[1]:
+                    return True
+        string = self.remove_pattern(emoji, string)
+        return str(self) in string
+
+
+class PrivateResponse:
+    def __init__(self, triggers=(Trigger(""),), message="", allowed_guilds=(), denied_guilds=()):
+        self.triggers = triggers  # Contenu d'un message pour activer la réponse
+        self.message = message  # Réponse à envoyer
+        self.Aguilds = allowed_guilds  # Servers sur lesquels la réponse fonctionne ([] = tous)
+        self.Dguilds = denied_guilds  # Servers sur lesquels la réponse est désactivée
+
     def __str__(self):
         return self.message
 
-    def trigger(self, content: str, rmurl: bool = True, rmmention: bool = True):
-        if rmurl:
-            content = self.remove_pattern(url, content)
-        if rmmention:
-            content = self.remove_pattern(all_mentions, content)
+    def trigger(self, content: str):
         for t in self.triggers:
-            if t.lower() in content.lower():
+            if t.check(content):
                 return True
         return False
 
