@@ -1,3 +1,4 @@
+import re
 from collections import namedtuple
 from datetime import datetime, timedelta
 from subprocess import check_output
@@ -7,7 +8,17 @@ from discord import Embed
 from fast_autocomplete import AutoComplete
 from requests import Session
 
-from GoloBot.Auxilliaire.settings import *  # Stcokage de données de config
+from GoloBot.Auxilliaire.settings import *  # Stockage de données de config
+
+
+url = re.compile(r'http[a-zA-Z0-9:/.#]*')
+all_mentions = re.compile(r'<[@#!&]+[0-9]*>')
+user_mentions = re.compile(r'<@[0-9]*>')
+role_mentions = re.compile(r'<@&[0-9]*>')
+channel_mentions = re.compile(r'<#[0-9]*>')
+slash_mention = re.compile(r'</[a-zA-Z0-9]*:[0-9]*>')
+emoji = re.compile(r'<a?:[a-zA-Z0-9]*:[0-9]*>')
+timestamp = re.compile(r'<t:[0-9]*:[RDdTtFf]>')
 
 
 class CustomSession:
@@ -184,13 +195,13 @@ def eltInStr(string, start, end, to_type=str):
 
 # Message.role_mentions existe, mais parfois ne marche pas complétement
 def rolesInStr(string, guild):
-    roles_ids = eltInStr(string, "<@&", ">", to_type=int)
+    roles_ids = [int(r[2:-1]) for r in re.findall(role_mentions, string)]
     roles = [guild.get_role(r) for r in roles_ids]
     return roles
 
 
 async def usersInStr(string, bot):
-    users_ids = eltInStr(string, "<@", ">", to_type=int)
+    users_ids = [int(u[1:-1]) for u in re.findall(user_mentions, string)]
     users = [await bot.fetch_user(u) for u in users_ids]
     return users
 
