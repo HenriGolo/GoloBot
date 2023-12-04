@@ -508,5 +508,5 @@ class ViewAide(MyView):
     async def callback(self, button, interaction):
         embed = MyEmbed(title="Liste des commandes", color=interaction.user.color)
         description = "<reset>, <green>".join(name for name in cmds)
-        embed.description = await ANSI().convert(None, description)
+        embed.description = await ANSI().convert(None, "<green>"+description)
         await interaction.response.send_message(embed=embed, ephemeral=True)
