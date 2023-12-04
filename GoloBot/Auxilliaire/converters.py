@@ -89,7 +89,7 @@ class ANSI(Converter):
         colors = {f"<{c.name}>": f"\u001b[{c.value}m" for c in TextColor}
         colors["<reset>"] = f"\u001b[0m"
         bgcolors = {f"<bg{c.name}>": f"\u001b[{c.value}m" for c in BackgroundColor}
-        tags = re.compile(r"<[a-z]*>")  # Pas le filtrage le plus optimal
+        tags = re.compile(r"<[a-z]+>")  # Pas le filtrage le plus optimal
         found = re.findall(tags, argument)
         if not found:
             return argument
