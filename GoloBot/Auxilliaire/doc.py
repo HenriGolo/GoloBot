@@ -209,7 +209,9 @@ Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']}).""",
         "embed": DocCommand("emebd",
                             "Crée un nouvel embed, entièrement customisable.",
                             perm.none(),
-                            "Si modification d'un Embed existant : aucune modification n'est effective avant de valider à la toute fin.",
+                            """Si modification d'un Embed existant : aucune modification n'est effective avant de valider à la toute fin.
+Documention sur les [couleurs ANSI](https://gist.github.com/kkrypt0nn/a02506f3712ff2d1c8ca7c9e0aed7c06).
+Utilisation avec le bot : <couleur>, <bgcouleur> ou <reset>.""",
                             [Arg("edit", "ID du message à modifier.", default=base_value)]),
 
         "disable_custom_responses": DocCommand("disable_custom_responses",
