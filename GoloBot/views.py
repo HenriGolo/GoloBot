@@ -501,3 +501,12 @@ class ViewEditEmbed(MyView):
             msg = await interaction.channel.fetch_message(int(self.msg))
             await msg.edit(embeds=self.embeds, view=None)
         await interaction.response.edit_message(delete_after=0)
+
+
+class ViewAide(MyView):
+    @ui.button(label="Liste des commandes", style=ButtonStyle.success)
+    async def callback(self, button, interaction):
+        embed = MyEmbed(title="Liste des commandes", color=interaction.user.color)
+        description = "<reset>, <green>".join(name for name in cmds)
+        embed.description = await ANSI().convert(None, description)
+        await interaction.response.send_message(embed=embed, ephemeral=True)

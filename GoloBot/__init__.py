@@ -79,7 +79,7 @@ class General(commands.Cog):
         embed.add_field(name="Encore des questions ?",
                         value=f"Le <:discord:1164579176146288650> [Serveur de Support]({environ['invite_server']}) est là pour ça",
                         inline=False)
-        await ctx.respond(embed=embed, ephemeral=not visible)
+        await ctx.respond(embed=embed, view=ViewAide(), ephemeral=not visible)
 
     # Renvoie un lien pour inviter le bot
     @commands.slash_command(description=cmds["invite"].desc)
@@ -93,9 +93,9 @@ Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci
         await ctx.respond(embed=embed, ephemeral=True)
 
     # Renvoie le code source du bot
-    @commands.slash_command(description=cmds["code"].desc)
+    @commands.slash_command(description=cmds["github"].desc)
     @customSlash
-    async def code(self, ctx):
+    async def github(self, ctx):
         await ctx.defer(ephemeral=True)
         embed = MyEmbed(title="Code Source",
                         description=f"Le code source est disponible sur <:github:1164672088934711398> [Github]({environ['github']})\n\
