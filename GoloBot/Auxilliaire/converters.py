@@ -94,7 +94,12 @@ class ANSI(Converter):
         if not found:
             return argument
 
-        colored = f"```ansi\n{argument.replace('```ansi', '').replace('```', '')}\n```"
+        codeblocks = re.findall(re.compile(r"```[a-z]*"), argument)
+        codeblocks.sort()
+        colored = argument
+        for pattern in reversed(codeblocks):
+            colored = colored.replace(pattern, "")
+        colored = f"```ansi\n{colored}\n```"
         for pattern in re.findall(tags, colored):
             if pattern in colors:
                 colored = colored.replace(pattern, colors[pattern])
