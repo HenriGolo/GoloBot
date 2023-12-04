@@ -297,7 +297,7 @@ class ModalNewEmbed(ui.Modal):
     @modal_logger
     async def callback(self, interaction):
         title = self.children[0].value
-        description = self.children[1].value
+        description = await ANSI().convert(None, self.children[1].value)
         color = Colour(int(self.children[2].value, 16))
         embed = MyEmbed(title=title, description=description, color=color)
         view = ViewEditEmbed([embed], embed, self.msg)
@@ -320,7 +320,7 @@ class ModalEditEmbed(ui.Modal):
     @modal_logger
     async def callback(self, interaction):
         title = self.children[0].value
-        description = self.children[1].value
+        description = await ANSI().convert(None, self.children[1].value)
         color = Colour(int(self.children[2].value, 16))
         self.embed.title = title
         self.embed.description = description
@@ -349,7 +349,7 @@ class ModalEditEmbedFields(ui.Modal):
     @modal_logger
     async def callback(self, interaction):
         name = self.children[0].value
-        value = self.children[1].value
+        value = await ANSI().convert(None, self.children[1].value)
         self.embed.set_field_at(self.field, name=name, value=value, inline=False)
         view = ViewEditEmbed(self.embeds, self.embed, self.msg)
         await interaction.response.edit_message(embeds=self.embeds, view=view)

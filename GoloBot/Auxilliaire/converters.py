@@ -1,13 +1,14 @@
+import re
 from discord.ext.commands import Converter, Context
 from collections import namedtuple
 from datetime import timedelta
 from discord.ext.commands.converter import T_co
-
-compint = namedtuple("CompNInt", ["comp", "int"])
+from enum import Enum
 
 
 class CompNInt(Converter):
     async def convert(self, ctx: Context, argument: str) -> T_co:
+        compint = namedtuple("CompNInt", ["comp", "int"])
         default = ">="
         try:
             comp = default
@@ -59,3 +60,44 @@ class Duree(Converter):
                     raise Exception(f"Mauvais format de {argument}. Attendu 1j 2h 3m 4s")
                 number = ""
         return timedelta(days=jours, hours=heures, minutes=minutes, seconds=secondes)
+
+
+class TextColor(Enum):
+    gray = 30
+    red = 31
+    green = 32
+    yellow = 33
+    blue = 34
+    pink = 35
+    cyan = 36
+    white = 37
+
+
+class BackgroundColor(Enum):
+    firefly_darj_blue = 40
+    orange = 41
+    marble_blue = 42
+    greyish_turquoise = 43
+    gray = 44
+    indigo = 45
+    light_gray = 46
+    white = 47
+
+
+class ANSI(Converter):
+    async def convert(self, ctx: Context, argument: str) -> T_co:
+        colors = {f"<{c.name}>": f"\u001b[{c.value}m" for c in TextColor}
+        colors["<reset>"] = f"\u001b[0m"
+        bgcolors = {f"<bg{c.name}>": f"\u001b[{c.value}m" for c in BackgroundColor}
+        tags = re.compile(r"<[a-z]*>")  # Pas le filtrage le plus optimal
+        found = re.findall(tags, argument)
+        if not found:
+            return argument
+
+        colored = f"```ansi{argument.replace('```ansi', '').replace('```', '')}```"
+        for pattern in re.findall(tags, colored):
+            if pattern in colors:
+                colored = colored.replace(pattern, colors[pattern])
+            if pattern in bgcolors:
+                colored = colored.replace(pattern, bgcolors[pattern])
+        return colored

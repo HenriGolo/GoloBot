@@ -160,13 +160,13 @@ Ne pas combiner, par exemple `3m30s` est invalide, utilisez `210s`.""",
                              "",
                              []),
 
-        "code": DocCommand("code",
-                           "Lien vers GitHub pour accéder aux fichiers du bot.",
-                           perm.none(),
-                           f"""Doc Pycord : [ici]({docs['pycord']}).
+        "github": DocCommand("github",
+                             "Lien vers GitHub pour accéder aux fichiers du bot.",
+                             perm.none(),
+                             f"""Doc Pycord : [ici]({docs['pycord']}).
 Portail des Développeurs : [ici]({docs['discord developpers']}).
 Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']}).""",
-                           []),
+                             []),
 
         "get_logs": DocCommand("get_logs",
                                "Envoie les logs des erreurs.",

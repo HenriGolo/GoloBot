@@ -500,7 +500,7 @@ class Music(commands.Cog):
     @guild_only()
     @customSlash
     async def play(self, ctx, search: str):
-        await ctx.defer()
+        await ctx.defer(invisible=False)
         audiocontroller = guild_to_audiocontroller[ctx.guild]
         if await is_connected(ctx) is None:
             if not await audiocontroller.uconnect(ctx):
