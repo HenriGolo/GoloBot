@@ -498,6 +498,6 @@ class ViewEditEmbed(MyView):
         if self.msg == base_value:
             await interaction.channel.send(embeds=self.embeds)
         else:
-            msg = await interaction.channel.fetch_message(int(self.msg.id))
+            msg = await interaction.channel.fetch_message(int(self.msg))
             await msg.edit(embeds=self.embeds, view=None)
         await interaction.response.edit_message(delete_after=0)
