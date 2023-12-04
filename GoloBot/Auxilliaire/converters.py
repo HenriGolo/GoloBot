@@ -94,7 +94,7 @@ class ANSI(Converter):
         if not found:
             return argument
 
-        colored = f"```ansi{argument.replace('```ansi', '').replace('```', '')}```"
+        colored = f"```ansi\n{argument.replace('```ansi', '').replace('```', '')}\n```"
         for pattern in re.findall(tags, colored):
             if pattern in colors:
                 colored = colored.replace(pattern, colors[pattern])
