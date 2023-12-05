@@ -26,7 +26,12 @@ def command_logger(func):
                 result = await func(*args, **kwargs)
                 stdout.write(f"{func.__name__} terminé en {now(True) - start}s")
 
-            except Exception:
+            except Forbidden as e:
+                await ctx.respond(f"{self.bot.emotes['error']} Manque de permissions", ephemeral=True)
+                with open(environ['stderr'], 'a') as stderr:
+                    stderr.write(f"\n{start}\n{fail()}\n")
+
+            except Exception as e:
                 await ctx.respond(environ['error_msg'], ephemeral=True)
                 with open(environ['stderr'], 'a') as stderr:
                     stderr.write(f"\n{start}\n{fail()}\n")
@@ -57,6 +62,11 @@ def modal_logger(func):
             try:
                 result = await func(*args, **kwargs)
                 stdout.write(f"{func.__name__} terminé en {now(True) - start}s")
+
+            except Forbidden as e:
+                await interaction.response.send_message(f"{self.bot.emotes['error']} Manque de permissions", ephemeral=True)
+                with open(environ['stderr'], 'a') as stderr:
+                    stderr.write(f"\n{start}\n{fail()}\n")
 
             except Exception as e:
                 await interaction.response.send_message(environ['error_msg'], ephemeral=True)
@@ -89,6 +99,11 @@ def button_logger(func):
             try:
                 result = await func(*args, **kwargs)
                 stdout.write(f"{func.__name__} terminé en {now(True) - start}s")
+
+            except Forbidden as e:
+                await interaction.response.send_message(f"{self.bot.emotes['error']} Manque de permissions", ephemeral=True)
+                with open(environ['stderr'], 'a') as stderr:
+                    stderr.write(f"\n{start}\n{fail()}\n")
 
             except Exception:
                 with open(environ['stderr'], 'a') as stderr:
