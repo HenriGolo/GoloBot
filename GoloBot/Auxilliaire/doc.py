@@ -5,7 +5,8 @@ from varname import nameof
 docs = {"pycord": "https://docs.pycord.dev/en/stable/",
         "discord developpers": "https://discord.com/developers/applications",
         "crontab": "https://www.man7.org/linux/man-pages/man5/crontab.5.html",
-        "cron": "https://www.man7.org/linux/man-pages/man8/cron.8.html"}
+        "cron": "https://www.man7.org/linux/man-pages/man8/cron.8.html",
+        "ansi": "https://gist.github.com/kkrypt0nn/a02506f3712ff2d1c8ca7c9e0aed7c06"}
 
 # Valeur par défaut des arguments
 base_value = ""
@@ -174,6 +175,12 @@ Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']}).""",
                                "",
                                [Arg("last_x_lines", "Les X dernières lignes de stderr.", default=50)]),
 
+        "get_history": DocCommand("get_history",
+                                  "Envoie les logs de stdout.",
+                                  "dev",
+                                  "",
+                                  [Arg("last_x_lines", "Les X dernières lignes de stdout.", default=50)]),
+
         "qpup": DocCommand("qpup",
                            "Lance le quiz Questions Pour Un Poulet !",
                            perm.none(),
@@ -209,8 +216,8 @@ Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']}).""",
         "embed": DocCommand("emebd",
                             "Crée un nouvel embed, entièrement customisable.",
                             perm.none(),
-                            """Si modification d'un Embed existant : aucune modification n'est effective avant de valider à la toute fin.
-Documention sur les [couleurs ANSI](https://gist.github.com/kkrypt0nn/a02506f3712ff2d1c8ca7c9e0aed7c06).
+                            f"""Si modification d'un Embed existant : aucune modification n'est effective avant de valider à la toute fin.
+Documention sur les [couleurs ANSI]({docs['ansi']}).
 Utilisation avec le bot : <couleur>, <bgcouleur> ou <reset>.""",
                             [Arg("edit", "ID du message à modifier.", default=base_value)]),
 
@@ -219,41 +226,54 @@ Utilisation avec le bot : <couleur>, <bgcouleur> ou <reset>.""",
                                                perm.administrator,
                                                "Désactive tout, pour en remettre seulement certaines en service, envoyer un MP au bot à ce sujet.",
                                                []),
+
         "play": DocCommand("play",
                            "Joue une musiqe / playlist à partir d'une recherche / url.",
                            perm.none(),
                            "Sources supportées : YouTube, Twitter, SoundCloud, BandCamp",
                            [Arg("search", "Mots clé ou URL de la vidéo / playlist à jouer.")]),
+
         "playlist": DocCommand("playlist",
                                "Affiche la playlist en cours.",
                                perm.none(),
                                "",
                                []),
+
         "stop": DocCommand("stop",
                            "Arrête la musique et déconnecte le bot du vocal.",
                            perm.none(),
                            "",
                            []),
+
         "skip": DocCommand("skip",
                            "Joue la prochaine musique de la playlist.",
                            perm.none(),
                            "",
                            []),
+
         "songinfo": DocCommand("songinfo",
                                "Des informations sur la musique en cours.",
                                perm.none(),
                                "Provenance et durée de la musique.",
                                []),
-        "history": DocCommand("history",
-                              "Affiche l'historique des musiques jouées.",
-                              perm.none(),
-                              "",
-                              []),
+
+        "historique": DocCommand("historique",
+                                 "Affiche l'historique des musiques jouées.",
+                                 perm.none(),
+                                 "",
+                                 []),
+
         "volume": DocCommand("volume",
                              "Change le volume de la musique.",
                              perm.none(),
                              "",
-                             [Arg("volume", "Compris entre 1 et 100 (inclus).")])}
+                             [Arg("volume", "Compris entre 1 et 100 (inclus).")]),
+
+        "loop": DocCommand("loop",
+                           "(Dés)active la boucle de la PlayList.",
+                           perm.none(),
+                           "",
+                           [])}
 
 for cmd in cmds:
     cmds[cmd].set_options()

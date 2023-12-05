@@ -196,7 +196,6 @@ class Dev(commands.Cog):
 
     # Renvoie les logs
     @commands.slash_command(description=cmds["get_logs"].desc)
-    @commands.has_permissions(manage_messages=True)
     @customSlash
     async def get_logs(self, ctx, last_x_lines: int):
         await ctx.defer(ephemeral=True)
@@ -207,6 +206,18 @@ class Dev(commands.Cog):
         stderr = File(fp=environ['stderr'], filename=environ['stderr'].split("/")[-1])
         reponse = f"Dernières {last_x_lines} lignes de **{stderr}** :\n{tail(environ['stderr'], last_x_lines)[-1900:]}"
         await ctx.respond(f"Voici les logs demandés\n{reponse}", files=[stderr], ephemeral=True)
+
+    @commands.slash_command(description=cmds["get_history"].desc)
+    @customSlash
+    async def get_history(self, ctx, last_x_lines: int):
+        await ctx.defer(ephemeral=True)
+        # Commande réservée au dev
+        if not ctx.author == self.bot.dev:
+            await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
+            raise Exception("N'est pas dev")
+        stdout = File(fp=environ['stdout'], filename=environ['stdout'].split("/")[-1])
+        reponse = f"Dernières {last_x_lines} lignes de **{stdout}** :\n{tail(environ['stdout'], last_x_lines)[-1900:]}"
+        await ctx.respond(f"Voici les logs demandés\n{reponse}", files=[stdout], ephemeral=True)
 
 
 # Fonctions Admin
@@ -296,7 +307,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         if ctx.channel.type == ChannelType.private:
             with open("logs/logs_dm.txt", "a") as logs:
                 await ctx.respond("Début du clear", ephemeral=True, delete_after=2)
-                hist = ctx.channel.history(limit=nombre).flatten()
+                hist = ctx.channel.historique(limit=nombre).flatten()
                 for msg in await hist:
                     try:
                         await msg.delete()
@@ -596,10 +607,10 @@ class Music(commands.Cog):
             return
         await ctx.respond(embed=song.info.format_output("Infos", color=ctx.author.color))
 
-    @commands.slash_command(description=cmds["history"].desc)
+    @commands.slash_command(description=cmds["historique"].desc)
     @guild_only()
     @customSlash
-    async def history(self, ctx):
+    async def historique(self, ctx):
         await ctx.defer(ephemeral=True)
         if not await play_check(ctx):
             return
@@ -617,3 +628,14 @@ class Music(commands.Cog):
             return await ctx.respond(f"{volume} n'est pas compris entre 1 et 100")
         guild_to_audiocontroller[ctx.guild].volume = volume
         await ctx.respond(f"Nouveau volume défini sur {volume}")
+
+    @commands.slash_command(description=cmds["loop"].desc)
+    @guild_only()
+    @customSlash
+    async def loop(self, ctx):
+        await ctx.defer(ephemeral=True)
+        if not await play_check(ctx):
+            return
+        loop = ctx.guild.voice_client.loop
+        ctx.guild.voice_client.loop = not loop
+        await ctx.respond(f"Changement de la boucle dans la PlayList : {loop} -> {not loop}", ephemeral=True)

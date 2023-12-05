@@ -13,8 +13,6 @@ class GoloBot(AutoShardedBot):
         self.games = dict()
         # Réponses personalisées
         self.PR = [pr() for pr in PrivateResponse.__subclasses__()]
-        # Quitte tous les vocaux où le bot est solo toutes les 10 mins
-        self.leave_voice.start()
         # Plus de 25 commandes, seul moyen d'avoir une forme d'autocomplétion
         words = {cmd: {} for cmd in cmds}
         synonyms = {cmd: {" ".join(cmd.split(" "))} for cmd in cmds}
@@ -26,14 +24,6 @@ class GoloBot(AutoShardedBot):
 
     def __str__(self):
         return self.user.name
-
-    @tasks.loop(seconds=10)
-    async def leave_voice(self):
-        for vc in self.voice_clients:
-            # Le bot est tout seul dans le vocal
-            if len(vc.channel.members) == 1:
-                await guild_to_audiocontroller[vc.guild].stop_player()
-                await vc.disconnect()
 
     async def on_ready(self):
         # Heure de démarrage
@@ -63,6 +53,15 @@ class GoloBot(AutoShardedBot):
 
     async def on_guild_join(self, guild):
         await register(self, guild)
+
+    @staticmethod
+    async def on_voice_state_update(member, before, after):
+        # Déconnecte le bot du vocal quand il est tout seul dedans
+        vc = member.guild.voice_client
+        if vc is not None:
+            if len(vc.channel.members) == 1:
+                await guild_to_audiocontroller[vc.guild].stop_player()
+                await vc.disconnect()
 
 
 # Création du Bot
