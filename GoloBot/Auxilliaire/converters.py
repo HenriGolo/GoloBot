@@ -94,15 +94,21 @@ class ANSI(Converter):
         if not found:
             return argument
 
-        codeblocks = re.findall(re.compile(r"```[a-z]*"), argument)
-        codeblocks.sort()
-        colored = argument
-        for pattern in reversed(codeblocks):
-            colored = colored.replace(pattern, "")
-        colored = f"```ansi\n{colored}\n```"
-        for pattern in re.findall(tags, colored):
-            if pattern in colors:
-                colored = colored.replace(pattern, colors[pattern])
-            if pattern in bgcolors:
-                colored = colored.replace(pattern, bgcolors[pattern])
-        return colored
+        parts = argument.split("```")
+        parts[1::2] = [f"```{e}```" for e in parts[1::2]]
+        modified = list()
+        for part in parts[::2]:
+            part = part.strip()
+            need_wrap = False
+            for pattern in re.findall(tags, part):
+                if pattern in colors:
+                    part = part.replace(pattern, colors[pattern])
+                    need_wrap = True
+                if pattern in bgcolors:
+                    part = part.replace(pattern, bgcolors[pattern])
+                    need_wrap = True
+            if need_wrap:
+                part = f"```ansi\n{part}\n```"
+            modified.append(part)
+        parts[::2] = modified
+        return "\n".join(parts)
