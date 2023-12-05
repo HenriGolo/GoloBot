@@ -80,18 +80,18 @@ def button_logger(func):
         user = interaction.user.name
         signature = "\n\t".join(args_repr + kwargs_repr)
         time = start.replace(microsecond=0)
-        print(
-            f"\n{time} {user} : {cname}.{func.__name__}\
-dans {interaction.guild.name} avec comme arguments\n\t{signature}")
+        with open(environ['stdout'], 'a') as stdout:
+            stdout.write(f"\n{time} {user} : {cname}.{func.__name__}\
+    dans {interaction.guild.name} avec comme arguments\n\t{signature}")
 
-        result = None
-        try:
-            result = await func(*args, **kwargs)
-            print(f"{func.__name__} terminé en {now(True) - start}s")
+            result = None
+            try:
+                result = await func(*args, **kwargs)
+                stdout.write(f"{func.__name__} terminé en {now(True) - start}s")
 
-        except Exception:
-            with open(environ['stderr'], 'a') as file:
-                file.write(f"\n{start}\n{fail()}\n")
+            except Exception:
+                with open(environ['stderr'], 'a') as stderr:
+                    stderr.write(f"\n{start}\n{fail()}\n")
 
         return result
 

@@ -10,7 +10,7 @@ with open(environ['pidfile'], 'r') as pid:
         # lancement du bot
         Popen([environ['bot_path']],
               stdin=DEVNULL,
-              stdout=open(environ['stdout'], 'a'),
+              stdout=DEVNULL,
               stderr=open(environ['stderr'], 'a'),
               start_new_session=True,
               shell=True)
