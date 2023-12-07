@@ -506,7 +506,9 @@ class ViewEditEmbed(MyView):
 class ViewAide(MyView):
     @ui.button(label="Liste des commandes", style=ButtonStyle.success)
     async def callback(self, button, interaction):
+        names = [name for name in cmds]
+        names.sort()
         embed = MyEmbed(title="Liste des commandes", color=interaction.user.color)
-        description = "<reset>, <green>".join(name for name in cmds)
+        description = "<reset>, <green>".join(names)
         embed.description = await ANSI().convert(None, "<green>"+description)
         await interaction.response.send_message(embed=embed, ephemeral=True)
