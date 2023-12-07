@@ -106,7 +106,7 @@ cmds = {"aide": DocCommand("aide",
                            perm.none(),
                            "",
                            [Arg("question", "Question à poser dans le sondage."),
-                            Arg("réponses", "Réponses possibles dans le sondage, séparer par un point virgule."),
+                            Arg("reponses", "Réponses possibles dans le sondage, séparer par un point virgule."),
                             Arg("salon", "Salon où envoyer le sondage.", default=base_value)]),
 
         "role_react": DocCommand("role_react",
@@ -152,7 +152,7 @@ Si échec suivi d'une possibilité `Actualiser`, choisir `Actualiser` et continu
                            """Durée sous forme d'un nombre et `d` ou `j` (jour), `h` (heure), `m` (minute), `s` (secondes).
 Ne pas combiner, par exemple `3m30s` est invalide, utilisez `210s`.""",
                            [Arg("user", "Utilisateur à mute."),
-                            Arg("durée", "Durée du mute.", default="30m"),
+                            Arg("duree", "Durée du mute.", default="30m"),
                             Arg("raison", "Motif du mute.", default=" ")]),
 
         "invite": DocCommand("invite",
