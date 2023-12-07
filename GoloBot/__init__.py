@@ -90,9 +90,9 @@ class General(commands.Cog):
                         description=f"""Tu peux m'inviter avec [ce lien]({environ['invite_bot']})
 Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci]({environ['invite_server']})""",
                         color=ctx.author.color)
-        github_qrcode = environ.get('github_qr', None)
-        if github_qrcode:
-            embed.set_thumbnail(url=github_qrcode)
+        support_qrcode = environ.get('support_qr', None)
+        if support_qrcode:
+            embed.set_thumbnail(url=support_qrcode)
         await ctx.respond(embed=embed, ephemeral=True)
 
     # Renvoie le code source du bot
