@@ -104,9 +104,9 @@ Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci
                         description=f"Le code source est disponible sur <:github:1164672088934711398> [Github]({environ['github']})\n\
 Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({environ['invite_server']})",
                         color=ctx.author.color)
-        github_qrcode = environ.get('github_qr', None)
-        if github_qrcode:
-            embed.set_thumbnail(url=github_qrcode)
+        support_qrcode = environ.get('support_qr', None)
+        if support_qrcode:
+            embed.set_thumbnail(url=support_qrcode)
         await ctx.respond(embed=embed, ephemeral=True)
 
     # Quelques stats sur le nombre de box à ouvrir pour espérer un certain pourcentage
