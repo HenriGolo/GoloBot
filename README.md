@@ -24,8 +24,8 @@ Attention, vous devez définir les variables suivantes dans votre environnement 
 | ownerID                    | Votre identifiant discord                                                   | int    | nécessaire |
 | invite_bot                 | Lien pour inviter votre bot                                                 | string | `""`       |
 | github                     | Lien vers le repository [GitHub](https://github.com)                        | string | nécessaire |
-| github_qr                  | Pareil mais un lien vers un QR Code                                         | string | `""`       |
 | invite_server              | Lien vers votre serveur de support                                          | string | `""`       |
+| support_qr                 | Pareil mais un lien avec un QR Code                                         | string | `""`       |
 | stdout, stderr, dm         | Chemins (en dur ou relatif) aux fichiers de log correspondants              | string | nécessaire |
 | qpup                       | Chemins (en dur ou relatif) vers une DB de question / réponse               | string | nécessaire |
 | pidfile, restart, bot_path | Chemins (en dur ou relatif) aux fichiers correspondants                     | string | nécessaire |
