@@ -226,7 +226,7 @@ class Game2048:
                         case2 = self.grid.getCase(Coordonnees([i, j]) + toward.value)
                         self.move(case1, case2)
 
-            if to == "droite":
+            if toward == Directions.Droite:
                 for i in range(1, 1 + self.grid.size):
                     for j in range(self.grid.size, 0, -1):
                         case1 = self.grid.getCase([i, j])
