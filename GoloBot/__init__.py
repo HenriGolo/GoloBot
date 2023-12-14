@@ -1,10 +1,7 @@
 # Code Principal
-# Bibliothèques
-import datetime
-
 # Discord, la base
 from discord import *
-from discord.ext import commands, tasks
+from discord.ext import tasks
 
 from GoloBot.Auxilliaire import *  # Quelques fonctions utiles
 from GoloBot.Auxilliaire.aux_maths import *  # Outils mathématiques
@@ -17,12 +14,12 @@ from GoloBot.UI import *  # Les composants de l'UI custom
 
 
 # Code du bot
-class General(commands.Cog):
+class General(discord.ext.commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     # Gestion des messages
-    @commands.Cog.listener()
+    @discord.ext.commands.Cog.listener()
     async def on_message(self, msg):
         currentTime = now()
         try:
@@ -55,12 +52,12 @@ class General(commands.Cog):
                 stderr.write(f"\n{currentTime}\n{fail()}\n")
 
     # Aide
-    @commands.slash_command(description=cmds["aide"].desc)
+    @discord.ext.commands.slash_command(description=cmds["aide"].desc)
     @customSlash
     async def aide(self, ctx, commande: str, visible: bool):
         await ctx.defer(ephemeral=not visible)
         if not commande in cmds:
-            commande = self.bot.commands_names.search(commande)[0][0]
+            commande = self.bot.discord.ext.commands_names.search(commande)[0][0]
         authorUser = await Member2User(self.bot, ctx.author)
         # Nom, ID et mention de la commande concernée
         commande = self.bot.get_application_command(commande)
@@ -82,7 +79,7 @@ class General(commands.Cog):
         await ctx.respond(embed=embed, view=ViewAide(), ephemeral=not visible)
 
     # Renvoie un lien pour inviter le bot
-    @commands.slash_command(description=cmds["invite"].desc)
+    @discord.ext.commands.slash_command(description=cmds["invite"].desc)
     @customSlash
     async def invite(self, ctx):
         await ctx.defer(ephemeral=True)
@@ -96,7 +93,7 @@ Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci
         await ctx.respond(embed=embed, ephemeral=True)
 
     # Renvoie le code source du bot
-    @commands.slash_command(description=cmds["github"].desc)
+    @discord.ext.commands.slash_command(description=cmds["github"].desc)
     @customSlash
     async def github(self, ctx):
         await ctx.defer(ephemeral=True)
@@ -110,7 +107,7 @@ Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({
         await ctx.respond(embed=embed, ephemeral=True)
 
     # Quelques stats sur le nombre de box à ouvrir pour espérer un certain pourcentage
-    @commands.slash_command(description=cmds["droprates"].desc)
+    @discord.ext.commands.slash_command(description=cmds["droprates"].desc)
     @customSlash
     async def droprates(self, ctx, pourcentage: float, nom: str, item: str):
         await ctx.defer(ephemeral=(nom == "" or item == ""))
@@ -147,12 +144,12 @@ Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({
 
 
 # Fonctions Dev
-class Dev(commands.Cog):
+class Dev(discord.ext.commands.Cog):
     def __init__(self, used_bot):
         self.bot = used_bot
 
     # Envoie un message privé à un User
-    @commands.slash_command(description=cmds["dm"].desc)
+    @discord.ext.commands.slash_command(description=cmds["dm"].desc)
     @customSlash
     async def dm(self, ctx):
         # Commande réservée au dev
@@ -163,7 +160,7 @@ class Dev(commands.Cog):
         await ctx.send_modal(ModalDM(bot=self.bot, title="Envoyer un message privé"))
 
     # Déconnecte le bot
-    @commands.slash_command(description=cmds["logout"].desc)
+    @discord.ext.commands.slash_command(description=cmds["logout"].desc)
     @customSlash
     async def logout(self, ctx):
         await ctx.defer(ephemeral=True)
@@ -181,7 +178,7 @@ class Dev(commands.Cog):
         await self.bot.close()
 
     # Renvoie le ping et d'autres informations
-    @commands.slash_command(description=cmds["ping"].desc)
+    @discord.ext.commands.slash_command(description=cmds["ping"].desc)
     @customSlash
     async def ping(self, ctx):
         await ctx.defer(ephemeral=True)
@@ -195,13 +192,13 @@ class Dev(commands.Cog):
         await ctx.respond(embed=embed, ephemeral=True)
 
     # Propose une suggestion
-    @commands.slash_command(description=cmds["suggestions"].desc)
+    @discord.ext.commands.slash_command(description=cmds["suggestions"].desc)
     @customSlash
     async def suggestions(self, ctx):
         await ctx.send_modal(ModalDM(bot=self.bot, target=self.bot.dev, title="Suggestion"))
 
     # Renvoie les logs
-    @commands.slash_command(description=cmds["get_logs"].desc)
+    @discord.ext.commands.slash_command(description=cmds["get_logs"].desc)
     @customSlash
     async def get_logs(self, ctx, last_x_lines: int):
         await ctx.defer(ephemeral=True)
@@ -213,7 +210,7 @@ class Dev(commands.Cog):
         reponse = f"Dernières {last_x_lines} lignes de **{stderr}** :\n{tail(environ['stderr'], last_x_lines)[-1900:]}"
         await ctx.respond(f"Voici les logs demandés\n{reponse}", files=[stderr], ephemeral=True)
 
-    @commands.slash_command(description=cmds["get_history"].desc)
+    @discord.ext.commands.slash_command(description=cmds["get_history"].desc)
     @customSlash
     async def get_history(self, ctx, last_x_lines: int):
         await ctx.defer(ephemeral=True)
@@ -227,12 +224,12 @@ class Dev(commands.Cog):
 
 
 # Fonctions Admin
-class Admin(commands.Cog):
+class Admin(discord.ext.commands.Cog):
     def __init__(self, used_bot):
         self.bot = used_bot
 
     # Création de sondage
-    @commands.slash_command(description=cmds["poll"].desc)
+    @discord.ext.commands.slash_command(description=cmds["poll"].desc)
     @customSlash
     async def poll(self, ctx, question: str, reponses: Splitter, salon: TextChannel):
         authorUser = await Member2User(self.bot, ctx.author)
@@ -281,8 +278,8 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         await ctx.respond("Sondage créé !", ephemeral=True)
 
     # Role react
-    @commands.slash_command(description=cmds["role_react"].desc)
-    @commands.has_permissions(manage_roles=True)
+    @discord.ext.commands.slash_command(description=cmds["role_react"].desc)
+    @discord.ext.commands.has_permissions(manage_roles=True)
     @guild_only()
     @customSlash
     async def role_react(self, ctx, roles: str, message: str, message_id: str):
@@ -304,7 +301,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             await ctx.respond(content=content, view=view)
 
     # Nettoyage des messages d'un salon
-    @commands.slash_command(description=cmds["clear"].desc)
+    @discord.ext.commands.slash_command(description=cmds["clear"].desc)
     @customSlash
     async def clear(self, ctx, nombre: int, salon: TextChannel, user: User):
         if salon == base_value:
@@ -350,9 +347,9 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         await ctx.respond(f"{salon.mention} a été clear de {cpt} messages", ephemeral=True, delete_after=10)
 
     # Bannir un Member
-    @commands.slash_command(description=cmds["ban"].desc)
-    @commands.has_permissions(ban_members=True)
-    @commands.bot_has_permissions(ban_members=True)
+    @discord.ext.commands.slash_command(description=cmds["ban"].desc)
+    @discord.ext.commands.has_permissions(ban_members=True)
+    @discord.ext.commands.bot_has_permissions(ban_members=True)
     @customSlash
     async def ban(self, ctx, user: Member, raison: str):
         await ctx.defer(ephemeral=True)
@@ -378,9 +375,9 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             await ctx.respond(msg, ephemeral=True)
 
     # Mute un Member
-    @commands.slash_command(description=cmds["mute"].desc)
-    @commands.has_permissions(moderate_members=True)
-    @commands.bot_has_permissions(moderate_members=True)
+    @discord.ext.commands.slash_command(description=cmds["mute"].desc)
+    @discord.ext.commands.has_permissions(moderate_members=True)
+    @discord.ext.commands.bot_has_permissions(moderate_members=True)
     @customSlash
     async def mute(self, ctx, user: Member, duree: Duree, raison: str):
         await ctx.defer(ephemeral=True)
@@ -406,7 +403,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             await ctx.respond(msg, ephemeral=True)
 
     # Affiche les informations d'un Member
-    @commands.slash_command(description=cmds["user_info"].desc)
+    @discord.ext.commands.slash_command(description=cmds["user_info"].desc)
     @customSlash
     async def user_info(self, ctx, user: Member):
         await ctx.defer(ephemeral=True)
@@ -425,8 +422,8 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             embed.add_field(name="Rôles", value="- " + "\n- ".join(roles), inline=False)
         await ctx.respond(embed=embed)
 
-    @commands.slash_command(description=cmds["embed"].desc)
-    @commands.has_permissions(manage_messages=True)
+    @discord.ext.commands.slash_command(description=cmds["embed"].desc)
+    @discord.ext.commands.has_permissions(manage_messages=True)
     @customSlash
     async def embed(self, ctx, edit: str):
         if edit == base_value:
@@ -439,12 +436,12 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
 
 # Fonctions Random
-class MiniGames(commands.Cog):
+class MiniGames(discord.ext.commands.Cog):
     def __init__(self, used_bot):
         self.bot = used_bot
 
     # QPUP, bon courage pour retrouver le lore ...
-    @commands.slash_command(description=cmds["qpup"].desc)
+    @discord.ext.commands.slash_command(description=cmds["qpup"].desc)
     @customSlash
     async def qpup(self, ctx, nbquestions: int):
         await ctx.defer()
@@ -457,7 +454,7 @@ class MiniGames(commands.Cog):
             await ctx.respond(self.bot.qpup[line][0], view=ViewQPUP(rep=self.bot.qpup[line][1]))
 
     # 2048, le _ est nécessaire, une fonction ne commence pas à un chiffre
-    @commands.slash_command(name="2048", description=cmds["2048"].desc)
+    @discord.ext.commands.slash_command(name="2048", description=cmds["2048"].desc)
     @customSlash
     async def _2048(self, ctx, size: int):
         await ctx.defer()
@@ -475,13 +472,13 @@ class MiniGames(commands.Cog):
         await ctx.respond(embed=embed, view=View2048(self.bot))
 
 
-class Troll(commands.Cog):
+class Troll(discord.ext.commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         super().__init__()
 
     # Spamme un texte (emote ou autre) jusqu'à atteindre la limite de caractères
-    @commands.slash_command(description=cmds["spam_emote"].desc)
+    @discord.ext.commands.slash_command(description=cmds["spam_emote"].desc)
     @customSlash
     async def spam_emote(self, ctx, emote: str, user: User):
         await ctx.defer(ephemeral=True)
@@ -495,8 +492,8 @@ class Troll(commands.Cog):
         await ctx.respond(emote, ephemeral=True)
 
     # Désactive les réponses custom dans le serveur
-    @commands.slash_command(description=cmds["disable_custom_responses"].desc)
-    @commands.has_permissions(administrator=True)
+    @discord.ext.commands.slash_command(description=cmds["disable_custom_responses"].desc)
+    @discord.ext.commands.has_permissions(administrator=True)
     @customSlash
     async def disable_custom_responses(self, ctx):
         serveur = ctx.guild
@@ -509,11 +506,11 @@ class Troll(commands.Cog):
     Pour changer ça, envoyer un message privé au bot.""", ephemeral=True)
 
 
-class Music(commands.Cog):
+class Music(discord.ext.commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command(description=cmds["play"].desc)
+    @discord.ext.commands.slash_command(description=cmds["play"].desc)
     @guild_only()
     @customSlash
     async def play(self, ctx, search: str):
@@ -541,7 +538,7 @@ class Music(commands.Cog):
         elif song.origin == Origins.Playlist:
             await ctx.invoke(self.playlist)
 
-    @commands.slash_command(description=cmds["playlist"].desc)
+    @discord.ext.commands.slash_command(description=cmds["playlist"].desc)
     @guild_only()
     @customSlash
     async def playlist(self, ctx):
@@ -570,7 +567,7 @@ class Music(commands.Cog):
         else:
             await ctx.respond(embed=embed)
 
-    @commands.slash_command(description=cmds["stop"].desc)
+    @discord.ext.commands.slash_command(description=cmds["stop"].desc)
     @guild_only()
     @customSlash
     async def stop(self, ctx):
@@ -583,7 +580,7 @@ class Music(commands.Cog):
         await ctx.guild.voice_client.disconnect()
         await ctx.respond(f"Arrêt de la musique {self.bot.bools[False]}")
 
-    @commands.slash_command(description=cmds["skip"].desc)
+    @discord.ext.commands.slash_command(description=cmds["skip"].desc)
     @guild_only()
     @customSlash
     async def skip(self, ctx):
@@ -601,7 +598,7 @@ class Music(commands.Cog):
         ctx.guild.voice_client.stop()
         await ctx.respond(f"Passage à la musique suivante {self.bot.emotes['skip']}")
 
-    @commands.slash_command(description=cmds["songinfo"].desc)
+    @discord.ext.commands.slash_command(description=cmds["songinfo"].desc)
     @guild_only()
     @customSlash
     async def songinfo(self, ctx):
@@ -613,7 +610,7 @@ class Music(commands.Cog):
             return
         await ctx.respond(embed=song.info.format_output("Infos", color=ctx.author.color))
 
-    @commands.slash_command(description=cmds["historique"].desc)
+    @discord.ext.commands.slash_command(description=cmds["historique"].desc)
     @guild_only()
     @customSlash
     async def historique(self, ctx):
@@ -622,7 +619,7 @@ class Music(commands.Cog):
             return
         await ctx.respond(guild_to_audiocontroller[ctx.guild].track_history())
 
-    @commands.slash_command(description=cmds["volume"].desc)
+    @discord.ext.commands.slash_command(description=cmds["volume"].desc)
     @guild_only()
     @customSlash
     async def volume(self, ctx, volume: float):
@@ -635,7 +632,7 @@ class Music(commands.Cog):
         guild_to_audiocontroller[ctx.guild].volume = volume
         await ctx.respond(f"Nouveau volume défini sur {volume}")
 
-    @commands.slash_command(description=cmds["loop"].desc)
+    @discord.ext.commands.slash_command(description=cmds["loop"].desc)
     @guild_only()
     @customSlash
     async def loop(self, ctx):

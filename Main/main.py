@@ -69,7 +69,7 @@ intents = Intents.all()
 bot = GoloBot(intents=intents)
 
 # Ajout des commandes
-for cog in commands.Cog.__subclasses__():
+for cog in discord.ext.commands.Cog.__subclasses__():
     bot.add_cog(cog(bot))
 
 # Run
