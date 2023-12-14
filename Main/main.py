@@ -4,7 +4,7 @@ from GoloBot import *  # Contient tout ce qu'il faut, imports
 from privatebot import PrivateResponse  # Réponses custom à certains contenus de messages
 
 
-class GoloBot(AutoShardedBot):
+class GoloBot(discord.AutoShardedBot):
     def __init__(self, description=None, *args, **kwargs):
         super().__init__(description, *args, **kwargs)
         # Création de session pour les requêtes
@@ -31,9 +31,9 @@ class GoloBot(AutoShardedBot):
         # Récupération de l'User du dev
         self.dev = await self.fetch_user(environ['ownerID'])
         # Message de statut du bot
-        activity = Activity(name="GitHub",
-                            state="https://github.com/HenriGolo/GoloBot",
-                            type=ActivityType.watching)
+        activity = discord.Activity(name="GitHub",
+                                    state="https://github.com/HenriGolo/GoloBot",
+                                    type=discord.ActivityType.watching)
         await self.change_presence(activity=activity)
         # Emojis personnalisés
         GoloBotGuild = await self.fetch_guild(1158154606124204072)
@@ -65,11 +65,11 @@ class GoloBot(AutoShardedBot):
 
 
 # Création du Bot
-intents = Intents.all()
+intents = discord.Intents.all()
 bot = GoloBot(intents=intents)
 
 # Ajout des commandes
-for cog in discord.ext.commands.Cog.__subclasses__():
+for cog in commands.Cog.__subclasses__():
     bot.add_cog(cog(bot))
 
 # Run

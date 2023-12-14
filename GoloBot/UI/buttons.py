@@ -1,4 +1,4 @@
-from discord import *
+from discord import ui, Interaction, ButtonStyle
 from GoloBot.Auxilliaire import *
 from GoloBot.Auxilliaire.games import *
 from GoloBot.Auxilliaire.decorators import *
@@ -75,7 +75,7 @@ class BoutonStop2048(ui.Button):
 
 
 class BoutonReponseQPUP(ui.Button):
-    def __init__(self, bot, rep):
+    def __init__(self, rep):
         super().__init__(label="Répondre", style=ButtonStyle.success)
         self.rep = rep
 
@@ -143,14 +143,13 @@ class BoutonAjouterEmbed(ui.Button):
 
 
 class BoutonEnvoyerEmbed(ui.Button):
-    def __init__(self, embeds, msg_id):
+    def __init__(self, msg_id):
         super().__init__(label="Valider", style=ButtonStyle.success)
         self.msg_id = msg_id
 
     @button_logger
     # Envoyer les Embeds
     async def callback(self, interaction: Interaction):
-        msg = interaction.message
         for e in self.embeds:
             e.timestamp = now()
         if self.msg_id == base_value:
