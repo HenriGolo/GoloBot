@@ -1,6 +1,6 @@
 from functools import wraps
 from os import environ
-
+from discord import Forbidden
 from GoloBot.Auxilliaire import *
 from GoloBot.Auxilliaire.doc import cmds
 
