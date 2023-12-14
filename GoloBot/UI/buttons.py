@@ -35,11 +35,9 @@ class BoutonDirectionnel2048(ui.Button):
 
         # On itère sur les boutons de la View
         for child in self.gameview.children:
-            # Bouton non directionnel
-            if not child.label.lower() in toward:
-                continue
-            # Bouton directionnel → désactiver si mouvement impossible
-            child.disabled = not game.canMove(child.label.lower())
+            direcs = [d for d in list(Directions) if d.name.lower() == child.label.lower()]
+            if len(direcs) > 0:
+                child.disabled = not game.canMove(direcs[0])
 
         embed = MyEmbed(title="2048", color=joueur.color)
         # On envoie le jeu formatté pour du python (ou n'importe quel autre langage)
@@ -62,7 +60,7 @@ class BoutonStop2048(ui.Button):
         # On désactive tous les boutons
         for child in self.gameview.children:
             child.disabled = True
-            child.label = "Partie Terminée"
+            child.label = "Partie Arrêtée"
 
         joueur = interaction.user
         # On supprime la partie de la liste des parties en cours
