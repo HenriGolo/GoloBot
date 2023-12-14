@@ -69,15 +69,16 @@ class Grid:
                         Case(value=self.bord, grid_size=size, coos=Coordonnees([i, j]), vide=self.vide, bord=self.bord))
             self.grid.append(l)
 
-    # N'est pas censé être utilisé, ne sert qu'au débug
+    # Pas censé être utilisé, ne sert qu'au débug
     def __str__(self):
         sep = ("+--" + "-" * 15) * (self.size + 2) + "+\n| "
+        sep = f"<red>{sep}<reset>"
         affichage = sep
         for line in self.grid:
             for case in line:
-                affichage += "{:>15} | ".format(str(case))
+                affichage += "<cyan>{:>15} <red>|<reset> ".format(str(case))
             affichage += "\n" + sep
-        return affichage[:-3]
+        return ANSI().convert(None, affichage[:-3])
 
     def __getitem__(self, key):
         return self.grid[key]
