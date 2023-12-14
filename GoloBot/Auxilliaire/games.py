@@ -134,7 +134,7 @@ class Game2048:
             for j in range(1, 1 + self.grid.size):
                 affichage += "<cyan>{:>5} <red>|<reset> ".format(str(self.grid.getCase([i, j]).value))
             affichage += "\n" + sep
-        return ANSI().converter(affichage[:-3])
+        return ANSI().converter(affichage[:-15])
 
     def _score(self):
         # Calculs d'après https://medium.com/@kotamori/total-score-formula-of-the-2048-game-d9a8c9a1f1ac
