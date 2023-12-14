@@ -17,7 +17,7 @@ class SelectRoleReact(ui.Select):
         super().__init__(placeholder="Choisir un rôle", min_values=1, options=choix, custom_id="role_react")
 
     # Ce n'est pas un modal, mais c'est le même format d'arguments
-    @modal_logger
+    @select_logger
     async def callback(self, interaction: Interaction):
         user = interaction.user
         msg = interaction.message
@@ -51,7 +51,7 @@ class SelectEmbed(ui.Select):
             if value == embed.title:
                 return i
 
-    @modal_logger
+    @select_logger
     async def callback(self, interaction: Interaction):
         index = self.select_embed(self.values[0])
         modal = ModalEditEmbed(self.embeds, self.embeds[index], self.msg, title="Édition de l'Embed")
@@ -76,7 +76,7 @@ class SelectFieldEmbed(ui.Select):
             if value == field.name:
                 return i
 
-    @modal_logger
+    @select_logger
     async def callback(self, interaction: Interaction):
         index = self.select_field(self.values[0])
         if index is None:
@@ -99,7 +99,7 @@ class SelectRemoveEmbed(ui.Select):
             if e.title == value:
                 return e
 
-    @modal_logger
+    @select_logger
     async def callback(self, interaction: Interaction):
         embed = self.select_embed(self.values[0])
         embeds = [e for e in self.embeds if e != embed]
@@ -124,7 +124,7 @@ class SelectRemoveFieldEmbed(ui.Select):
                 return i
         return None
 
-    @modal_logger
+    @select_logger
     async def callback(self, interaction: Interaction):
         index = self.select_field(self.values[0])
         if index is None:

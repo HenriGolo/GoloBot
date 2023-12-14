@@ -41,7 +41,7 @@ def command_logger(func):
     return wrapper_error
 
 
-def modal_logger(func):
+def callback_logger(func):
     start = now(True)
 
     @wraps(func)
@@ -78,40 +78,9 @@ def modal_logger(func):
     return wrapper_error
 
 
-def button_logger(func):
-    start = now(True)
-
-    @wraps(func)
-    async def wrapper_error(*args, **kwargs):
-        args_repr = [repr(a) for a in args]
-        kwargs_repr = [f"{k}={v!r}" for k, v in kwargs.items()]
-        self = args[0]
-        cname = self.__class__.__name__
-        interaction = args[2]
-        user = interaction.user.name
-        signature = "\n\t".join(args_repr + kwargs_repr)
-        time = start.replace(microsecond=0)
-        with open(environ['stdout'], 'a') as stdout:
-            stdout.write(f"\n{time} {user} : {cname}.{func.__name__}\
-    dans {interaction.guild.name} avec comme arguments\n\t{signature}")
-
-            result = None
-            try:
-                result = await func(*args, **kwargs)
-                stdout.write(f"{func.__name__} terminé en {now(True) - start}s")
-
-            except Forbidden as e:
-                await interaction.response.send_message(f"{self.bot.emotes['error']} Manque de permissions", ephemeral=True)
-                with open(environ['stderr'], 'a') as stderr:
-                    stderr.write(f"\n{start}\n{fail()}\n")
-
-            except Exception:
-                with open(environ['stderr'], 'a') as stderr:
-                    stderr.write(f"\n{start}\n{fail()}\n")
-
-        return result
-
-    return wrapper_error
+modal_logger = callback_logger
+select_logger = callback_logger
+button_logger = callback_logger
 
 
 # Applique une liste de décorateurs
