@@ -3,11 +3,9 @@ from collections import namedtuple
 from datetime import datetime, timedelta
 from subprocess import check_output
 from traceback import format_exc
-
 from discord import Embed
 from fast_autocomplete import AutoComplete
 from requests import Session
-
 from GoloBot.Auxilliaire.settings import *  # Stockage de données de config
 
 url = re.compile(r'https?://[a-zA-Z0-9/.#-]*')
