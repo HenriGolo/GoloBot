@@ -72,13 +72,12 @@ class Grid:
     # Pas censé être utilisé, ne sert qu'au débug
     def __str__(self):
         sep = ("+--" + "-" * 15) * (self.size + 2) + "+\n| "
-        sep = f"<red>{sep}<reset>"
         affichage = sep
         for line in self.grid:
             for case in line:
-                affichage += "<cyan>{:>15} <red>|<reset> ".format(str(case))
+                affichage += "{:>15} | ".format(str(case))
             affichage += "\n" + sep
-        return ANSI().convert(None, affichage[:-3])
+        return affichage[:-3]
 
     def __getitem__(self, key):
         return self.grid[key]
@@ -129,12 +128,13 @@ class Game2048:
 
     def __str__(self):
         sep = ("+--" + "-" * 5) * self.grid.size + "+\n| "
+        sep = f"<red>{sep}<reset>"
         affichage = sep
         for i in range(1, 1 + self.grid.size):
             for j in range(1, 1 + self.grid.size):
-                affichage += "{:>5} | ".format(str(self.grid.getCase([i, j]).value))
+                affichage += "<cyan>{:>5} <red>|<reset> ".format(str(self.grid.getCase([i, j]).value))
             affichage += "\n" + sep
-        return affichage[:-3]
+        return ANSI().convert(None, affichage[:-3])
 
     def _score(self):
         # Calculs d'après https://medium.com/@kotamori/total-score-formula-of-the-2048-game-d9a8c9a1f1ac

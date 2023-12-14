@@ -468,7 +468,7 @@ class MiniGames(commands.Cog):
         embed = MyEmbed(title="2048", color=ctx.author.color)
         # Envoie du jeu formatté en python ou n'importe quel autre langage
         # pour colorer les chiffres et ajouter un effet visuel
-        embed.add_field(name=f"Partie de {ctx.author.name}", value=f"```python\n{game}```", inline=True)
+        embed.add_field(name=f"Partie de {ctx.author.name}", value=str(game), inline=True)
         moves = [f"{to} : {self.bot.bools[game.canMove(to)]}" for to in list(Directions)]
         embed.add_field(name="Mouvements", value="\n".join(moves), inline=True)
         embed.add_field(name="Score", value=game.score, inline=True)
