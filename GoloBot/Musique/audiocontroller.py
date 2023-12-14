@@ -93,8 +93,6 @@ class AudioController:
 
     def next_song(self, error):
         """Invoked after a song is finished. Plays the next song if there is one."""
-        if self.loop:
-            self.playlist.add(self.current_song)
         next_song = self.playlist.next(self.current_song)
         self.current_song = None
         if next_song is None:

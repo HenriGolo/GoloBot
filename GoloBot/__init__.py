@@ -642,6 +642,6 @@ class Music(commands.Cog):
         await ctx.defer(ephemeral=True)
         if not await play_check(ctx):
             return
-        loop = ctx.guild.voice_client.loop
-        ctx.guild.voice_client.loop = not loop
-        await ctx.respond(f"Changement de la boucle dans la PlayList : {loop} -> {not loop}", ephemeral=True)
+        loop = guild_to_audiocontroller[ctx.guild].playlist.loop
+        guild_to_audiocontroller[ctx.guild].playlist.loop = not loop
+        await ctx.respond(f"Changement de la boucle dans la PlayList : {self.bot.bools[loop]} -> {self.bot.bools[not loop]}", ephemeral=True)

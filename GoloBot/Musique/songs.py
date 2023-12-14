@@ -43,6 +43,7 @@ class Playlist:
         self.playhistory = deque()
         # A seperate history that remembers the names of the tracks that were played
         self.trackname_history = deque()
+        self.loop = False
 
     def __len__(self):
         return len(self.playque)
@@ -56,6 +57,9 @@ class Playlist:
         self.playque.append(track)
 
     def next(self, song_played):
+        if self.loop:
+            self.playque.appendleft(self.playhistory[-1])
+
         if len(self.playque) == 0:
             return None
 
