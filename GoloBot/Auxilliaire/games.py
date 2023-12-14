@@ -1,7 +1,9 @@
 from math import log2
-from random import randrange
-
+from random import randrange, choice
+from enum import Enum
+from discord import Colour
 from GoloBot.Auxilliaire import *
+from GoloBot.Auxilliaire.converters import ANSI
 
 
 class Coordonnees:
@@ -20,10 +22,11 @@ class Coordonnees:
         return ncoos
 
 
-toward = {"haut": Coordonnees([-1, 0]),
-          "bas": Coordonnees([1, 0]),
-          "gauche": Coordonnees([0, -1]),
-          "droite": Coordonnees([0, 1])}
+class Directions(Enum):
+    Haut = Coordonnees([-1, 0])
+    Bas = Coordonnees([1, 0])
+    Gauche = Coordonnees([0, -1])
+    Droite = Coordonnees([0, 1])
 
 
 # On définit un type Case générique
@@ -144,13 +147,13 @@ class Game2048:
                 score += (n - 1) * 2 ** n
         return score
 
-    def canMove(self, to):
+    def canMove(self, toward):
         for i in range(1, 1 + self.grid.size):
             for j in range(1, 1 + self.grid.size):
                 case = self.grid.getCase([i, j])
                 if case.isEmpty():
                     continue
-                nearCase = self.grid.getCase(Coordonnees([i, j]) + toward[to])
+                nearCase = self.grid.getCase(Coordonnees([i, j]) + toward.value)
                 if nearCase.isWall():
                     continue
                 if self.canFuse(case, nearCase) or nearCase.isEmpty():
@@ -158,8 +161,8 @@ class Game2048:
         return False
 
     def canMoveAll(self):
-        for to in toward:
-            if self.canMove(to):
+        for toward in list(Directions):
+            if self.canMove(toward):
                 return True
         return False
 
@@ -173,8 +176,8 @@ class Game2048:
         c1 = case1.value == case2.value and not case2.isWall()
         c2 = case1.can_fuse and case2.can_fuse
         adjacents = list()
-        for to in toward:
-            adjacents.append(case1.coos + toward[to])
+        for toward in list(Directions):
+            adjacents.append(case1.coos + toward.value)
         c3 = case2.coos.pos in adjacents
         return c1 and c2 and c3
 
@@ -195,38 +198,38 @@ class Game2048:
         else:
             self.fusion(case1, case2)
 
-    def moveAll(self, to):
-        if not self.canMove(to):
+    def moveAll(self, toward):
+        if not self.canMove(toward):
             return
 
         # while self.canMove(to):
-        while self.canMove(to):
-            if to == "haut":
+        while self.canMove(toward):
+            if toward == Directions.Haut:
                 for i in range(1, 1 + self.grid.size):
                     for j in range(1, 1 + self.grid.size):
                         case1 = self.grid.getCase([i, j])
-                        case2 = self.grid.getCase(Coordonnees([i, j]) + toward[to])
+                        case2 = self.grid.getCase(Coordonnees([i, j]) + toward.value)
                         self.move(case1, case2)
 
-            if to == "bas":
+            if toward == Directions.Bas:
                 for i in range(self.grid.size, 0, -1):
                     for j in range(1, 1 + self.grid.size):
                         case1 = self.grid.getCase([i, j])
-                        case2 = self.grid.getCase(Coordonnees([i, j]) + toward[to])
+                        case2 = self.grid.getCase(Coordonnees([i, j]) + toward.value)
                         self.move(case1, case2)
 
-            if to == "gauche":
+            if toward == Directions.Gauche:
                 for i in range(1, 1 + self.grid.size):
                     for j in range(1, 1 + self.grid.size):
                         case1 = self.grid.getCase([i, j])
-                        case2 = self.grid.getCase(Coordonnees([i, j]) + toward[to])
+                        case2 = self.grid.getCase(Coordonnees([i, j]) + toward.value)
                         self.move(case1, case2)
 
             if to == "droite":
                 for i in range(1, 1 + self.grid.size):
                     for j in range(self.grid.size, 0, -1):
                         case1 = self.grid.getCase([i, j])
-                        case2 = self.grid.getCase(Coordonnees([i, j]) + toward[to])
+                        case2 = self.grid.getCase(Coordonnees([i, j]) + toward.value)
                         self.move(case1, case2)
 
         self.score = self._score()

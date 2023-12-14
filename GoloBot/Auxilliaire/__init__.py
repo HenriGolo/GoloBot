@@ -227,13 +227,17 @@ def eltInStr(string, start, end, to_type=str):
 
 # Message.role_mentions existe, mais parfois ne marche pas complétement
 def rolesInStr(string, guild):
-    roles_ids = [int(r[2:-1]) for r in re.findall(role_mentions, string)]
+    mentions = re.findall(role_mentions, string)
+    # Il faut enlever les <> autour de la mention
+    roles_ids = [int(r[2:-1]) for r in mentions]
     roles = [guild.get_role(r) for r in roles_ids]
     return roles
 
 
 async def usersInStr(string, bot):
-    users_ids = [int(u[1:-1]) for u in re.findall(user_mentions, string)]
+    mentions = re.findall(user_mentions, string)
+    # Il faut enlever les <> autour de la mention
+    users_ids = [int(u[2:-1]) for u in mentions]
     users = [await bot.fetch_user(u) for u in users_ids]
     return users
 

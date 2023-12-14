@@ -13,7 +13,7 @@ from GoloBot.Auxilliaire.decorators import *  # Decorateurs custom
 from GoloBot.Auxilliaire.doc import *  # Raccourcis et noms customs
 from GoloBot.Auxilliaire.games import *  # Jeux de plateau custom
 from GoloBot.Musique import *  # Adapté de https://github.com/Raptor123471/DingoLingo
-from GoloBot.views import *  # Les composants de l'UI custom
+from GoloBot.UI import *  # Les composants de l'UI custom
 
 
 # Code du bot
