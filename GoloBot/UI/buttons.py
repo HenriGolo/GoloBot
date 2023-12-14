@@ -1,4 +1,4 @@
-from discord import ui, ButtonStyle, Interaction
+from discord import *
 from GoloBot.Auxilliaire import *
 from GoloBot.Auxilliaire.games import *
 from GoloBot.Auxilliaire.decorators import *

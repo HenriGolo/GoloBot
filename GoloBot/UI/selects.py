@@ -1,4 +1,4 @@
-from discord import ui, Interaction, Role, SelectOption
+from discord import *
 from GoloBot.Auxilliaire import *
 from GoloBot.Auxilliaire.decorators import *
 from GoloBot.UI import *
