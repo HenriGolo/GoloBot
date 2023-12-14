@@ -171,5 +171,5 @@ class BoutonListeCommandes(ui.Button):
         names.sort()
         embed = MyEmbed(title="Liste des commandes", color=interaction.user.color)
         description = "<reset>, <green>".join(names)
-        embed.description = await ANSI().convert(None, "<green>"+description)
+        embed.description = ANSI().converter("<green>"+description)
         await interaction.response.send_message(embed=embed, ephemeral=True)

@@ -85,7 +85,8 @@ class BackgroundColor(Enum):
 
 
 class ANSI(Converter):
-    async def convert(self, ctx: Context, argument: str) -> T_co:
+    @staticmethod
+    def converter(argument):
         colors = {f"<{c.name}>": f"\u001b[{c.value}m" for c in TextColor}
         colors["<reset>"] = f"\u001b[0m"
         bgcolors = {f"<bg{c.name}>": f"\u001b[{c.value}m" for c in BackgroundColor}
@@ -112,3 +113,6 @@ class ANSI(Converter):
             modified.append(part)
         parts[::2] = modified
         return "\n".join(parts)
+
+    async def convert(self, ctx: Context, argument: str) -> T_co:
+        return self.converter(argument)
