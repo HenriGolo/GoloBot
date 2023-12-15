@@ -3,7 +3,7 @@ from collections import namedtuple
 from datetime import datetime, timedelta
 from subprocess import check_output
 from traceback import format_exc
-from discord import Embed
+from discord import Embed, ui
 from fast_autocomplete import AutoComplete
 from requests import Session
 from GoloBot.Auxilliaire.settings import *  # Stockage de données de config
@@ -60,6 +60,11 @@ class MyEmbed(Embed):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.timestamp = now()
+
+
+class MyView(ui.View):
+    async def on_timeout(self):
+        self.disable_all_items()
 
 
 class Trigger:
