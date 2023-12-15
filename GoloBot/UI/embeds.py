@@ -86,7 +86,7 @@ class SelectEmbed(ui.Select):
     def select_embed(self, value):
         for i in range(len(self.embeds)):
             embed = self.embeds[i]
-            if value == embed.title:
+            if value.endswith(embed.title):
                 return i
 
     @select_logger
@@ -111,7 +111,7 @@ class SelectFieldEmbed(ui.Select):
     def select_field(self, value):
         for i in range(len(self.embed.fields)):
             field = self.embed.fields[i]
-            if value == field.name:
+            if value.endswith(field.name):
                 return i
 
     @select_logger
@@ -134,7 +134,7 @@ class SelectRemoveEmbed(ui.Select):
 
     def select_embed(self, value):
         for e in self.embeds:
-            if e.title == value:
+            if value.endswith(e.title):
                 return e
 
     @select_logger
@@ -158,7 +158,7 @@ class SelectRemoveFieldEmbed(ui.Select):
     def select_field(self, value):
         for i in range(len(self.embed.fields)):
             field = self.embed.fields[i]
-            if value == field.name:
+            if value.endswith(field.name):
                 return i
         return None
 
@@ -168,8 +168,7 @@ class SelectRemoveFieldEmbed(ui.Select):
         if index is None:
             self.embeds = [e for e in self.embeds if e != self.embed]
             if len(self.embeds) == 0:
-                await interaction.response.edit_message(delete_after=0)
-                return
+                return await interaction.response.edit_message(delete_after=0)
             view = ViewEditEmbed(self.embeds, self.embeds[0], self.msg_id)
         else:
             self.embed.remove_field(index)
@@ -178,10 +177,11 @@ class SelectRemoveFieldEmbed(ui.Select):
 
 
 class BoutonAjouterChampEmbed(ui.Button):
-    def __init__(self, embeds, embed):
+    def __init__(self, embeds, embed, msg_id):
         super().__init__(label="Ajouter un Champ", style=ButtonStyle.primary)
         self.embeds = embeds
         self.embed = embed
+        self.msg_id = msg_id
 
     @button_logger
     # Ajouter un Champ
@@ -192,10 +192,11 @@ class BoutonAjouterChampEmbed(ui.Button):
 
 
 class BoutonAjouterEmbed(ui.Button):
-    def __init__(self, embeds, embed):
+    def __init__(self, embeds, embed, msg_id):
         super().__init__(label="Ajouter un Embed", style=ButtonStyle.primary)
         self.embeds = embeds
         self.embed = embed
+        self.msg_id = msg_id
 
     @button_logger
     # Ajouter un Embed
@@ -228,8 +229,8 @@ class BoutonEnvoyerEmbed(ui.Button):
 class ViewEditEmbed(MyView):
     def __init__(self, embeds, embed, msg_id):
         super().__init__()
-        self.add_item(BoutonAjouterEmbed(embeds, embed))
-        self.add_item(BoutonAjouterChampEmbed(embeds, embed))
+        self.add_item(BoutonAjouterEmbed(embeds, embed, msg_id))
+        self.add_item(BoutonAjouterChampEmbed(embeds, embed, msg_id))
         self.add_item(BoutonEnvoyerEmbed(msg_id))
         if len(embeds) > 1:
             self.add_item(SelectEmbed(embeds, msg_id))
