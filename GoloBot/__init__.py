@@ -262,7 +262,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
         # Création de l'embed
         embed = MyEmbed(title="Sondage", description=f"Créé par {ctx.author.mention}", color=ctx.author.color)
-        embed.add_field(name="Question :", value=question, inline=False)
+        embed.add_field(name="Question :", value=ANSI().converter(question), inline=False)
         embed.add_field(name="Réponses", value=choix, inline=False)
 
         # Envoi avec les réactions

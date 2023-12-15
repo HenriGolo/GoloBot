@@ -2,7 +2,7 @@ from discord import ui, Interaction, InputTextStyle, Colour
 from GoloBot.Auxilliaire import *
 from GoloBot.Auxilliaire.converters import ANSI
 from GoloBot.Auxilliaire.decorators import *
-from GoloBot.UI import *
+from GoloBot.UI import ViewEditEmbed
 
 
 # QPUP (non, vous n'aurez pas le lore)
