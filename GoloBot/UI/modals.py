@@ -1,4 +1,4 @@
-from discord import ui, Interaction, InputTextStyle
+from discord import ui, Interaction, InputTextStyle, Colour
 from GoloBot.Auxilliaire import *
 from GoloBot.Auxilliaire.converters import ANSI
 from GoloBot.Auxilliaire.decorators import *
