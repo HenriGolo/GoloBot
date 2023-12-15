@@ -26,7 +26,7 @@ class ModalNewEmbed(ui.Modal):
 
 # Modification d'un Embed déjà existant
 class ModalEditEmbed(ui.Modal):
-    def __init__(self, embeds, embed, _id, send_new=False, *args, **kwargs):
+    def __init__(self, embeds, embed, msg_id, send_new=False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.embeds = embeds
         self.embed = embed
