@@ -80,7 +80,7 @@ class AudioController:
         self._volume = value
         try:
             self.guild.voice_client.source.volume = float(value) / 100.0
-        except Exception as e:
+        except Exception:
             pass
 
     @staticmethod
@@ -142,7 +142,7 @@ class AudioController:
         """Adds the track to the playlist instance and plays it, if it is the first song"""
         search = YoutubeSearch(track, max_results=1).to_dict()
         if search:
-            track = "https://www.youtube.com" + search[0]['url_suffix']
+            track = f"https://www.youtube.com{search[0]['url_suffix']}"
         host = identify_url(track)
         is_playlist = identify_playlist(track)
 
