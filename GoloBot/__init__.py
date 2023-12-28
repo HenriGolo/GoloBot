@@ -202,7 +202,7 @@ class Dev(commands.Cog):
         if not ctx.author == self.bot.dev:
             await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
             raise Exception("N'est pas dev")
-        stderr = File(fp=environ['stderr'], filename=environ['stderr'].split("/")[-1])
+        stderr = discord.File(fp=environ['stderr'], filename=environ['stderr'].split("/")[-1])
         reponse = f"Dernières {last_x_lines} lignes de **{stderr}** :\n{tail(environ['stderr'], last_x_lines)[-1900:]}"
         await ctx.respond(f"Voici les logs demandés\n{reponse}", files=[stderr], ephemeral=True)
 
