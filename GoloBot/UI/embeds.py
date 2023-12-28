@@ -208,8 +208,9 @@ class BoutonAjouterEmbed(ui.Button):
 
 
 class BoutonEnvoyerEmbed(ui.Button):
-    def __init__(self, msg_id):
+    def __init__(self, embeds, msg_id):
         super().__init__(label="Valider", style=ButtonStyle.success)
+        self.embeds = embeds
         self.msg_id = msg_id
 
     @button_logger
@@ -231,7 +232,7 @@ class ViewEditEmbed(MyView):
         super().__init__()
         self.add_item(BoutonAjouterEmbed(embeds, embed, msg_id))
         self.add_item(BoutonAjouterChampEmbed(embeds, embed, msg_id))
-        self.add_item(BoutonEnvoyerEmbed(msg_id))
+        self.add_item(BoutonEnvoyerEmbed(embeds, msg_id))
         if len(embeds) > 1:
             self.add_item(SelectEmbed(embeds, msg_id))
         self.add_item(SelectFieldEmbed(embeds, embed, msg_id))
