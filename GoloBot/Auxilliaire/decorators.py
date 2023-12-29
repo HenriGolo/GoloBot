@@ -16,10 +16,13 @@ def command_logger(func):
         cname = caller.__class__.__name__
         ctx = args[1]
         user = ctx.author.name
+        gname = f"MP de {user}"
+        if ctx.guild is not None:
+            gname = ctx.guild.name
         signature = "\n\t".join(args_repr + kwargs_repr)
         time = start.replace(microsecond=0)
         with (open(environ['stdout'], 'a') as stdout):
-            stdout.write(f"\n{time} {user} : {cname}.{func.__name__} dans {ctx.guild.name} avec comme arguments\n\t{signature}")
+            stdout.write(f"\n{time} {user} : {cname}.{func.__name__} dans {gname} avec comme arguments\n\t{signature}")
 
             result = None
             try:
@@ -57,11 +60,14 @@ def interaction_logger(func):
         cname = caller.__class__.__name__
         interaction = args[1]
         user = interaction.user.name
+        gname = f"MP de {user}"
+        if interaction.guild is not None:
+            gname = interaction.guild.name
         signature = "\n\t".join(args_repr + kwargs_repr)
         time = start.replace(microsecond=0)
         with open(environ['stdout'], 'a') as stdout:
             stdout.write(f"\n{time} {user} : {cname}.{func.__name__}\
-    dans {interaction.guild.name} avec comme arguments\n\t{signature}")
+    dans {gname} avec comme arguments\n\t{signature}")
 
             result = None
             try:
