@@ -1,8 +1,25 @@
 from functools import wraps
 from os import environ
-from discord import Forbidden
+from discord import Forbidden, ui, Interaction, ButtonStyle
 from GoloBot.Auxilliaire import *
 from GoloBot.Auxilliaire.doc import cmds
+
+
+class ShowFullError(ui.Button):
+    def __init__(self, full_embed, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.full = full_embed
+
+    @button_logger
+    async def callback(self, interaction: Interaction):
+        await interaction.response.edit_message(embed=self.full, view=None)
+
+
+class ViewError(MyView):
+    def __init__(self, full_embed):
+        super().__init__()
+        self.add_item(ShowFullError(full_embed, label="Détails", style=ButtonStyle.danger))
+
 
 
 def command_logger(func):
@@ -39,7 +56,6 @@ def command_logger(func):
                 embed = MyEmbed(title="Un problème est survenu ...", color=0xff0000)
                 full_embed = embed.copy()
                 full_embed.description = f"```\n{err.strip()}\n```"
-                from GoloBot.UI.error import ViewError
                 await ctx.respond(embed=embed, view=ViewError(full_embed), ephemeral=True)
                 with open(environ['stderr'], 'a') as stderr:
                     stderr.write(f"\n{start}\n{err}\n")
@@ -84,7 +100,6 @@ def interaction_logger(func):
                 embed = MyEmbed(title="Un problème est survenu ...", color=0xff0000)
                 full_embed = embed.copy()
                 full_embed.description = f"```\n{err.strip()}\n```"
-                from GoloBot.UI.error import ViewError
                 await ctx.respond(embed=embed, view=ViewError(full_embed), ephemeral=True)
                 with open(environ['stderr'], 'a') as stderr:
                     stderr.write(f"\n{start}\n{err}\n")

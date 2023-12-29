@@ -1,7 +1,4 @@
-from discord import ui, Interaction, SelectOption, InputTextStyle, ButtonStyle, Colour
-from GoloBot.Auxilliaire import *
-from GoloBot.Auxilliaire.decorators import *
-from GoloBot.Auxilliaire.converters import ANSI
+from GoloBot.UI.base_imports import *
 
 
 # Création d'Embed
