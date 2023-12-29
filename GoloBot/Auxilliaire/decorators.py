@@ -3,7 +3,6 @@ from os import environ
 from discord import Forbidden
 from GoloBot.Auxilliaire import *
 from GoloBot.Auxilliaire.doc import cmds
-from GoloBot.UI.error import ViewError
 
 
 def command_logger(func):
@@ -36,7 +35,8 @@ def command_logger(func):
                 err = fail()
                 embed = MyEmbed(title="Un problème est survenu ...", color=0xff0000)
                 full_embed = embed.copy()
-                full_embed.description = err.strip()
+                full_embed.description = f"```\n{err.strip()}\n```"
+                from GoloBot.UI.error import ViewError
                 await ctx.respond(embed=embed, view=ViewError(full_embed), ephemeral=True)
                 with open(environ['stderr'], 'a') as stderr:
                     stderr.write(f"\n{start}\n{err}\n")
@@ -77,7 +77,8 @@ def interaction_logger(func):
                 err = fail()
                 embed = MyEmbed(title="Un problème est survenu ...", color=0xff0000)
                 full_embed = embed.copy()
-                full_embed.description = err.strip()
+                full_embed.description = f"```\n{err.strip()}\n```"
+                from GoloBot.UI.error import ViewError
                 await ctx.respond(embed=embed, view=ViewError(full_embed), ephemeral=True)
                 with open(environ['stderr'], 'a') as stderr:
                     stderr.write(f"\n{start}\n{err}\n")
