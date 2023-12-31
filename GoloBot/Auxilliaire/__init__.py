@@ -199,7 +199,15 @@ def insert(liste: list, pos: int, elt):
     liste[pos:pos] = [elt]
 
 
+def nb_char_in_str(string):
+    dejavu = dict()
+    for c in string:
+        dejavu[c] = dejavu.get(c, 0) + 1
+    return dejavu
+
+
 def check_unicity(string: str, elt: str):
+    # existence + unicité
     return len(string.split(elt)) == 2
 
 

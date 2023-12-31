@@ -17,6 +17,8 @@ class GoloBot(discord.AutoShardedBot):
         words = {cmd: {} for cmd in cmds}
         synonyms = {cmd: {" ".join(cmd.split(" "))} for cmd in cmds}
         self.commands_names = Completer(words=words, synonyms=synonyms)
+        self.alphabet = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲',
+                         '🇳', '🇴', '🇵', '🇶', '🇷', '🇸', '🇹', '🇺', '🇻', '🇼', '🇽', '🇾', '🇿']
         self.startTime = None
         self.dev = None
         self.emotes = None

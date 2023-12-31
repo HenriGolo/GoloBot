@@ -238,22 +238,20 @@ class Admin(commands.Cog):
         # Préparation les réactions
         # Étant donné le passage par l'ASCII, ajouter des réactions nécessite un changement de la procédure
         # Car les nombres, majuscules et minuscules ne sont pas accolés
-        alphabet = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲',
-                    '🇳', '🇴', '🇵', '🇶', '🇷', '🇸', '🇹', '🇺', '🇻', '🇼', '🇽', '🇾', '🇿']
         # Première lettre de chaque réponse
         first_letters = "".join([s[0].lower() for s in reponses])
         # Tableau de bool pour savoir si les premières lettres sont uniques
         # Au moins un doublon, ou une non-lettre → alphabet standard
         if False in [check_unicity(first_letters, l) and 'a' <= l <= 'z' for l in first_letters]:
-            used_alphaB = alphabet[:len(reponses)]
+            used_alphaB = self.bot.alphabet[:len(reponses)]
         # Que des lettres uniques, on répond avec les lettres correspondantes
         else:
             a = ord('a')
-            used_alphaB = [alphabet[ord(i.lower()) - a] for i in first_letters]
+            used_alphaB = [self.bot.alphabet[ord(i.lower()) - a] for i in first_letters]
         # Trop de réponses à gérer
-        if len(reponses) > len(alphabet):
-            await ctx.respond(f"Oula ... On va se calmer sur le nombre de réponses possibles, \
-j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premiers", ephemeral=True)
+        if len(reponses) > len(self.bot.alphabet):
+            await ctx.respond(f"""Oula ... On va se calmer sur le nombre de réponses possibles,
+j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premiers""", ephemeral=True)
 
         # Préparation de l'affichage des réactions
         choix = ''
@@ -485,6 +483,28 @@ class Troll(commands.Cog):
         msg += lim
         await ctx.channel.send(msg)
         await ctx.respond(emote, ephemeral=True)
+
+    @commands.slash_command(description=cmds["write_emote"].desc)
+    @customSlash
+    async def write_emote(self, ctx, mot: str, message_id: str):
+        await ctx.defer(ephemeral=True)
+        nbchars = nb_char_in_str(mot)
+        a = ord('a')
+        for char, i in nbchars.items():
+            if i > 1:
+                msg = f"<red>{char}<reset> apparait <yellow>{i}<reset> fois, impossible d'écrire <red>{mot}<reset> en réactions"
+                embed = GBEmbed(title="Erreur", description=ANSI().converter(msg), color=ctx.author.color)
+                return await ctx.respond(embed=embed, ephemeral=True)
+
+        msg = await ctx.channel.fetch_message(int(message_id))
+        emotes = [self.bot.alphabet[ord(c) - a] for c in mot]
+        for e in emotes:
+            await msg.add_reaction(e)
+        embed = GBEmbed(color=ctx.author.color)
+        embed.description = f"""Tu as écrit {' '.join(emotes)} en dessous de ```
+{msg.content}
+```(Certaines lettres étaient peut être déjà prises)"""
+        await ctx.respond(embed=embed, ephemeral=True)
 
     # Désactive les réponses custom dans le serveur
     @commands.slash_command(description=cmds["disable_custom_responses"].desc)

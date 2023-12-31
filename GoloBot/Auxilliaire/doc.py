@@ -273,7 +273,14 @@ Utilisation avec le bot : <couleur>, <bgcouleur> ou <reset>.""",
                            "(Dés)active la boucle de la PlayList.",
                            perm.none(),
                            "",
-                           [])}
+                           []),
+
+        "write_emote": DocCommand("write_emote",
+                                  "Écrit un mot avec des réactions sous un message",
+                                  perm.none(),
+                                  "",
+                                  [Arg("mot", "Mot à écrire."),
+                                   Arg("message_id", "Identifiant du message.")])}
 
 for cmd in cmds:
     cmds[cmd].set_options()
