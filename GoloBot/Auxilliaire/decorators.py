@@ -98,7 +98,7 @@ def interaction_logger(func):
                 embed = GBEmbed(title="Un problème est survenu ...", color=0xff0000)
                 full_embed = embed.copy()
                 full_embed.description = f"```python\n{err.strip()}\n```"
-                await ctx.respond(embed=embed, view=ViewError(full_embed), ephemeral=True)
+                await interaction.response.send_message(embed=embed, view=ViewError(full_embed), ephemeral=True)
                 with open(environ['stderr'], 'a') as stderr:
                     stderr.write(f"\n{start}\n{err}\n")
 
