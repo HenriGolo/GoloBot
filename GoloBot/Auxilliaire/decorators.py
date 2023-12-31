@@ -53,7 +53,7 @@ def command_logger(func):
                 err = fail()
                 embed = GBEmbed(title="Un problème est survenu ...", color=0xff0000)
                 full_embed = embed.copy()
-                full_embed.description = f"```\n{err.strip()}\n```"
+                full_embed.description = f"```python\n{err.strip()}\n```"
                 await ctx.respond(embed=embed, view=ViewError(full_embed), ephemeral=True)
                 with open(environ['stderr'], 'a') as stderr:
                     stderr.write(f"\n{start}\n{err}\n")
@@ -97,7 +97,7 @@ def interaction_logger(func):
                 err = fail()
                 embed = GBEmbed(title="Un problème est survenu ...", color=0xff0000)
                 full_embed = embed.copy()
-                full_embed.description = f"```\n{err.strip()}\n```"
+                full_embed.description = f"```python\n{err.strip()}\n```"
                 await ctx.respond(embed=embed, view=ViewError(full_embed), ephemeral=True)
                 with open(environ['stderr'], 'a') as stderr:
                     stderr.write(f"\n{start}\n{err}\n")
