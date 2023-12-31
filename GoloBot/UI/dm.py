@@ -16,7 +16,7 @@ class ModalDM(ui.Modal):
         joueur = interaction.user
         if self.target is None:
             self.target = await self.bot.fetch_user(int(self.children[1].value))
-        embed = MyEmbed(description=self.children[0].value, color=joueur.color)
+        embed = GBEmbed(description=self.children[0].value, color=joueur.color)
         content = ""
         if self.target == self.bot.dev:
             content = f"Reçu de {joueur.mention}"
@@ -52,7 +52,7 @@ class BoutonSupprimerDM(ui.Button):
         await interaction.response.edit_message(delete_after=0)
 
 
-class ViewDM(MyView):
+class ViewDM(GBView):
     def __init__(self, bot):
         super().__init__(timeout=None)
         self.target = None

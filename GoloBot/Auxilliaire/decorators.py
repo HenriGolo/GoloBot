@@ -14,7 +14,7 @@ class ShowFullError(ui.Button):
         await interaction.response.edit_message(embed=self.full, view=None)
 
 
-class ViewError(MyView):
+class ViewError(GBView):
     def __init__(self, full_embed):
         super().__init__()
         self.add_item(ShowFullError(full_embed, label="Détails", style=ButtonStyle.danger))
@@ -51,7 +51,7 @@ def command_logger(func):
 
             except Exception:
                 err = fail()
-                embed = MyEmbed(title="Un problème est survenu ...", color=0xff0000)
+                embed = GBEmbed(title="Un problème est survenu ...", color=0xff0000)
                 full_embed = embed.copy()
                 full_embed.description = f"```\n{err.strip()}\n```"
                 await ctx.respond(embed=embed, view=ViewError(full_embed), ephemeral=True)
@@ -95,7 +95,7 @@ def interaction_logger(func):
 
             except Exception:
                 err = fail()
-                embed = MyEmbed(title="Un problème est survenu ...", color=0xff0000)
+                embed = GBEmbed(title="Un problème est survenu ...", color=0xff0000)
                 full_embed = embed.copy()
                 full_embed.description = f"```\n{err.strip()}\n```"
                 await ctx.respond(embed=embed, view=ViewError(full_embed), ephemeral=True)

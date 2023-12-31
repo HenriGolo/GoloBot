@@ -9,13 +9,13 @@ class BoutonListeCommandes(ui.Button):
     async def callback(self, interaction: Interaction):
         names = [name for name in cmds]
         names.sort()
-        embed = MyEmbed(title="Liste des commandes", color=interaction.user.color)
-        description = "<reset>, <green>".join(names)
-        embed.description = ANSI().converter("<green>"+description)
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        embed = interaction.message.embeds[0]
+        liste = "\n".join(names)
+        embed.add_field(name="Liste des commandes", value=ANSI().converter("<green>"+liste))
+        await interaction.response.edit_message(embed=embed, view=None)
 
 
-class ViewAide(MyView):
+class ViewAide(GBView):
     def __init__(self):
         super().__init__()
         self.add_item(BoutonListeCommandes())

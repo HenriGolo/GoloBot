@@ -34,7 +34,7 @@ class SelectRoleReact(ui.Select):
         await msg.edit(view=ViewRoleReact(self.roles))
 
 
-class ViewRoleReact(MyView):
+class ViewRoleReact(GBView):
     def __init__(self, roles: list[Role] = ()):
         super().__init__(timeout=None)
         self.add_item(SelectRoleReact(roles=roles))

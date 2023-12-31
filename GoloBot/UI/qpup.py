@@ -28,7 +28,7 @@ class BoutonReponseQPUP(ui.Button):
         await interaction.response.send_modal(ModalQPUP(rep=self.rep, title=msg.content))
 
 
-class ViewQPUP(MyView):
+class ViewQPUP(GBView):
     def __init__(self, rep):
         super().__init__()
         self.add_item(BoutonReponseQPUP(bot, rep))

@@ -28,7 +28,7 @@ class General(commands.Cog):
             # Message privé → transmission au dev
             if msg.channel.type == discord.ChannelType.private:
                 if not msg.author == self.bot.dev:
-                    embed = MyEmbed(title="Nouveau Message", description=msg.content, color=msg.author.color)
+                    embed = GBEmbed(title="Nouveau Message", description=msg.content, color=msg.author.color)
                     # Transmission des pièces jointes
                     files = [await fichier.to_file() for fichier in msg.attachments]
                     await self.bot.dev.send(f"Reçu de {msg.author.mention}",
@@ -63,7 +63,7 @@ class General(commands.Cog):
         mention = f"</{name}:{cmd_id}>"
         commande = cmds[name]
         # Embed des informations sur la commande
-        embed = MyEmbed(title="Aide", description=mention, color=ctx.author.color)
+        embed = GBEmbed(title="Aide", description=mention, color=ctx.author.color)
         embed.add_field(name="Description", value=commande.desc, inline=False)
         embed.add_field(name="Permissions Nécessaires", value=commande.perms, inline=False)
         embed.add_field(name="Paramètres", value=str(commande))
@@ -80,7 +80,7 @@ class General(commands.Cog):
     @customSlash
     async def invite(self, ctx):
         await ctx.defer(ephemeral=True)
-        embed = MyEmbed(title=f"Inviter {self.bot.user.name}",
+        embed = GBEmbed(title=f"Inviter {self.bot.user.name}",
                         description=f"""Tu peux m'inviter avec [ce lien]({environ['invite_bot']})
 Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci]({environ['invite_server']})""",
                         color=ctx.author.color)
@@ -94,7 +94,7 @@ Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci
     @customSlash
     async def github(self, ctx):
         await ctx.defer(ephemeral=True)
-        embed = MyEmbed(title="Code Source",
+        embed = GBEmbed(title="Code Source",
                         description=f"Le code source est disponible sur <:github:1164672088934711398> [Github]({environ['github']})\n\
 Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({environ['invite_server']})",
                         color=ctx.author.color)
@@ -133,7 +133,7 @@ Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({
         title = f"Chances de drop {item}"
         if not nom == "":
             title += f" dans {nom}"
-        embed = MyEmbed(title=title, description=f"Pourcentage dans 1 lootbox : {pourcentage}", color=ctx.author.color)
+        embed = GBEmbed(title=title, description=f"Pourcentage dans 1 lootbox : {pourcentage}", color=ctx.author.color)
         for key in seuils:
             n = seuils[key]
             embed.add_field(name=f"Au moins {key} % de chances", value=f"{n} lootboxes", inline=False)
@@ -179,7 +179,7 @@ class Dev(commands.Cog):
     @customSlash
     async def ping(self, ctx):
         await ctx.defer(ephemeral=True)
-        embed = MyEmbed(title="Ping et autres informations", color=ctx.author.color)
+        embed = GBEmbed(title="Ping et autres informations", color=ctx.author.color)
         embed.add_field(name="Ping", value=f"{round(self.bot.latency * 1000)} ms", inline=False)
         embed.add_field(name="Bot en ligne depuis", value=f"{Timestamp(self.bot.startTime).relative}", inline=False)
         embed.add_field(name="Propiétaire", value=self.bot.dev.mention, inline=False)
@@ -261,7 +261,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             choix += f"{used_alphaB[i]} {reponses[i]}\n"
 
         # Création de l'embed
-        embed = MyEmbed(title="Sondage", description=f"Créé par {ctx.author.mention}", color=ctx.author.color)
+        embed = GBEmbed(title="Sondage", description=f"Créé par {ctx.author.mention}", color=ctx.author.color)
         embed.add_field(name="Question :", value=ANSI().converter(question), inline=False)
         embed.add_field(name="Réponses", value=choix, inline=False)
 
@@ -402,7 +402,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
     @customSlash
     async def user_info(self, ctx, user: discord.Member):
         await ctx.defer(ephemeral=True)
-        embed = MyEmbed(title="Informations", description=f"À propos de {user.mention}", color=user.color)
+        embed = GBEmbed(title="Informations", description=f"À propos de {user.mention}", color=user.color)
         embed.add_field(name="Nom", value=str(user), inline=False)
         embed.set_thumbnail(url=user.avatar.url)
         if user.banner is not None:
@@ -457,7 +457,7 @@ class MiniGames(commands.Cog):
         game = Game2048(size=size)
         game.duree = now()
         add_dict(self.bot.games, ctx.author.mention, game)
-        embed = MyEmbed(title="2048", color=ctx.author.color)
+        embed = GBEmbed(title="2048", color=ctx.author.color)
         # Envoie du jeu formatté en python ou n'importe quel autre langage
         # pour colorer les chiffres et ajouter un effet visuel
         embed.add_field(name=f"Partie de {ctx.author.name}", value=str(game), inline=True)
@@ -548,7 +548,7 @@ class Music(commands.Cog):
             return
 
         playlist = guild_to_audiocontroller[ctx.guild].playlist
-        embed = MyEmbed(title=f"À venir ({len(playlist.playque)} en tout)", color=ctx.author.color)
+        embed = GBEmbed(title=f"À venir ({len(playlist.playque)} en tout)", color=ctx.author.color)
         current = guild_to_audiocontroller[ctx.guild].current_song
         if current:
             current = current.info.format_output("En Cours", color=ctx.author.color)

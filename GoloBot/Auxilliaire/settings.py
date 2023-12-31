@@ -63,7 +63,7 @@ class Settings:
         return self.config[setting]
 
     async def format(self, color=discord.Colour.blurple()):
-        embed = MyEmbed(title="Settings", description=self.guild.name, color=color)
+        embed = GBEmbed(title="Settings", description=self.guild.name, color=color)
         embed.set_thumbnail(url=self.guild.icon_url)
         embed.set_footer(text="Usage: /set `setting_name` `value`")
         exclusion_keys = ['id']

@@ -18,6 +18,14 @@ emoji = re.compile(r'<a?:[a-zA-Z0-9]*:[0-9]*>')
 timestamp = re.compile(r'<t:[0-9]*:[RDdTtFf]>')
 
 
+class Cycle(list):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def __getitem__(self, item):
+        return super().__getitem__(item % len(self))
+
+
 class CustomSession:
     def __init__(self):
         self.s = Session()
@@ -56,13 +64,13 @@ class Timestamp:
         self.short_datetime = f"<t:{ts}:f>"
 
 
-class MyEmbed(Embed):
+class GBEmbed(Embed):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.timestamp = now()
 
 
-class MyView(ui.View):
+class GBView(ui.View):
     async def on_timeout(self):
         self.disable_all_items()
 

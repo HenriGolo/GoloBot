@@ -16,7 +16,7 @@ class ModalNewEmbed(ui.Modal):
         title = self.children[0].value
         description = ANSI().converter(self.children[1].value)
         color = Colour(int(self.children[2].value, 16))
-        embed = MyEmbed(title=title, description=description, color=color)
+        embed = GBEmbed(title=title, description=description, color=color)
         view = ViewEditEmbed([embed], embed, self.msg_id)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
@@ -199,7 +199,7 @@ class BoutonAjouterEmbed(ui.Button):
     # Ajouter un Embed
     async def callback(self, interaction: Interaction):
         color = self.embeds[-1].color.value
-        self.embeds.append(MyEmbed(title=f"Embed {len(self.embeds)}", color=color))
+        self.embeds.append(GBEmbed(title=f"Embed {len(self.embeds)}", color=color))
         modal = ModalEditEmbed(self.embeds, self.embeds[-1], self.msg_id, title="Nouvel Embed")
         await interaction.response.send_modal(modal)
 
@@ -224,7 +224,7 @@ class BoutonEnvoyerEmbed(ui.Button):
 
 
 # View finale de la création / modification des Embeds
-class ViewEditEmbed(MyView):
+class ViewEditEmbed(GBView):
     def __init__(self, embeds, embed, msg_id):
         super().__init__()
         self.add_item(BoutonAjouterEmbed(embeds, embed, msg_id))

@@ -1,4 +1,4 @@
-from GoloBot.Auxilliaire import MyEmbed
+from GoloBot.Auxilliaire import GBEmbed
 from GoloBot.Auxilliaire.settings import *
 from GoloBot.Musique.songs import *
 import re

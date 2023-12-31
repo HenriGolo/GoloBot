@@ -1,4 +1,4 @@
-from GoloBot.Auxilliaire import MyEmbed
+from GoloBot.Auxilliaire import GBEmbed
 from collections import deque
 from discord import Colour
 from datetime import timedelta
@@ -23,7 +23,7 @@ class Song:
             self.output = ""
 
         def format_output(self, playtype, color=Colour.blurple()):
-            embed = MyEmbed(title=playtype,
+            embed = GBEmbed(title=playtype,
                             description=f"[{self.title}]({self.webpage_url})",
                             color=color)
             if self.thumbnail is not None:

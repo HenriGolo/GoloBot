@@ -36,7 +36,7 @@ class BoutonDirectionnel2048(ui.Button):
             if len(direcs) > 0:
                 child.disabled = not game.canMove(direcs[0])
 
-        embed = MyEmbed(title="2048", color=joueur.color)
+        embed = GBEmbed(title="2048", color=joueur.color)
         # On envoie le jeu formatté pour du python (ou n'importe quel autre langage)
         # pour colorer les chiffres et ajouter un effet visuel
         embed.add_field(name=f"Partie de {joueur.name}", value=str(game), inline=True)
@@ -72,7 +72,7 @@ class BoutonStop2048(ui.Button):
 
 
 # Les boutons pour le jeu de 2048
-class View2048(MyView):
+class View2048(GBView):
     def __init__(self, bot):
         self.bot = bot
         super().__init__()
