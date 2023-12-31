@@ -5,7 +5,7 @@ from GoloBot.Auxilliaire import *
 from GoloBot.Auxilliaire.doc import cmds
 
 
-class ShowFullError(ui.Button):
+class BoutonShowFullError(ui.Button):
     def __init__(self, full_embed, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.full = full_embed
@@ -14,10 +14,21 @@ class ShowFullError(ui.Button):
         await interaction.response.edit_message(embed=self.full, view=None)
 
 
+class BoutonTransfert(ui.Button):
+    def __init__(self, dev, embed, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.dev = dev
+        self.embed = embed
+
+    async def callback(self, interaction: Interaction):
+        await self.dev.send(embed=self.embed)
+
+
 class ViewError(GBView):
-    def __init__(self, full_embed):
+    def __init__(self, dev, full_embed, embed_err):
         super().__init__()
-        self.add_item(ShowFullError(full_embed, label="Détails", style=ButtonStyle.danger))
+        self.add_item(BoutonShowFullError(full_embed, label="Détails", style=ButtonStyle.danger))
+        self.add_item(BoutonTransfert(dev, embed_err, label="Transférer", style=ButtonStyle.success))
 
 
 def command_logger(func):
@@ -54,7 +65,10 @@ def command_logger(func):
                 embed = GBEmbed(title="Un problème est survenu ...", color=0xff0000)
                 full_embed = embed.copy()
                 full_embed.description = f"```python\n{err.strip()}\n```"
-                await ctx.respond(embed=embed, view=ViewError(full_embed), ephemeral=True)
+                embed_err = full_embed.copy()
+                embed_err.title = f"Erreur de {user} avec {func.__name__}"
+                view = ViewError(caller.bot.dev, full_embed, embed_err)
+                await ctx.respond(embed=embed, view=view, ephemeral=True)
                 with open(environ['stderr'], 'a') as stderr:
                     stderr.write(f"\n{start}\n{err}\n")
 
@@ -98,7 +112,10 @@ def interaction_logger(func):
                 embed = GBEmbed(title="Un problème est survenu ...", color=0xff0000)
                 full_embed = embed.copy()
                 full_embed.description = f"```python\n{err.strip()}\n```"
-                await interaction.response.send_message(embed=embed, view=ViewError(full_embed), ephemeral=True)
+                embed_err = full_embed.copy()
+                embed_err.title = f"Erreur de {user} avec {func.__name__}"
+                view = ViewError(caller.bot.dev, full_embed, embed_err)
+                await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
                 with open(environ['stderr'], 'a') as stderr:
                     stderr.write(f"\n{start}\n{err}\n")
 
