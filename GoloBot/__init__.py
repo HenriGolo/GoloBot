@@ -300,10 +300,10 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         if salon == base_value:
             salon = ctx.channel
         await ctx.defer(ephemeral=True)
-        if ctx.channel.type == ChannelType.private:
+        if ctx.channel.type == discord.ChannelType.private:
             with open("logs/logs_dm.txt", "a") as logs:
                 await ctx.respond("Début du clear", ephemeral=True, delete_after=2)
-                hist = ctx.channel.historique(limit=nombre).flatten()
+                hist = ctx.channel.history(limit=nombre).flatten()
                 for msg in await hist:
                     try:
                         await msg.delete()
