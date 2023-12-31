@@ -6,12 +6,15 @@ from GoloBot.Auxilliaire.doc import cmds
 
 
 class BoutonShowFullError(ui.Button):
-    def __init__(self, full_embed, *args, **kwargs):
+    def __init__(self, view, full_embed, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.v = view
         self.full = full_embed
 
     async def callback(self, interaction: Interaction):
-        await interaction.response.edit_message(embed=self.full, view=None)
+        view = self.v
+        view.remove_item(self)
+        await interaction.response.edit_message(embed=self.full, view=view)
 
 
 class BoutonTransfert(ui.Button):
@@ -21,13 +24,15 @@ class BoutonTransfert(ui.Button):
         self.embed = embed
 
     async def callback(self, interaction: Interaction):
-        await self.dev.send(embed=self.embed)
+        from GoloBot.UI.dm import BoutonSupprimerDM
+        await self.dev.send(embed=self.embed, view=GBView(BoutonSupprimerDM()))
+        await interaction.response.edit_message(delete_after=0)
 
 
 class ViewError(GBView):
     def __init__(self, dev, full_embed, embed_err):
         super().__init__()
-        self.add_item(BoutonShowFullError(full_embed, label="Détails", style=ButtonStyle.danger))
+        self.add_item(BoutonShowFullError(self, full_embed, label="Détails", style=ButtonStyle.danger))
         self.add_item(BoutonTransfert(dev, embed_err, label="Transférer", style=ButtonStyle.success))
 
 
