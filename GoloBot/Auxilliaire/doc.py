@@ -63,6 +63,8 @@ class DocCommand:
         self.desc = desc
         if isinstance(perms, perm):
             self.perms = nameof(perms)
+            if perms == perm.none():
+                self.perms = "Aucune"
         else:
             self.perms = "Développeur"
         self.aide = aide
