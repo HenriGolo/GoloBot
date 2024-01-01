@@ -23,7 +23,10 @@ class General(commands.Cog):
         try:
             # Message d'un bot → inutile
             if msg.author.bot:
-                return
+                try:
+                    await msg.publish()
+                finally:
+                    return
 
             # Message privé → transmission au dev
             if msg.channel.type == discord.ChannelType.private:
