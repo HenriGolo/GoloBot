@@ -3,10 +3,9 @@ from GoloBot.Auxilliaire.games import *
 
 
 class BoutonDirectionnel2048(ui.Button):
-    def __init__(self, bot, view, direction):
+    def __init__(self, bot, direction):
         super().__init__(label=direction.name, style=ButtonStyle.primary)
         self.bot = bot
-        self.gameview = view
         self.direction = direction
 
     @button_logger
@@ -24,14 +23,14 @@ class BoutonDirectionnel2048(ui.Button):
         # Partie perdue
         if not game.canMoveAll():
             # On itère sur tous les boutons de la View
-            for child in self.gameview.children:
+            for child in self.view.children:
                 child.label = "Partie Terminée"
                 # On désactive le bouton
                 child.disabled = True
             game.termine = True
 
         # On itère sur les boutons de la View
-        for child in self.gameview.children:
+        for child in self.view.children:
             direcs = [d for d in list(Directions) if d.name.lower() == child.label.lower()]
             if len(direcs) > 0:
                 child.disabled = not game.canMove(direcs[0])
@@ -43,19 +42,18 @@ class BoutonDirectionnel2048(ui.Button):
         moves = [f"{to} : {self.bot.bools[game.canMove(to)]}" for to in list()]
         embed.add_field(name="Mouvements", value="\n".join(moves), inline=True)
         embed.add_field(name="Score", value=game.score, inline=True)
-        await interaction.response.edit_message(embed=embed, view=self.gameview)
+        await interaction.response.edit_message(embed=embed, view=self.view)
 
 
 class BoutonStop2048(ui.Button):
-    def __init__(self, bot, view):
+    def __init__(self, bot):
         super().__init__(label="Arrêter", style=ButtonStyle.danger, emoji=bot.bools[False])
         self.bot = bot
-        self.gameview = view
 
     @button_logger
     async def callback(self, interaction: Interaction):
         # On désactive tous les boutons
-        for child in self.gameview.children:
+        for child in self.view.children:
             child.disabled = True
             child.label = "Partie Arrêtée"
 
@@ -68,16 +66,16 @@ class BoutonStop2048(ui.Button):
         game.duree = now() - game.duree
 
         self.bot.games[joueur.mention] = [g for g in self.bot.games[joueur.mention] if g.jeu != "2048"]
-        await interaction.response.edit_message(view=self.gameview)
+        await interaction.response.edit_message(view=self.view)
 
 
 # Les boutons pour le jeu de 2048
 class View2048(GBView):
-    def __init__(self, bot):
+    def __init__(self, bot, *args, **kwargs):
         self.bot = bot
-        super().__init__()
-        self.add_item(BoutonDirectionnel2048(bot, self, Directions.Haut))
-        self.add_item(BoutonDirectionnel2048(bot, self, Directions.Bas))
-        self.add_item(BoutonDirectionnel2048(bot, self, Directions.Gauche))
-        self.add_item(BoutonDirectionnel2048(bot, self, Directions.Droite))
-        self.add_item(BoutonStop2048(bot, self))
+        super().__init__(*args, **kwargs)
+        self.add_item(BoutonDirectionnel2048(bot, Directions.Haut))
+        self.add_item(BoutonDirectionnel2048(bot, Directions.Bas))
+        self.add_item(BoutonDirectionnel2048(bot, Directions.Gauche))
+        self.add_item(BoutonDirectionnel2048(bot, Directions.Droite))
+        self.add_item(BoutonStop2048(bot))
