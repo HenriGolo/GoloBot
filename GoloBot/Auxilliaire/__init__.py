@@ -19,8 +19,8 @@ timestamp = re.compile(r'<t:[0-9]*:[RDdTtFf]>')
 
 
 class Cycle(list):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *items):
+        super().__init__(items)
 
     def __getitem__(self, item):
         return super().__getitem__(item % len(self))
