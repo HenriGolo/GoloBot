@@ -6,6 +6,8 @@ from subprocess import Popen, DEVNULL
 with open(environ['pidfile'], 'r') as pid:
     try:
         Popen(["kill", pid.read()])
+    except:
+        pass
     finally:
         # lancement du bot
         Popen([environ['bot_path']],
