@@ -67,7 +67,7 @@ class AudioController:
         self.current_song = None
         self.guild = guild
         sett = guild_to_settings[guild]
-        self._volume = sett.get('default_volume')
+        self._volume = sett['default_volume']
         self.timer = Timer(self.timeout_handler)
         self.loop = False
 
@@ -275,11 +275,6 @@ class AudioController:
             self.guild.voice_client.stop()
 
     async def timeout_handler(self):
-        sett = guild_to_settings[self.guild]
-        if not sett.get('vc_timeout'):
-            self.timer = Timer(self.timeout_handler)  # restart timer
-            return
-
         if self.guild.voice_client.is_playing():
             self.timer = Timer(self.timeout_handler)  # restart timer
             return
@@ -309,19 +304,3 @@ class AudioController:
 async def register(bot, guild):
     guild_to_settings[guild] = Settings(guild)
     guild_to_audiocontroller[guild] = AudioController(bot, guild)
-    sett = guild_to_settings[guild]
-    vc_channels = guild.voice_channels
-    if not sett.get('vc_timeout'):
-        if sett.get('start_voice_channel') is None:
-            try:
-                await guild_to_audiocontroller[guild].register_voice_channel(guild.voice_channels[0])
-            except:
-                pass
-
-        else:
-            for vc in vc_channels:
-                if vc.id == sett.get('start_voice_channel'):
-                    try:
-                        await guild_to_audiocontroller[guild].register_voice_channel(vc_channels[vc_channels.index(vc)])
-                    except:
-                        pass
