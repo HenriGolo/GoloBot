@@ -9,11 +9,11 @@ guild_to_settings = dict()
 class Param:
     instances = list()
 
-    def __init__(self, name, desc, value, valid=lambda _: False):
+    def __init__(self, name, desc, value, predicate=lambda _: False):
         self.name = name
         self.desc = desc
         self.value = value
-        self.valid = valid
+        self.predicate = predicate
         self.__class__.instances.append(self)
 
     def __str__(self):
@@ -40,7 +40,7 @@ class Param:
         return False
 
     def update(self, value):
-        if self.valid(value):
+        if self.predicate(value):
             self.value = value
             return Exit.Success
         return Exit.Fail
@@ -56,7 +56,7 @@ Param("id",
       0)
 
 Param("default_volume",
-      "Volume sonor par défaut.",
+      "Volume sonore par défaut.",
       100,
       lambda i: isinstance(i, int) and 0 <= i <= 100)
 
