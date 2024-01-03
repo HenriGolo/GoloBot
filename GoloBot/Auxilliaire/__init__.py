@@ -6,7 +6,9 @@ from traceback import format_exc
 from discord import Embed, ui
 from fast_autocomplete import AutoComplete
 from requests import Session
-from GoloBot.Auxilliaire.settings import *  # Stockage de données de config
+from enum import Enum
+from functools import partial
+import json
 
 url = re.compile(r'https?://[a-zA-Z0-9/.#-]*')
 all_mentions = re.compile(r'<[@#!&]+[0-9]*>')
@@ -24,6 +26,11 @@ class Cycle(list):
 
     def __getitem__(self, item):
         return super().__getitem__(item % len(self))
+
+
+class Exit(Enum):
+    Success = True
+    Fail = False
 
 
 class CustomSession:
@@ -151,6 +158,46 @@ class Completer(AutoComplete):
                 synonyms[data[0].lower()] = [e.lower() for e in data[1]]
 
         return Completer(words=words, synonyms=synonyms)
+
+
+class GBEncoder(json.JSONEncoder):
+    def default(self, o):
+        try:
+            return super().default(o)
+        except TypeError:
+            return repr(o)
+
+
+class GBDecoder(json.JSONDecoder):
+    def decode(self, s, _w=...):
+        s = s.strip('"')
+        if s.startswith('<') and s.endswith('>'):
+            cls, kwargs = self.repr_parser(s)
+            if hasattr(cls, "instances"):
+                instances_dict = {i.name: i for i in cls.instances}
+                o = instances_dict.get(kwargs["name"], cls(**kwargs))
+                return o
+            else:
+                return cls(**kwargs)
+        return super().decode(s)
+
+    @staticmethod
+    def repr_parser(s):
+        s = s.strip('<').strip('>') + ' '
+        elts = s.split('=')
+        elts = [e.split(' ') for e in elts]
+        cls = elts[0][0]
+        cls = globals()[cls]
+        kwargs = dict()
+        for i in range(1, len(elts)):
+            data = ' '.join(elts[i][:-1])
+            try:
+                data = json.loads(data, cls=GBDecoder)
+            except:
+                pass
+            finally:
+                kwargs[elts[i-1][-1]] = data
+        return cls, kwargs
 
 
 # Commande bash tail avec un peu de traitement
