@@ -74,8 +74,6 @@ class View2048(GBView):
     def __init__(self, bot, *args, **kwargs):
         self.bot = bot
         super().__init__(*args, **kwargs)
-        self.add_item(BoutonDirectionnel2048(bot, Directions.Haut))
-        self.add_item(BoutonDirectionnel2048(bot, Directions.Bas))
-        self.add_item(BoutonDirectionnel2048(bot, Directions.Gauche))
-        self.add_item(BoutonDirectionnel2048(bot, Directions.Droite))
+        for direction in list(Directions):
+            self.add_item(BoutonDirectionnel2048(bot, direction))
         self.add_item(BoutonStop2048(bot))
