@@ -18,6 +18,8 @@ clean :
 	pip uninstall -r piplist.txt -y
 	rm piplist.txt
 	pip install build
-	echo {} > logs/settins.json
 
-reset : clean build
+clean_settings :
+	echo {} > logs/settings.json
+
+reset : clean clean_settings build
