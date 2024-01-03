@@ -32,9 +32,9 @@ class Arg:
             name += " (optionnel)"
         affichage = f"""- <cyan>{name}<reset>
     {self.desc}"""
-        if self.default is not None:
+        if self.default is not None and self.default != base_value:
             affichage += "\n\tValeur par défaut : "
-            affichage += str(self.default)
+            affichage += f"<yellow>{self.default}<reset>"
         return ANSI().converter(affichage)
 
     def __eq__(self, other):  # self == other
