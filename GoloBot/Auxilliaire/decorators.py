@@ -1,6 +1,7 @@
 from functools import wraps
 from os import environ
 from discord import Forbidden, ui, Interaction, ButtonStyle
+from discord.ext.commands import slash_command
 from GoloBot.Auxilliaire import *
 from GoloBot.Auxilliaire.doc import cmds
 
@@ -147,4 +148,5 @@ def customSlash(func):
     name = func.__name__.strip('_')
     func = command_logger(func)
     func = apply_list(cmds[name].options)(func)
+    func = slash_command(name=name, description=cmds[name].desc)(func)
     return func
