@@ -13,11 +13,24 @@ class Param:
         self.name = name
         self.desc = desc
         self.value = value
+        self.base = value
         self.predicate = predicate
         self.__class__.instances.append(self)
 
+    def __repr__(self):
+        std = repr(self.__class__)  # de la forme <class 'nom'>
+        cls = std.split("'")[1]
+        excluded = ["predicate", "base"]
+        attr = [f"{k}={v}" for k, v in self.__dict__.items() if not k in excluded]
+        return f"<{cls} {' '.join(attr)}>"
+
     def __str__(self):
         raw = f"<green>{self.name}<reset> : {self.desc}"
+        raw += "\n\tValeur : "
+        value = self.value
+        if value == self.base:
+            value = f"<yellow>{value}<reset>"
+        raw += value
         return ANSI().converter(raw)
 
     def __eq__(self, other):
@@ -45,22 +58,17 @@ class Param:
             return Exit.Success
         return Exit.Fail
 
-    def __repr__(self):
-        excluded = ["valid"]
-        attr = [f"{k}={v}" for k, v in self.__dict__.items() if not k in excluded]
-        return f"<{self.__class__.__name__} {' '.join(attr)}>"
-
 
 Param("id",
       None,
       0)
 
-Param("default_volume",
+Param("default volume",
       "Volume sonore par défaut.",
       100,
       lambda i: isinstance(i, int) and 0 <= i <= 100)
 
-Param("autopublish_bots",
+Param("autopublish bots",
       "Publie automatiquement les messages des bots.",
       False,
       lambda b: isinstance(b, bool))
@@ -71,11 +79,11 @@ Param.instances.sort()
 class Settings:
     template = {p.name: p for p in Param.instances}
 
-    def __init__(self, guild):
+    def __init__(self, guild, path='logs/settings.json'):
         self.guild = guild
         self.json_data = None
         self.config = None
-        self.path = 'logs/settings.json'
+        self.path = path
         self.reload()
         self.upgrade()
 
@@ -98,6 +106,10 @@ class Settings:
         if target is None:
             return self.create()
         self.config = target
+
+        for key, value in self.config.items():
+            if isinstance(value, (str, bytes, bytearray)):
+                self.config[key] = json.loads(value, cls=GBDecoder)
 
     def upgrade(self):
         refresh = False
@@ -122,16 +134,11 @@ class Settings:
         return self.config[item]
 
     def __str__(self):
-        return "\n".join([str(p) for p in self.config])
+        return "\n".join([str(self.config[p]) for p in self.config])
 
     def to_embed(self, color=None):
         if color is None:
             color = self.guild.owner.color
-        embed = GBEmbed(title="Settings", description=self.guild.name, color=color)
-        embed.set_thumbnail(url=self.guild.icon_url)
-        exclusion_keys = ['id']
-        for key, value in self.config.items():
-            if key in exclusion_keys:
-                continue
-            embed.add_field(name=key, value=value, inline=False)
+        embed = GBEmbed(title=f"Paramètres de {self.guild.name}", description=str(self), color=color)
+        embed.set_thumbnail(url=self.guild.icon.url)
         return embed

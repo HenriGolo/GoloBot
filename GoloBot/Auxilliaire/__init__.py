@@ -170,24 +170,34 @@ class GBEncoder(json.JSONEncoder):
 
 class GBDecoder(json.JSONDecoder):
     def decode(self, s, _w=...):
-        s = s.strip('"')
+        s = s.strip('"').strip("'")
         if s.startswith('<') and s.endswith('>'):
             cls, kwargs = self.repr_parser(s)
+            cls = self.instanciate(cls)
             if hasattr(cls, "instances"):
                 instances_dict = {i.name: i for i in cls.instances}
-                o = instances_dict.get(kwargs["name"], cls(**kwargs))
-                return o
+                item = instances_dict.get(kwargs["name"], cls(**kwargs))
+                for key, value in kwargs.items():
+                    setattr(item, key, value)
+                return item
             else:
                 return cls(**kwargs)
-        return super().decode(s)
+        std = super().decode(s)
+        if isinstance(std, str):
+            if std.lower() in ["oui", "o", "yes", "y", "vrai", "v", "true"]:
+                std = True
+            elif std.lower() in ["non", "n", "no", "faux", "f", "false"]:
+                std = False
+        return std
 
     @staticmethod
     def repr_parser(s):
+        # s de la forme <path.to.class.classname champ1=valeur1 champ2=valeur2>
         s = s.strip('<').strip('>') + ' '
-        elts = s.split('=')
+        elts = s.split('=')  # on commence par split sur = sinon c'est + dur de s'y retrouver
         elts = [e.split(' ') for e in elts]
-        cls = elts[0][0]
-        cls = globals()[cls]
+        cls = elts[0][0]  # cls de la forme path.to.class.classname
+        cls = cls.split('.')
         kwargs = dict()
         for i in range(1, len(elts)):
             data = ' '.join(elts[i][:-1])
@@ -198,6 +208,17 @@ class GBDecoder(json.JSONDecoder):
             finally:
                 kwargs[elts[i-1][-1]] = data
         return cls, kwargs
+
+    def instanciate(self, path: list[str], _from=None):
+        if not path:
+            return _from
+        try:
+            return globals()[path[-1]]
+        except KeyError:
+            if _from is None:
+                _from = __import__(path[0])
+                path = path[1:]
+            return self.instanciate(path[1:], getattr(_from, path[0]))
 
 
 # Commande bash tail avec un peu de traitement
@@ -306,7 +327,3 @@ async def usersInStr(string, bot):
     users_ids = [int(u[2:-1]) for u in mentions]
     users = [await bot.fetch_user(u) for u in users_ids]
     return users
-
-
-def clanships(clan):
-    return f"clan{clan}.txt"
