@@ -413,7 +413,16 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             msg = await ctx.channel.fetch_message(int(edit))
             embeds = msg.embeds
             embed = embeds[0]
-            await ctx.send_modal(ModalEditEmbed(embeds, embed, edit, send_new=True, title="Modifier l'Embed"))
+            await ctx.send_modal(ModalEditEmbed(self.bot, embeds, embed, edit, send_new=True, title="Modifier l'Embed"))
+
+    @customSlash
+    @commands.has_permissions(manage_guild=True)
+    async def dashboard(self, ctx):
+        await ctx.defer()
+        sett = guild_to_settings[ctx.guild]
+        view = GBView(self.bot)
+        view.add_item(SelectDashboard(self.bot, ctx.guild))
+        await ctx.respond(embed=sett.to_embed(), view=view)
 
 
 # Fonctions Random
