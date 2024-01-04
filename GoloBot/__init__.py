@@ -77,7 +77,7 @@ class General(commands.Cog):
         embed.add_field(name="Encore des questions ?",
                         value=f"Le <:discord:1164579176146288650> [Serveur de Support]({environ['invite_server']}) est là pour ça",
                         inline=False)
-        await ctx.respond(embed=embed, view=ViewAide(), ephemeral=not visible)
+        await ctx.respond(embed=embed, view=ViewAide(self.bot), ephemeral=not visible)
 
     # Renvoie un lien pour inviter le bot
     @customSlash
@@ -274,7 +274,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
         await ctx.defer()
         roles = rolesInStr(roles, ctx.guild)
-        view = ViewRoleReact(roles=roles)
+        view = ViewRoleReact(self.bot, roles=roles)
         rolesm = [e.mention for e in roles]
         if not message_id == base_value:
             msg = await ctx.channel.fetch_message(int(message_id))
@@ -408,7 +408,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
     @commands.has_permissions(manage_messages=True)
     async def embed(self, ctx, edit: str):
         if edit == base_value:
-            await ctx.send_modal(ModalNewEmbed(edit, title="Nouvel Embed"))
+            await ctx.send_modal(ModalNewEmbed(self.bot, edit, title="Nouvel Embed"))
         else:
             msg = await ctx.channel.fetch_message(int(edit))
             embeds = msg.embeds
@@ -431,7 +431,7 @@ class MiniGames(commands.Cog):
             # Tirage au sort d'une question
             line = randrange(len(self.bot.qpup))
             # Envoi de la question
-            await ctx.respond(self.bot.qpup[line][0], view=ViewQPUP(rep=self.bot.qpup[line][1]))
+            await ctx.respond(self.bot.qpup[line][0], view=ViewQPUP(self.bot, rep=self.bot.qpup[line][1]))
 
     # 2048, le _ est nécessaire, une fonction ne commence pas à un chiffre
     @customSlash

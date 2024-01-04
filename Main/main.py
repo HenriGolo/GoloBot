@@ -42,7 +42,7 @@ class GoloBot(discord.AutoShardedBot):
         self.emotes = {e.name: str(e) for e in GoloBotGuild.emojis}
         self.bools = {True: self.emotes['check'], False: self.emotes['denied']}
         # View persistantes
-        self.add_view(ViewRoleReact())
+        self.add_view(ViewRoleReact(self))
         self.add_view(ViewDM(self))
         # Setup de la Musique
         for guild in self.guilds:
