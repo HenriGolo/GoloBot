@@ -23,13 +23,12 @@ class General(commands.Cog):
         try:
             # Message d'un bot → inutile
             if msg.author.bot:
-                if guild_to_settings.get(msg.guild, Settings()).config["autopublish_bots"]:
+                if guild_to_settings[msg.guild].config["autopublish bots"]:
                     try:
                         await msg.publish()
                     except:
                         pass
-                    finally:
-                        return
+                return
 
             # Message privé → transmission au dev
             if msg.channel.type == discord.ChannelType.private:
