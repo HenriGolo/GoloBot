@@ -78,6 +78,10 @@ class GBEmbed(Embed):
 
 
 class GBView(ui.View):
+    def __init__(self, bot, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.bot = bot
+
     async def on_timeout(self):
         self.disable_all_items()
 
@@ -169,11 +173,24 @@ class GBEncoder(json.JSONEncoder):
 
 
 class GBDecoder(json.JSONDecoder):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.create_instance = True
+
     def decode(self, s, _w=...):
+        # print("à décoder", s)
         s = s.strip('"').strip("'")
         if s.startswith('<') and s.endswith('>'):
+            s = s[1:-1].strip('"').strip("'")
+            if s.startswith("class "):
+                self.create_instance = False
+                return self.decode(f"<{s[7:]}>")  # s de la forme <class truc>
+
             cls, kwargs = self.repr_parser(s)
             cls = self.instanciate(cls)
+            if not self.create_instance:
+                return cls
+
             if hasattr(cls, "instances"):
                 instances_dict = {i.name: i for i in cls.instances}
                 item = instances_dict.get(kwargs["name"], cls(**kwargs))
@@ -182,7 +199,15 @@ class GBDecoder(json.JSONDecoder):
                 return item
             else:
                 return cls(**kwargs)
-        std = super().decode(s)
+
+        try:
+            std = super().decode(s)
+        except:
+            try:
+                std = super().decode(f"'{s}'")
+            except:
+                std = s
+
         if isinstance(std, str):
             if std.lower() in ["oui", "o", "yes", "y", "vrai", "v", "true"]:
                 std = True
@@ -210,15 +235,19 @@ class GBDecoder(json.JSONDecoder):
         return cls, kwargs
 
     def instanciate(self, path: list[str], _from=None):
+        # print("path", path)
         if not path:
             return _from
         try:
-            return globals()[path[-1]]
-        except KeyError:
-            if _from is None:
-                _from = __import__(path[0])
-                path = path[1:]
-            return self.instanciate(path[1:], getattr(_from, path[0]))
+            return __builtins__[path[-1]]
+        except:
+            try:
+                return globals()[path[-1]]
+            except KeyError:
+                if _from is None:
+                    _from = __import__(path[0])
+                    path = path[1:]
+                return self.instanciate(path[1:], getattr(_from, path[0]))
 
 
 # Commande bash tail avec un peu de traitement

@@ -9,28 +9,26 @@ guild_to_settings = dict()
 class Param:
     instances = list()
 
-    def __init__(self, name, desc, value, predicate=lambda _: False):
+    def __init__(self, name, desc, value, _type):
         self.name = name
         self.desc = desc
         self.value = value
-        self.base = value
-        self.predicate = predicate
+        self._type = _type
         self.__class__.instances.append(self)
 
     def __repr__(self):
         std = repr(self.__class__)  # de la forme <class 'nom'>
         cls = std.split("'")[1]
-        excluded = ["predicate", "base"]
-        attr = [f"{k}={v}" for k, v in self.__dict__.items() if not k in excluded]
+        keys = [k for k in self.__dict__ if k in self.__init__.__code__.co_varnames]
+        keys.sort()
+        attr = [f"{k}={self.__dict__[k]}" for k in keys]
         return f"<{cls} {' '.join(attr)}>"
 
     def __str__(self):
         raw = f"<green>{self.name}<reset> : {self.desc}"
         raw += "\n\tValeur : "
-        value = self.value
-        if value == self.base:
-            value = f"<yellow>{value}<reset>"
-        raw += value
+        raw += (f"<yellow>{self.value}<reset> (<blue"
+                f">{self._type.__name__}<reset>)")
         return ANSI().converter(raw)
 
     def __eq__(self, other):
@@ -53,44 +51,42 @@ class Param:
         return False
 
     def update(self, value):
-        if self.predicate(value):
+        if isinstance(value, self._type):
             self.value = value
             return Exit.Success
         return Exit.Fail
 
 
-Param("id",
-      None,
-      0)
-
 Param("default volume",
-      "Volume sonore par défaut.",
+      "Volume sonore par défaut. Doit être compris entre 0 et 100.",
       100,
-      lambda i: isinstance(i, int) and 0 <= i <= 100)
+      int)
 
 Param("autopublish bots",
       "Publie automatiquement les messages des bots.",
       False,
-      lambda b: isinstance(b, bool))
+      bool)
 
 Param.instances.sort()
 
 
 class Settings:
     template = {p.name: p for p in Param.instances}
+    indent = 4
+    path = 'logs/settings.json'
 
-    def __init__(self, guild, path='logs/settings.json'):
+    def __init__(self, guild):
         self.guild = guild
         self.json_data = None
         self.config = None
-        self.path = path
         self.reload()
         self.upgrade()
 
     def write(self, setting, value):
-        response = self.config.get(setting, Param()).update(value)
+        params = {p.name: p for p in Param.instances}
+        response = self.config.get(setting, params[setting]).update(value)
         with open(self.path, 'w') as source:
-            json.dump(self.json_data, source, cls=GBEncoder)
+            json.dump(self.json_data, source, cls=GBEncoder, indent=self.indent)
         self.reload()
         return response
 
@@ -100,6 +96,8 @@ class Settings:
         target = None
         for server in self.json_data:
             server = self.json_data[server]
+            if self.guild is None:
+                continue
             if server['id'] == self.guild.id:
                 target = server
 
@@ -120,25 +118,24 @@ class Settings:
             refresh = True
         if refresh:
             with open(self.path, 'w') as source:
-                json.dump(self.json_data, source, cls=GBEncoder)
+                json.dump(self.json_data, source, cls=GBEncoder, indent=self.indent)
             self.reload()
 
     def create(self):
         self.json_data[self.guild.id] = self.template
         self.json_data[self.guild.id]['id'] = self.guild.id
         with open(self.path, 'w') as source:
-            json.dump(self.json_data, source, cls=GBEncoder)
+            json.dump(self.json_data, source, cls=GBEncoder, indent=self.indent)
         self.reload()
 
     def __getitem__(self, item):
         return self.config[item]
 
     def __str__(self):
-        return "\n".join([str(self.config[p]) for p in self.config])
+        return "\n".join([str(self.config[p]) for p in self.config if p != "id"])
 
-    def to_embed(self, color=None):
-        if color is None:
-            color = self.guild.owner.color
+    def to_embed(self):
+        color = self.guild.owner.color
         embed = GBEmbed(title=f"Paramètres de {self.guild.name}", description=str(self), color=color)
         embed.set_thumbnail(url=self.guild.icon.url)
         return embed
