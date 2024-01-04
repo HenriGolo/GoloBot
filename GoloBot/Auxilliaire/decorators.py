@@ -12,8 +12,8 @@ class BoutonShowFullError(ui.Button):
         self.full = full_embed
 
     async def callback(self, interaction: Interaction):
-        view = self.view.copy()
-        view.remove_item(self)
+        view = GBView()
+        view.add_item(BoutonTransfert(self.view.dev, self.view.embed_err, label="Transférer", style=ButtonStyle.success))
         await interaction.response.edit_message(embed=self.full, view=view)
 
 
@@ -32,6 +32,8 @@ class BoutonTransfert(ui.Button):
 class ViewError(GBView):
     def __init__(self, dev, full_embed, embed_err):
         super().__init__()
+        self.dev = dev
+        self.embed_err = embed_err
         self.add_item(BoutonShowFullError(full_embed, label="Détails", style=ButtonStyle.danger))
         self.add_item(BoutonTransfert(dev, embed_err, label="Transférer", style=ButtonStyle.success))
 
@@ -108,7 +110,8 @@ def interaction_logger(func):
                 stdout.write(f"{func.__name__} terminé en {now(True) - start}s")
 
             except Forbidden:
-                await interaction.response.send_message(f"{caller.bot.emotes['error']} Manque de permissions", ephemeral=True)
+                await interaction.response.send_message(f"{caller.bot.emotes['error']} Manque de permissions",
+                                                        ephemeral=True)
                 with open(environ['stderr'], 'a') as stderr:
                     stderr.write(f"\n{start}\n{fail()}\n")
 
