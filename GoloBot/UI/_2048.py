@@ -73,7 +73,7 @@ class BoutonStop2048(ui.Button):
 class View2048(GBView):
     def __init__(self, bot, *args, **kwargs):
         self.bot = bot
-        super().__init__(*args, **kwargs)
+        super().__init__(bot, *args, **kwargs)
         for direction in list(Directions):
             self.add_item(BoutonDirectionnel2048(bot, direction))
         self.add_item(BoutonStop2048(bot))
