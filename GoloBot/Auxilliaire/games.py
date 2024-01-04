@@ -245,10 +245,29 @@ class Game2048:
 # Loup Garou de Thiercelieu
 
 class Camp(Enum):
-    Village = "<green>{}<reset>"
-    Loup = "<red>{}<reset>"
-    Solo = "<yellow>{}<reset>"
+    Village = "Village"
+    Loup = "Loup"
+    Solo = "Solitaire"
     Aucun = None
+
+
+class LGRole(Enum):
+    Villageois = "<green>Villageois<reset>"
+    Garde = "<green>Garde<reset>"
+    Sorciere = "<green>Sorcière<reset>"
+    Voyante = "<green>Voyante<reset>"
+    LG = "<red>Loup Garou<reset>"
+    LGB = "<yellow>Loup Garou Blanc<reset>"
+
+
+def get_camp(role: LGRole):
+    if role.value.startswith("<green>"):
+        return Camp.Village
+    if role.value.startswith("<red>"):
+        return Camp.Loup
+    if role.value.startswith("<yellow>"):
+        return Camp.Solo
+    return Camp.Aucun
 
 
 class Heure(Enum):
@@ -266,28 +285,29 @@ class LoupGarou:
             nb = len(joueurs)
             nblg = int(nb/3)
             nb_special = int(sorciere) + int(voyante) + int(garde)
-            self.compo = {"Loup Garou": [nblg - int(lgb), Camp.Loup],
-                          "Loup Garou Blanc": [int(lgb), Camp.Solo],
-                          "Villageois": [nb - nblg - nb_special, Camp.Village],
-                          "Sorcière": [int(sorciere), Camp.Village],
-                          "Voyante": [int(voyante), Camp.Village],
-                          "Garde": [int(garde), Camp.Village]}
+            self.compo = {LGRole.LG: nblg - int(lgb),
+                          LGRole.LGB: int(lgb),
+                          LGRole.Villageois: nb - nblg - nb_special,
+                          LGRole.Sorciere: int(sorciere),
+                          LGRole.Voyante: int(voyante),
+                          LGRole.Garde: int(garde)}
+        self.rotation = Cycle(LGRole.Villageois, LGRole.Garde, LGRole.LG, LGRole.LGB, LGRole.Sorciere, LGRole.Voyante)
+        self.current = 0
         self.joueurs = dict()
         restants = self.compo.copy()
         etat = namedtuple("etat", ["role", "mort", "maire", "garde"])
         for j in joueurs:
-            roles = [r for r in restants if restants[r][0] > 0]
+            roles = [r for r in restants if restants[r] > 0]
             role = choice(roles)
-            restants[role][0] -= 1
-            camp = restants[role][1]
-            self[j] = etat(camp.value.format(role), False, False, False)
+            restants[role] -= 1
+            self[j] = etat(role, False, False, False)
 
     def __str__(self):
         hide_alive = dict()
         for joueur in self.joueurs:
             key = joueur
             if self[joueur].maire:
-                key = f"<yellow>{joueur}<reset>"
+                key = f"<cyan>{joueur}<reset>"
             hide_alive[key] = self[joueur].role
             if not self[joueur].mort:
                 hide_alive[key] = ""
@@ -295,14 +315,14 @@ class LoupGarou:
         return ANSI().converter(roles)
 
     def to_embed(self, color=Colour.blurple()):
-        embed = MyEmbed(title=f"{self.cycle.heure} n°{self.cycle.nb}", description=str(self), color=color)
+        embed = GBEmbed(title=f"{self.cycle.heure} n°{self.cycle.nb}", description=str(self), color=color)
         detailled = dict()
         for joueur in self:
             detailled[joueur.role] = detailled.get(joueur.role, 0)
             if not joueur.mort:
                 detailled[joueur.role] += 1
         detailled = "\n".join([f"{role} : {nb}/{self.compo[role]}" for role, nb in detailled.items()])
-        embed.add_field(name=f"Roles en vie : {len(self)}/{len(self.joueurs)}", value=detailled)
+        embed.add_field(name=f"LGRoles en vie : {len(self)}/{len(self.joueurs)}", value=detailled)
         return embed
 
     def __getitem__(self, item):
@@ -337,7 +357,7 @@ class LoupGarou:
         camps = {c: 0 for c in list(Camp)}
         for joueur in self:
             if not self[joueur].mort:
-                camps[self[joueur].camp] += 1
+                camps[get_camp(self[joueur].role)] += 1
         restants = [c for c, nb in camps.items() if nb > 0]
         if len(restants) > 1:
             return None
@@ -347,7 +367,7 @@ class LoupGarou:
         if dernier == Camp.Solo:
             if len(self) > 1:
                 return None
-            return [self[j] for j in self if not self[j].mort][0]
+            return [j for j in self if not self[j].mort][0]
         return dernier
 
     def cycle_switch(self):
@@ -373,5 +393,13 @@ class LoupGarou:
                 conj = "est mort"
                 if len(targets) > 1:
                     conj = "sont morts"
-                return f"Le village s'éveille... {morts} {conj} cette nuit"
+                return f"Le village s'éveille... {morts} {conj} cette nuit."
             return win
+
+    def next_role(self):
+        actuel = self.rotation[self.current]
+        self.current += 1
+        prochain = self.rotation[self.current]
+        if LGRole.Villageois in [actuel, prochain]:
+            self.cycle_switch()
+        return prochain

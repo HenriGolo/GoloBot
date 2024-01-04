@@ -1,5 +1,7 @@
 from functools import wraps
 from os import environ
+
+import discord
 from discord import Forbidden, ui, Interaction, ButtonStyle
 from discord.ext.commands import slash_command
 from GoloBot.Auxilliaire import *
@@ -7,35 +9,38 @@ from GoloBot.Auxilliaire.doc import cmds
 
 
 class BoutonShowFullError(ui.Button):
-    def __init__(self, full_embed, *args, **kwargs):
+    def __init__(self, bot, full_embed, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.bot = bot
         self.full = full_embed
 
     async def callback(self, interaction: Interaction):
-        view = GBView()
-        view.add_item(BoutonTransfert(self.view.dev, self.view.embed_err, label="Transférer", style=ButtonStyle.success))
+        view = GBView(self.bot)
+        view.add_item(BoutonTransfert(self.bot, self.view.dev, self.view.embed_err, label="Transférer", style=ButtonStyle.success))
         await interaction.response.edit_message(embed=self.full, view=view)
 
 
 class BoutonTransfert(ui.Button):
-    def __init__(self, dev, embed, *args, **kwargs):
+    def __init__(self, bot, dev, embed, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.bot = bot
         self.dev = dev
         self.embed = embed
 
     async def callback(self, interaction: Interaction):
         from GoloBot.UI.dm import BoutonSupprimerDM
-        await self.dev.send(embed=self.embed, view=GBView(BoutonSupprimerDM()))
+        await self.dev.send(embed=self.embed, view=GBView(self.bot, BoutonSupprimerDM(self.bot)))
         await interaction.response.edit_message(delete_after=0)
 
 
 class ViewError(GBView):
-    def __init__(self, dev, full_embed, embed_err):
+    def __init__(self, bot, dev, full_embed, embed_err):
         super().__init__()
+        self.bot = bot
         self.dev = dev
         self.embed_err = embed_err
-        self.add_item(BoutonShowFullError(full_embed, label="Détails", style=ButtonStyle.danger))
-        self.add_item(BoutonTransfert(dev, embed_err, label="Transférer", style=ButtonStyle.success))
+        self.add_item(BoutonShowFullError(bot, full_embed, label="Détails", style=ButtonStyle.danger))
+        self.add_item(BoutonTransfert(bot, dev, embed_err, label="Transférer", style=ButtonStyle.success))
 
 
 def command_logger(func):

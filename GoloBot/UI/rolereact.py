@@ -4,7 +4,7 @@ from discord import Role
 
 # Menu déroulant pour le role react
 class SelectRoleReact(ui.Select):
-    def __init__(self, roles: list[Role]):
+    def __init__(self, bot, roles: list[Role]):
         self.roles = roles
         # Création des options du menu déroulant
         choix = [SelectOption(label=f"Récupérer / Enlever {e.name}") for e in roles]
@@ -12,6 +12,7 @@ class SelectRoleReact(ui.Select):
             choix = [SelectOption(label="Actualiser")]
         # Création du menu déroulant
         super().__init__(placeholder="Choisir un rôle", min_values=1, options=choix, custom_id="role_react")
+        self.bot = bot
 
     # Ce n'est pas un modal, mais c'est le même format d'arguments
     @select_logger
@@ -20,7 +21,7 @@ class SelectRoleReact(ui.Select):
         msg = interaction.message
         guild = interaction.guild
         if self.values[0] == "Actualiser":
-            await interaction.response.edit_message(view=ViewRoleReact(rolesInStr(msg.content, guild)))
+            await interaction.response.edit_message(view=ViewRoleReact(self.bot, rolesInStr(msg.content, guild)))
             return
 
         for role in self.roles:
@@ -31,10 +32,11 @@ class SelectRoleReact(ui.Select):
                 else:
                     await user.add_roles(role)
                     await interaction.response.send_message(content=f"Rôle ajouté : {role.mention}", ephemeral=True)
-        await msg.edit(view=ViewRoleReact(self.roles))
+        await msg.edit(view=ViewRoleReact(self.bot, self.roles))
 
 
 class ViewRoleReact(GBView):
-    def __init__(self, roles: list[Role] = ()):
-        super().__init__(timeout=None)
-        self.add_item(SelectRoleReact(roles=roles))
+    def __init__(self, bot, roles: list[Role] = ()):
+        super().__init__(bot, timeout=None)
+        self.bot = bot
+        self.add_item(SelectRoleReact(bot, roles=roles))

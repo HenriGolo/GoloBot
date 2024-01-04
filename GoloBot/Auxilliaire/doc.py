@@ -309,5 +309,11 @@ DocCommand("write_emote",
            [Arg("mot", "Mot à écrire."),
             Arg("message_id", "Identifiant du message.")])
 
+DocCommand("dashboard",
+           "Affiche un menu de configuration des paramètres locaux du serveur.",
+           perm.manage_guild,
+           "",
+           [])
+
 DocCommand.instances.sort()
 cmds = {d.name: d.set_options() for d in DocCommand.instances}

@@ -2,8 +2,9 @@ from GoloBot.UI.base_imports import *
 
 
 class BoutonListeCommandes(ui.Button):
-    def __init__(self):
+    def __init__(self, bot):
         super().__init__(label="Liste des commandes", style=ButtonStyle.success)
+        self.bot = bot
 
     @button_logger
     async def callback(self, interaction: Interaction):
@@ -16,6 +17,7 @@ class BoutonListeCommandes(ui.Button):
 
 
 class ViewAide(GBView):
-    def __init__(self):
-        super().__init__()
-        self.add_item(BoutonListeCommandes())
+    def __init__(self, bot):
+        super().__init__(bot)
+        self.bot = bot
+        self.add_item(BoutonListeCommandes(bot))

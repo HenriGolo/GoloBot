@@ -43,8 +43,9 @@ class BoutonReponseDM(ui.Button):
 
 
 class BoutonSupprimerDM(ui.Button):
-    def __init__(self):
+    def __init__(self, bot):
         super().__init__(label="Supprimer", custom_id="supprimer", style=ButtonStyle.danger)
+        self.bot = bot
 
     @button_logger
     # Supprimer le MP
@@ -54,7 +55,7 @@ class BoutonSupprimerDM(ui.Button):
 
 class ViewDM(GBView):
     def __init__(self, bot):
-        super().__init__(timeout=None)
+        super().__init__(bot, timeout=None)
         self.target = None
         self.add_item(BoutonReponseDM(bot))
-        self.add_item(BoutonSupprimerDM())
+        self.add_item(BoutonSupprimerDM(bot))

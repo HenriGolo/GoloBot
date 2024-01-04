@@ -3,8 +3,9 @@ from GoloBot.UI.base_imports import *
 
 # QPUP (non, vous n'aurez pas le lore)
 class ModalQPUP(ui.Modal):
-    def __init__(self, rep, *args, **kwargs):
+    def __init__(self, bot, rep, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.bot = bot
         self.add_item(ui.InputText(label="Votre réponse"))
         self.rep = rep
 
@@ -18,17 +19,19 @@ class ModalQPUP(ui.Modal):
 
 
 class BoutonReponseQPUP(ui.Button):
-    def __init__(self, rep):
+    def __init__(self, bot, rep):
         super().__init__(label="Répondre", style=ButtonStyle.success)
+        self.bot = bot
         self.rep = rep
 
     @button_logger
     async def callback(self, interaction: Interaction):
         msg = interaction.message
-        await interaction.response.send_modal(ModalQPUP(rep=self.rep, title=msg.content))
+        await interaction.response.send_modal(ModalQPUP(self.bot, rep=self.rep, title=msg.content))
 
 
 class ViewQPUP(GBView):
-    def __init__(self, rep):
-        super().__init__()
+    def __init__(self, bot, rep):
+        super().__init__(bot)
+        self.bot = bot
         self.add_item(BoutonReponseQPUP(bot, rep))
