@@ -34,21 +34,24 @@ class Param:
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return self.name == other.name and self.desc == other.desc
-        return False
+        return self.value == other
 
     def __lt__(self, other):
         if isinstance(other, self.__class__):
             if self == other:
                 return self.value < other.value
             return self.name < other.name
-        return False
+        return self.value < other
 
     def __gt__(self, other):
         if isinstance(other, self.__class__):
             if self == other:
                 return self.value > other.value
             return self.name > other.name
-        return False
+        return self.value > other
+
+    def __bool__(self):
+        return bool(self.value)
 
     def update(self, value):
         if isinstance(value, self._type):
