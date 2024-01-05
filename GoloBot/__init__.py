@@ -23,6 +23,8 @@ class General(commands.Cog):
         try:
             # Message d'un bot → inutile
             if msg.author.bot:
+                if msg.guild is None:
+                    return
                 if guild_to_settings[msg.guild].config["autopublish bots"]:
                     try:
                         await msg.publish()
