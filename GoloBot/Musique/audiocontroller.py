@@ -67,7 +67,7 @@ class AudioController:
         self.current_song = None
         self.guild = guild
         sett = guild_to_settings[guild]
-        self._volume = sett['default volume']
+        self._volume = sett['default volume'].value
         self.timer = Timer(self.timeout_handler)
         self.loop = False
 

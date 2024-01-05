@@ -12,7 +12,7 @@ class BoutonListeCommandes(ui.Button):
         names.sort()
         embed = interaction.message.embeds[0]
         liste = "\n".join(names)
-        embed.add_field(name="Liste des commandes", value=ANSI().converter("<green>"+liste))
+        embed.add_field(name="Liste des commandes", value=ANSI.converter("<green>"+liste))
         await interaction.response.edit_message(embed=embed, view=None)
 
 

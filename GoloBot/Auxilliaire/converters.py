@@ -85,8 +85,8 @@ class BackgroundColor(Enum):
 
 
 class ANSI(Converter):
-    @staticmethod
-    def converter(argument):
+    @classmethod
+    def converter(cls, argument):
         colors = {f"<{c.name}>": f"\u001b[{c.value}m" for c in TextColor}
         colors["<reset>"] = f"\u001b[0m"
         bgcolors = {f"<bg{c.name}>": f"\u001b[{c.value}m" for c in BackgroundColor}

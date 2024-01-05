@@ -35,7 +35,7 @@ class Arg:
         if self.default is not None and self.default != base_value:
             affichage += "\n\tValeur par défaut : "
             affichage += f"<yellow>{self.default}<reset>"
-        return ANSI().converter(affichage)
+        return ANSI.converter(affichage)
 
     def __eq__(self, other):  # self == other
         if isinstance(other, self.__class__):

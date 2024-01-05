@@ -134,7 +134,7 @@ class Game2048:
             for j in range(1, 1 + self.grid.size):
                 affichage += "<cyan>{:>5} <red>|<reset> ".format(str(self.grid.getCase([i, j]).value))
             affichage += "\n" + sep
-        return ANSI().converter(affichage[:-11])
+        return ANSI.converter(affichage[:-11])
 
     def _score(self):
         # Calculs d'après https://medium.com/@kotamori/total-score-formula-of-the-2048-game-d9a8c9a1f1ac
@@ -312,7 +312,7 @@ class LoupGarou:
             if not self[joueur].mort:
                 hide_alive[key] = ""
         roles = "\n".join([f"{joueur} : {role}" for joueur, role in hide_alive.items()])
-        return ANSI().converter(roles)
+        return ANSI.converter(roles)
 
     def to_embed(self, color=Colour.blurple()):
         embed = GBEmbed(title=f"{self.cycle.heure} n°{self.cycle.nb}", description=str(self), color=color)

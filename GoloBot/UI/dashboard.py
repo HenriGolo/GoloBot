@@ -20,7 +20,7 @@ class ModalDashboard(ui.Modal):
         update = self.sett.write(self.setting, value)
         if update == Exit.Success:
             msg = f"Paramètre <cyan>{self.setting}<reset> modifié avec <green>succès"
-            await interaction.response.send_message(ANSI().converter(msg), ephemeral=True)
+            await interaction.response.send_message(ANSI.converter(msg), ephemeral=True)
             view = GBView(self.bot)
             view.add_item(SelectDashboard(self.bot, self.guild))
             await self.message.edit(embed=self.sett.to_embed(), view=view)

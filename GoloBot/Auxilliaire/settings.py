@@ -27,9 +27,8 @@ class Param:
     def __str__(self):
         raw = f"<green>{self.name}<reset> : {self.desc}"
         raw += "\n\tValeur : "
-        raw += (f"<yellow>{self.value}<reset> (<blue"
-                f">{self._type.__name__}<reset>)")
-        return ANSI().converter(raw)
+        raw += f"<yellow>{self.value}<reset> (<blue>{self._type.__name__}<reset>)"
+        return ANSI.converter(raw)
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):

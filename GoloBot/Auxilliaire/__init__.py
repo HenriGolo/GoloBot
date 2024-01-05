@@ -215,14 +215,14 @@ class GBDecoder(json.JSONDecoder):
                 std = False
         return std
 
-    @staticmethod
-    def repr_parser(s):
+    @classmethod
+    def repr_parser(cls, s):
         # s de la forme <path.to.class.classname champ1=valeur1 champ2=valeur2>
         s = s.strip('<').strip('>') + ' '
         elts = s.split('=')  # on commence par split sur = sinon c'est + dur de s'y retrouver
         elts = [e.split(' ') for e in elts]
-        cls = elts[0][0]  # cls de la forme path.to.class.classname
-        cls = cls.split('.')
+        klass = elts[0][0]  # cls de la forme path.to.class.classname
+        klass = klass.split('.')
         kwargs = dict()
         for i in range(1, len(elts)):
             data = ' '.join(elts[i][:-1])
@@ -232,9 +232,10 @@ class GBDecoder(json.JSONDecoder):
                 pass
             finally:
                 kwargs[elts[i-1][-1]] = data
-        return cls, kwargs
+        return klass, kwargs
 
-    def instanciate(self, path: list[str], _from=None):
+    @classmethod
+    def instanciate(cls, path: list[str], _from=None):
         # print("path", path)
         if not path:
             return _from
@@ -247,7 +248,7 @@ class GBDecoder(json.JSONDecoder):
                 if _from is None:
                     _from = __import__(path[0])
                     path = path[1:]
-                return self.instanciate(path[1:], getattr(_from, path[0]))
+                return cls.instanciate(path[1:], getattr(_from, path[0]))
 
 
 # Commande bash tail avec un peu de traitement
