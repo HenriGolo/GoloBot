@@ -53,6 +53,12 @@ class Param:
     def __bool__(self):
         return bool(self.value)
 
+    def __int__(self):
+        return int(self.value)
+
+    def __float__(self):
+        return float(self.value)
+
     def update(self, value):
         if isinstance(value, self._type):
             self.value = value
