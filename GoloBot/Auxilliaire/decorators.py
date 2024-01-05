@@ -79,7 +79,7 @@ def command_logger(func):
                 full_embed.description = f"```python\n{err.strip()}\n```"
                 embed_err = full_embed.copy()
                 embed_err.title = f"Erreur de {user} avec {func.__name__}"
-                view = ViewError(caller.bot.dev, full_embed, embed_err)
+                view = ViewError(caller.bot, caller.bot.dev, full_embed, embed_err)
                 await ctx.respond(embed=embed, view=view, ephemeral=True)
                 with open(environ['stderr'], 'a') as stderr:
                     stderr.write(f"\n{start}\n{err}\n")
