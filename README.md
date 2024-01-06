@@ -15,7 +15,7 @@ Me contacter → envoyer un message privé au bot ou rejoindre le [Serveur de Su
 Créer le module python avec `make build`.
 `import GoloBot` pour l'utiliser dans vos scripts python.
 
-`make launch` ou simplement `make` pour démarrer le bot en tâche de fond.
+`make update` ou simplement `make` pour démarrer le bot en tâche de fond.
 Attention, vous devez définir les variables suivantes dans votre environnement virtuel.
 
 | Nom de la variable         | Description                                                                 | Format | Vide       |
