@@ -1,4 +1,4 @@
-update : pull build start
+update : pull build .WAIT start
 
 start :
 	Main/restart.py
@@ -22,4 +22,4 @@ clean :
 clean_settings :
 	echo {} > logs/settings.json
 
-reset : clean clean_settings build
+reset : clean clean_settings .WAIT build
