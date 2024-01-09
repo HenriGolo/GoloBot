@@ -17,7 +17,7 @@ class GoloBot(discord.AutoShardedBot):
     # Plus de 25 commandes, seul moyen d'avoir une forme d'autocomplétion
     words = {cmd: {} for cmd in cmds}
     synonyms = {cmd: {" ".join(cmd.split(" "))} for cmd in cmds}
-    self.commands_names = Completer(words=words, synonyms=synonyms)
+    commands_names = Completer(words=words, synonyms=synonyms)
 
     # Lettres de l'alphabet en caractères Unicode, utilisable comme emotes
     alphabet = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲',
@@ -31,7 +31,7 @@ class GoloBot(discord.AutoShardedBot):
 
         # Ajout des commandes
         for cog in commands.Cog.__subclasses__():
-            bot.add_cog(cog(bot))
+            self.add_cog(cog(self))
 
         # Sera défini dans on_ready
         self.startTime = None
