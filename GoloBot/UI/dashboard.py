@@ -13,7 +13,7 @@ class ModalDashboard(ui.Modal):
         self.add_item(ui.InputText(label=f"Nouvelle valeur pour {setting}", value=self.sett[setting].value,
                                    style=InputTextStyle.long))
 
-    @modal_logger
+    @logger
     async def callback(self, interaction: Interaction):
         value = self.children[0].value
         value = GBDecoder().decode(value)  # oui c'est overkill de load du json pour ça
@@ -35,7 +35,7 @@ class SelectDashboard(ui.Select):
         options = [SelectOption(label=sett) for sett in guild_to_settings[guild].config if sett != "id"]
         super().__init__(placeholder="Modifier un paramètre", min_values=1, options=options)
 
-    @select_logger
+    @logger
     async def callback(self, interaction: Interaction):
         setting = self.values[0]
         await interaction.response.send_modal(

@@ -18,43 +18,40 @@ class General(commands.Cog):
 
     # Gestion des messages
     @commands.Cog.listener()
+    @logger
     async def on_message(self, msg):
         currentTime = now()
-        try:
-            # Message d'un bot → inutile
-            if msg.author.bot:
-                if msg.guild is None:
-                    return
-                if guild_to_settings[msg.guild].config["autopublish bots"]:
-                    try:
-                        await msg.publish()
-                    except:
-                        pass
+        # Message d'un bot / webhook
+        if msg.author.bot:
+            if msg.guild is None:
                 return
+            if guild_to_settings[msg.guild].config["autopublish bots"]:
+                try:
+                    await msg.publish()
+                except:
+                    pass
+            return
 
-            # Message privé → transmission au dev
-            if msg.channel.type == discord.ChannelType.private:
-                if not msg.author == self.bot.dev:
-                    embed = GBEmbed(title="Nouveau Message", description=msg.content, color=msg.author.color)
-                    # Transmission des pièces jointes
-                    files = [await fichier.to_file() for fichier in msg.attachments]
-                    await self.bot.dev.send(f"Reçu de {msg.author.mention}",
-                                            embed=embed,
-                                            files=files,
-                                            view=ViewDM(bot=self.bot))
+        # Message privé → transmission au dev
+        if msg.channel.type == discord.ChannelType.private:
+            if not msg.author == self.bot.dev:
+                embed = GBEmbed(title="Nouveau Message", description=msg.content, color=msg.author.color)
+                # Transmission des pièces jointes
+                files = [await fichier.to_file() for fichier in msg.attachments]
+                await self.bot.dev.send(f"Reçu de {msg.author.mention}",
+                                        embed=embed,
+                                        files=files,
+                                        view=ViewDM(bot=self.bot))
+                if 'dm' in environ:
                     with open(environ['dm'], 'a') as fichier:
                         fichier.write(f"\n{currentTime} {msg.author.name} a envoyé un DM :\n{msg.content}\n")
-                    await msg.add_reaction(self.bot.bools[True])
-            else:
-                # S'obtient avec un '@silent' devant le message
-                if not msg.flags.suppress_notifications:
-                    for pr in self.bot.PR:
-                        if pr.trigger(msg.content) and pr.users(msg.author) and pr.guilds(msg.guild):
-                            await msg.reply(str(pr))
-
-        except Exception:
-            with open(environ['stderr'], 'a') as stderr:
-                stderr.write(f"\n{currentTime}\n{fail()}\n")
+                await msg.add_reaction(self.bot.bools[True])
+        else:
+            # S'obtient avec un '@silent ' devant le message
+            if not msg.flags.suppress_notifications:
+                for pr in self.bot.PR:
+                    if pr.trigger(msg.content) and pr.users(msg.author) and pr.guilds(msg.guild):
+                        await msg.reply(str(pr))
 
     # Aide
     @customSlash
@@ -77,7 +74,7 @@ class General(commands.Cog):
         if not commande.aide == "":
             embed.add_field(name="Aide Supplémentaire", value=commande.aide, inline=False)
         embed.add_field(name="Encore des questions ?",
-                        value=f"Le <:discord:1164579176146288650> [Serveur de Support]({environ['invite_server']}) est là pour ça",
+                        value=f"Le <:discord:1164579176146288650> [Serveur de Support]({environ.get('invite_server', None)}) est là pour ça",
                         inline=False)
         await ctx.respond(embed=embed, view=ViewAide(self.bot), ephemeral=not visible)
 
@@ -86,8 +83,8 @@ class General(commands.Cog):
     async def invite(self, ctx):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title=f"Inviter {self.bot.user.name}",
-                        description=f"""Tu peux m'inviter avec [ce lien]({environ['invite_bot']})
-Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci]({environ['invite_server']})""",
+                        description=f"""Tu peux m'inviter avec [ce lien]({environ.get('invite_bot', None)})
+Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci]({environ.get('invite_server', None)})""",
                         color=ctx.author.color)
         support_qrcode = environ.get('support_qr', None)
         if support_qrcode:
@@ -99,8 +96,8 @@ Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci
     async def github(self, ctx):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title="Code Source",
-                        description=f"Le code source est disponible sur <:github:1164672088934711398> [Github]({environ['github']})\n\
-Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({environ['invite_server']})",
+                        description=f"Le code source est disponible sur <:github:1164672088934711398> [Github]({environ.get('github', None)})\n\
+Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({environ.get('invite_server', None)})",
                         color=ctx.author.color)
         support_qrcode = environ.get('support_qr', None)
         if support_qrcode:
@@ -154,7 +151,7 @@ class Dev(commands.Cog):
         # Commande réservée au dev
         if not ctx.author == self.bot.dev:
             await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
-            raise Exception("N'est pas dev")
+            raise ManquePerms("N'est pas dev")
 
         await ctx.send_modal(ModalDM(bot=self.bot, title="Envoyer un message privé"))
 
@@ -169,7 +166,7 @@ class Dev(commands.Cog):
             else:
                 await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
                 await self.bot.dev.send(f"{ctx.author.mention} a essayé de déconnecter le bot")
-                raise Exception("N'est pas dev")
+                raise ManquePerms("N'est pas dev")
 
         await ctx.respond(f"En ligne depuis : {Timestamp(self.bot.startTime).relative}", ephemeral=True)
         # Déconnecte le bot
@@ -199,7 +196,11 @@ class Dev(commands.Cog):
         # Commande réservée au dev
         if not ctx.author == self.bot.dev:
             await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
-            raise Exception("N'est pas dev")
+            raise ManquePerms("N'est pas dev")
+
+        if not 'stderr' in environ:
+            raise Exception("Aucun fichier de log renseigné")
+
         stderr = discord.File(fp=environ['stderr'], filename=environ['stderr'].split("/")[-1])
         reponse = f"Dernières {last_x_lines} lignes de **{stderr}** :\n{tail(environ['stderr'], last_x_lines)[-1900:]}"
         await ctx.respond(f"Voici les logs demandés\n{reponse}", files=[stderr], ephemeral=True)
@@ -210,7 +211,11 @@ class Dev(commands.Cog):
         # Commande réservée au dev
         if not ctx.author == self.bot.dev:
             await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
-            raise Exception("N'est pas dev")
+            raise ManquePerms("N'est pas dev")
+
+        if not 'stdout' in environ:
+            raise Exception("Aucun fichier de sortie renseigné")
+
         stdout = File(fp=environ['stdout'], filename=environ['stdout'].split("/")[-1])
         reponse = f"Dernières {last_x_lines} lignes de **{stdout}** :\n{tail(environ['stdout'], last_x_lines)[-1900:]}"
         await ctx.respond(f"Voici les logs demandés\n{reponse}", files=[stdout], ephemeral=True)
@@ -316,7 +321,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         # Manque de permissions
         if not ctx.channel.permissions_for(ctx.author).manage_messages:
             await ctx.respond(f"Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
-            raise Exception("Manque de permissions")
+            raise ManquePerms("Manque de permissions")
 
         await ctx.respond(f"Début du clear de {salon.mention}", ephemeral=True)
         cpt = 0
@@ -344,7 +349,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             await ctx.respond(f"Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
             await self.bot.dev.send(f"{ctx.author.mention} a voulu ban {user.mention} de {ctx.guild}")
             await ctx.author.timeout(until=now() + timedelta(minutes=2), reason=f"A voulu ban {user.name}")
-            raise Exception("Rôle trop faible")
+            raise ManquePerms("Rôle trop faible")
 
         try:
             who = f" (demandé par {ctx.author.name})"
@@ -371,7 +376,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         if user.top_role >= ctx.author.top_role:
             await ctx.respond(f"Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
             await ctx.author.timeout(until=end_mute, reason=f"A voulu mute {user.name}")
-            raise Exception("Rôle trop faible")
+            raise ManquePerms("Rôle trop faible")
 
         try:
             who = f" (demandé par {ctx.author.name})"

@@ -11,7 +11,7 @@ class ModalDM(ui.Modal):
         if target is None:
             self.add_item(ui.InputText(label="Pour"))
 
-    @modal_logger
+    @logger
     async def callback(self, interaction: Interaction):
         joueur = interaction.user
         if self.target is None:
@@ -34,7 +34,7 @@ class BoutonReponseDM(ui.Button):
         targets = await usersInStr(content, self.bot)
         return targets[0]
 
-    @button_logger
+    @logger
     # Répondre au MP
     async def callback(self, interaction: Interaction):
         self.target = await self.set_target(interaction.message.content)
@@ -47,7 +47,7 @@ class BoutonSupprimerDM(ui.Button):
         super().__init__(label="Supprimer", custom_id="supprimer", style=ButtonStyle.danger)
         self.bot = bot
 
-    @button_logger
+    @logger
     # Supprimer le MP
     async def callback(self, interaction: Interaction):
         await interaction.response.edit_message(delete_after=0)

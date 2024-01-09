@@ -178,7 +178,6 @@ class GBDecoder(json.JSONDecoder):
         self.create_instance = True
 
     def decode(self, s, _w=...):
-        # print("à décoder", s)
         s = s.strip('"').strip("'")
         if s.startswith('<') and s.endswith('>'):
             s = s[1:-1].strip('"').strip("'")
@@ -236,7 +235,6 @@ class GBDecoder(json.JSONDecoder):
 
     @classmethod
     def instanciate(cls, path: list[str], _from=None):
-        # print("path", path)
         if not path:
             return _from
         try:

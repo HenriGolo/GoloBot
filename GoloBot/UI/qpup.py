@@ -9,7 +9,7 @@ class ModalQPUP(ui.Modal):
         self.add_item(ui.InputText(label="Votre réponse"))
         self.rep = rep
 
-    @modal_logger
+    @logger
     async def callback(self, interaction: Interaction):
         if correspond(self.children[0].value, self.rep):
             await interaction.response.send_message(
@@ -24,7 +24,7 @@ class BoutonReponseQPUP(ui.Button):
         self.bot = bot
         self.rep = rep
 
-    @button_logger
+    @logger
     async def callback(self, interaction: Interaction):
         msg = interaction.message
         await interaction.response.send_modal(ModalQPUP(self.bot, rep=self.rep, title=msg.content))

@@ -8,7 +8,7 @@ class BoutonDirectionnel2048(ui.Button):
         self.bot = bot
         self.direction = direction
 
-    @button_logger
+    @logger
     async def callback(self, interaction: Interaction):
         # Récupération du joueur
         joueur = interaction.user
@@ -50,7 +50,7 @@ class BoutonStop2048(ui.Button):
         super().__init__(label="Arrêter", style=ButtonStyle.danger, emoji=bot.bools[False])
         self.bot = bot
 
-    @button_logger
+    @logger
     async def callback(self, interaction: Interaction):
         # On désactive tous les boutons
         for child in self.view.children:

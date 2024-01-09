@@ -6,7 +6,7 @@ class BoutonListeCommandes(ui.Button):
         super().__init__(label="Liste des commandes", style=ButtonStyle.success)
         self.bot = bot
 
-    @button_logger
+    @logger
     async def callback(self, interaction: Interaction):
         names = [name for name in cmds]
         names.sort()

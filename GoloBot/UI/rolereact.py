@@ -15,7 +15,7 @@ class SelectRoleReact(ui.Select):
         self.bot = bot
 
     # Ce n'est pas un modal, mais c'est le même format d'arguments
-    @select_logger
+    @logger
     async def callback(self, interaction: Interaction):
         user = interaction.user
         msg = interaction.message

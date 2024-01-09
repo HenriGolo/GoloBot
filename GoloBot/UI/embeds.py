@@ -14,7 +14,7 @@ class ModalNewEmbed(ui.Modal):
         self.add_item(
             ui.InputText(label="Couleur", placeholder="Couleur en Hexadécimal", value="5865F2", required=False))
 
-    @modal_logger
+    @logger
     async def callback(self, interaction: Interaction):
         title = self.children[0].value
         description = ANSI.converter(self.children[1].value)
@@ -38,7 +38,7 @@ class ModalEditEmbed(ui.Modal):
         self.add_item(ui.InputText(label="Description", value=old[1], style=InputTextStyle.long, required=False))
         self.add_item(ui.InputText(label="Couleur", value=old[2], required=False))
 
-    @modal_logger
+    @logger
     async def callback(self, interaction: Interaction):
         title = self.children[0].value
         description = ANSI.converter(self.children[1].value)
@@ -68,7 +68,7 @@ class ModalEditEmbedFields(ui.Modal):
         self.add_item(ui.InputText(label="Nom", value=old_name, required=False))
         self.add_item(ui.InputText(label="Contenu", value=old_value, style=InputTextStyle.long, required=False))
 
-    @modal_logger
+    @logger
     async def callback(self, interaction: Interaction):
         name = self.children[0].value
         value = ANSI.converter(self.children[1].value)
@@ -92,7 +92,7 @@ class SelectEmbed(ui.Select):
             if value.endswith(embed.title):
                 return i
 
-    @select_logger
+    @logger
     async def callback(self, interaction: Interaction):
         index = self.select_embed(self.values[0])
         modal = ModalEditEmbed(self.bot, self.embeds, self.embeds[index], self.msg_id, title="Édition de l'Embed")
@@ -118,7 +118,7 @@ class SelectFieldEmbed(ui.Select):
             if value.endswith(field.name):
                 return i
 
-    @select_logger
+    @logger
     async def callback(self, interaction: Interaction):
         index = self.select_field(self.values[0])
         if index is None:
@@ -142,7 +142,7 @@ class SelectRemoveEmbed(ui.Select):
             if value.endswith(e.title):
                 return e
 
-    @select_logger
+    @logger
     async def callback(self, interaction: Interaction):
         embed = self.select_embed(self.values[0])
         embeds = [e for e in self.embeds if e != embed]
@@ -168,7 +168,7 @@ class SelectRemoveFieldEmbed(ui.Select):
                 return i
         return None
 
-    @select_logger
+    @logger
     async def callback(self, interaction: Interaction):
         index = self.select_field(self.values[0])
         if index is None:
@@ -190,7 +190,7 @@ class BoutonAjouterChampEmbed(ui.Button):
         self.embed = embed
         self.msg_id = msg_id
 
-    @button_logger
+    @logger
     # Ajouter un Champ
     async def callback(self, interaction: Interaction):
         self.embed.add_field(name=f"Champ {len(self.embed.fields)}", value="Nouveau", inline=False)
@@ -206,7 +206,7 @@ class BoutonAjouterEmbed(ui.Button):
         self.embed = embed
         self.msg_id = msg_id
 
-    @button_logger
+    @logger
     # Ajouter un Embed
     async def callback(self, interaction: Interaction):
         color = self.embeds[-1].color.value
@@ -222,7 +222,7 @@ class BoutonEnvoyerEmbed(ui.Button):
         self.embeds = embeds
         self.msg_id = msg_id
 
-    @button_logger
+    @logger
     # Envoyer les Embeds
     async def callback(self, interaction: Interaction):
         for e in self.embeds:
