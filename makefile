@@ -1,4 +1,4 @@
-update : pull build .WAIT start
+update : pull .WAIT build .WAIT start
 
 start :
 	Main/restart.py
