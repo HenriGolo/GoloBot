@@ -248,12 +248,6 @@ Documention sur les [couleurs ANSI]({docs['ansi']}).
 Utilisation avec le bot : <couleur>, <bgcouleur> ou <reset>.""",
            [Arg("edit", "ID du message à modifier.", default=base_value)])
 
-DocCommand("disable_custom_responses",
-           "Désactive les messages de réponses personnalisées sur ce serveur.",
-           perm.administrator,
-           "Désactive tout, pour en remettre seulement certaines en service, envoyer un MP au bot à ce sujet.",
-           [])
-
 DocCommand("play",
            "Joue une musiqe / playlist à partir d'une recherche / url.",
            perm.none(),
