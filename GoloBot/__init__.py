@@ -19,13 +19,13 @@ class General(commands.Cog):
     # Gestion des messages
     @commands.Cog.listener()
     @logger
-    async def on_message(self, msg):
+    async def on_message(self, msg: discord.Message):
         currentTime = now()
         # Message d'un bot / webhook
         if msg.author.bot:
             if msg.guild is None:
                 return
-            if msg.reference is not None:
+            if msg.reference is None:
                 if guild_to_settings[msg.guild].config["autopublish bots"]:
                     try:
                         await msg.publish()
