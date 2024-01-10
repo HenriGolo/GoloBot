@@ -10,7 +10,8 @@ class ModalDashboard(ui.Modal):
         self.setting = setting
         self.message = msg
         self.sett = guild_to_settings[guild]
-        self.add_item(ui.InputText(label=f"Nouvelle valeur pour {setting}", value=self.sett[setting].value,
+        self.add_item(ui.InputText(label=f"Nouvelle valeur pour {setting}",
+                                   value=str(self.sett[setting].value),
                                    style=InputTextStyle.long))
 
     @logger
