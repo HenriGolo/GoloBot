@@ -146,6 +146,14 @@ class Dev(commands.Cog):
     def __init__(self, used_bot):
         self.bot = used_bot
 
+    # Les ID sont ceux de mon serveur de test et du serveur de support
+    @commands.slash_command(guild_ids=[664006363508244481, 1158154606124204072],
+                            description="Commande de test, ne pas utiliser.")
+    async def test(self, ctx):
+        await ctx.defer(ephemeral=True)
+        embed = GBEmbed(title="test", user=ctx.author, guild=ctx.guild)
+        await ctx.respond(embed=embed, ephemeral=True)
+
     # Envoie un message privé à un User
     @customSlash
     async def dm(self, ctx):
