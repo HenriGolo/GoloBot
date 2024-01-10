@@ -67,9 +67,13 @@ class GoloBot(discord.AutoShardedBot):
         self.add_view(ViewRoleReact(self))
         self.add_view(ViewDM(self))
 
-        # Setup de la Musique
         for guild in self.guilds:
+            # Setup de la Musique
             await register(self, guild)
+
+            # Enregistrement des guilds auxquelles le bot appartient
+            with open('logs/guilds.log', 'w') as file:
+                file.write(f"{guild.name}\n")
 
         # Gestion du PID pour kill proprement
         with open(environ['pidfile'], 'w') as pid:
@@ -80,7 +84,12 @@ class GoloBot(discord.AutoShardedBot):
 
     @logger
     async def on_guild_join(self, guild):
+        # Setup de la Musique
         await register(self, guild)
+
+        # Enregistrement des guilds auxquelles le bot appartient
+        with open('logs/guilds.log', 'a') as file:
+            file.write(f"{guild.name}\n")
 
     @staticmethod
     @logger
