@@ -39,7 +39,7 @@ class BoutonTransfert(ui.Button):
 
 class ViewError(GBView):
     def __init__(self, bot, full_embed, embed_err):
-        super().__init__()
+        super().__init__(bot)
         self.bot = bot
         self.embed_err = embed_err
         self.add_item(BoutonShowFullError(bot, full_embed, label="Détails", style=ButtonStyle.danger))
@@ -53,7 +53,11 @@ class Data:
         self.caller = args[0]
         self.user = None
         self.guild = None
-        self.action = lambda *args: None
+
+        # on ne peut pas async un lambda, donc c'est moche
+        async def donothing(*args, **kwargs):
+            return None
+        self.action = donothing
 
         if len(args) > 1:
             source = args[1]
