@@ -3,7 +3,7 @@ from collections import namedtuple
 from datetime import datetime, timedelta
 from subprocess import check_output
 from traceback import format_exc
-from discord import Embed, ui
+import discord
 from fast_autocomplete import AutoComplete
 from requests import Session
 from enum import Enum
@@ -71,13 +71,13 @@ class Timestamp:
         self.short_datetime = f"<t:{ts}:f>"
 
 
-class GBEmbed(Embed):
+class GBEmbed(discord.Embed):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.timestamp = now()
 
 
-class GBView(ui.View):
+class GBView(discord.ui.View):
     def __init__(self, bot, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.bot = bot
@@ -87,7 +87,7 @@ class GBView(ui.View):
 
 
 class Trigger:
-    def __init__(self, trigger: str, rmurl: bool = True, rmention: bool = True, rmoji: bool = False):
+    def __init__(self, trigger: str, rmurl=True, rmention=True, rmoji=False):
         self.trigger = trigger
         self.rmurl = rmurl
         self.rmention = rmention
@@ -120,29 +120,33 @@ class Trigger:
 
 
 class PrivateResponse:
-    def __init__(self, triggers=(Trigger(""),), message="", allowed_guilds=(), denied_guilds=()):
+    def __init__(self, bot, triggers=(Trigger(""),), message="", allowed_guilds=()):
+        self.bot = bot
         self.triggers = triggers  # Contenu d'un message pour activer la réponse
         self.message = message  # Réponse à envoyer
         self.Aguilds = allowed_guilds  # Servers sur lesquels la réponse fonctionne ([] = tous)
-        self.Dguilds = denied_guilds  # Servers sur lesquels la réponse est désactivée
 
     def __str__(self):
         return self.message
 
-    def trigger(self, content: str):
+    async def trigger(self, msg: discord.Message):
+        content = msg.content
         for t in self.triggers:
             if t.check(content):
                 return True
         return False
 
     @staticmethod
-    def users(user):
-        return True
+    async def users(msg: discord.Message):
+        user = msg.author
+        return not user.bot
 
-    def guilds(self, guild):
-        allowed = self.Aguilds == () or guild.id in self.Aguilds
-        denied = guild.id in self.Dguilds
-        return allowed and not denied
+    async def guilds(self, msg: discord.Message):
+        return self.Aguilds == () or msg.guild.id in self.Aguilds
+
+    async def do_stuff(self, msg: discord.Message):
+        if await self.trigger(msg) and await self.guilds(msg) and await self.users(msg):
+            await msg.reply(str(self))
 
 
 class Completer(AutoComplete):

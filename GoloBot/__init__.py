@@ -25,11 +25,12 @@ class General(commands.Cog):
         if msg.author.bot:
             if msg.guild is None:
                 return
-            if guild_to_settings[msg.guild].config["autopublish bots"]:
-                try:
-                    await msg.publish()
-                except:
-                    pass
+            if msg.reference is not None:
+                if guild_to_settings[msg.guild].config["autopublish bots"]:
+                    try:
+                        await msg.publish()
+                    except:
+                        pass
             return
 
         # Message privé → transmission au dev
@@ -47,11 +48,11 @@ class General(commands.Cog):
                         fichier.write(f"\n{currentTime} {msg.author.name} a envoyé un DM :\n{msg.content}\n")
                 await msg.add_reaction(self.bot.bools[True])
         else:
-            # S'obtient avec un '@silent ' devant le message
-            if not msg.flags.suppress_notifications:
-                for pr in self.bot.PR:
-                    if pr.trigger(msg.content) and pr.users(msg.author) and pr.guilds(msg.guild):
-                        await msg.reply(str(pr))
+            if guild_to_settings[msg.guild].config["reponses custom"]:
+                # S'obtient avec un '@silent ' devant le message
+                if not msg.flags.suppress_notifications:
+                    for pr in self.bot.PR:
+                        await pr.do_stuff(msg)
 
     # Aide
     @customSlash
@@ -505,19 +506,6 @@ class Troll(commands.Cog):
         msg += lim
         await ctx.channel.send(msg)
         await ctx.respond(emote, ephemeral=True)
-
-    # Désactive les réponses custom dans le serveur
-    @customSlash
-    @commands.has_permissions(administrator=True)
-    async def disable_custom_responses(self, ctx):
-        serveur = ctx.guild
-        await ctx.defer(ephemeral=True)
-        for pr in self.bot.PR:
-            pr.Dguilds.append(serveur.id)
-        await self.bot.dev.send(
-            f"Ajouter {serveur.id} ({serveur.name}) sur blacklist des PR à la demande de {ctx.author} ({ctx.author.id})")
-        await ctx.respond(f"""Les messages de réponses customs sont désormais désactivés sur ce serveur.
-    Pour changer ça, envoyer un message privé au bot.""", ephemeral=True)
 
 
 class Music(commands.Cog):

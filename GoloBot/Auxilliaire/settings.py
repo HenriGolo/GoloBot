@@ -75,6 +75,11 @@ Param("autopublish bots",
       False,
       bool)
 
+Param("reponses custom",
+      "Autorise le bot à réagir avec un comportement personnalisable par les utilisateurs.",
+      True,
+      bool)
+
 Param.instances.sort()
 
 

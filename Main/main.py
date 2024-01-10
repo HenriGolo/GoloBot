@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from os import getpid
 from GoloBot import *  # Contient tout ce qu'il faut, imports
-from privatebot import PrivateResponse  # Réponses custom à certains contenus de messages
+from privatebot import *  # Réponses custom à certains contenus de messages
 
 
 class GoloBot(discord.AutoShardedBot):
@@ -10,9 +10,6 @@ class GoloBot(discord.AutoShardedBot):
 
     # Jeux en cours
     games = dict()
-
-    # Réponses personalisées
-    PR = [pr() for pr in PrivateResponse.__subclasses__()]
 
     # Plus de 25 commandes, seul moyen d'avoir une forme d'autocomplétion
     words = {cmd: {} for cmd in cmds}
@@ -32,6 +29,11 @@ class GoloBot(discord.AutoShardedBot):
         # Ajout des commandes
         for cog in commands.Cog.__subclasses__():
             self.add_cog(cog(self))
+
+        # Réponses personalisées
+        # On cherche dans les subclass pour se laisser la possibilité d'overwrite les fonctions
+        # Ce qui ne serait pas possible (ou moins intuitif / facile) avec des instances de PrivateResponse
+        self.PR = [pr(self) for pr in PrivateResponse.__subclasses__()]
 
         # Sera défini dans on_ready
         self.startTime = None
