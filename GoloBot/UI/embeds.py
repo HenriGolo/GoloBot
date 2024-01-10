@@ -77,6 +77,39 @@ class ModalEditEmbedFields(ui.Modal):
         await interaction.response.edit_message(embeds=self.embeds, view=view)
 
 
+class ModalSetAuthor(ui.Modal):
+    def __init__(self, bot, embeds, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.bot = bot
+        self.embeds = embeds
+        self.add_item(ui.InputText(label="Nom", placeholder="par défaut : toi", required=False))
+        self.add_item(ui.InputText(label="Avatar (url)", placeholder="par défaut : toi", required=False))
+        self.add_item(ui.InputText(label="Ne modifier que les N premiers", value="Tous"))
+
+    @logger
+    async def callback(self, interaction: Interaction):
+        name = self.children[0].value
+        avatar = self.children[1].value
+        try:
+            n = int(self.children[2].value)
+        except ValueError:
+            n = None
+
+        for embed in self.embeds[:n]:
+            if not name:
+                name = embed.author.name
+                if not name:
+                    name = interaction.user.name
+
+            if not avatar:
+                avatar = embed.author.icon_url
+                if not avatar:
+                    avatar = interaction.user.avatar.url
+
+            embed.set_author(name=name, icon_url=avatar)
+        await interaction.response.edit_message(embeds=self.embeds)
+
+
 # Sélection de l'Embed à modifier
 class SelectEmbed(ui.Select):
     def __init__(self, bot, embeds, msg_id):
@@ -235,6 +268,17 @@ class BoutonEnvoyerEmbed(ui.Button):
         await interaction.response.edit_message(delete_after=0)
 
 
+class BoutonSetAuthor(ui.Button):
+    def __init__(self, bot, embeds):
+        super().__init__(label="Définir Auteur", style=ButtonStyle.primary)
+        self.bot = bot
+        self.embeds = embeds
+
+    @logger
+    async def callback(self, interaction: Interaction):
+        await interaction.response.send_modal(ModalSetAuthor(self.bot, self.embeds, title="Modifier l'auteur"))
+
+
 # View finale de la création / modification des Embeds
 class ViewEditEmbed(GBView):
     def __init__(self, bot, embeds, embed, msg_id):
@@ -242,6 +286,7 @@ class ViewEditEmbed(GBView):
         self.bot = bot
         self.add_item(BoutonAjouterEmbed(bot, embeds, embed, msg_id))
         self.add_item(BoutonAjouterChampEmbed(bot, embeds, embed, msg_id))
+        self.add_item(BoutonSetAuthor(bot, embeds))
         self.add_item(BoutonEnvoyerEmbed(bot, embeds, msg_id))
         if len(embeds) > 1:
             self.add_item(SelectEmbed(bot, embeds, msg_id))
