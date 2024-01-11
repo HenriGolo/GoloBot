@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 from os import getpid
+
+import discord
+
 from GoloBot import *  # Contient tout ce qu'il faut, imports
 from privatebot import *  # Réponses custom à certains contenus de messages
 
@@ -36,10 +39,11 @@ class GoloBot(discord.AutoShardedBot):
         self.PR = [pr(self) for pr in PrivateResponse.__subclasses__()]
 
         # Sera défini dans on_ready
-        self.startTime = None
-        self.dev = None
-        self.emotes = None
-        self.bools = None
+        self.startTime: datetime = None
+        self.dev: discord.User = None
+        self.support: discord.Guild = None
+        self.emotes: dict[discord.Emoji] = None
+        self.bools: dict[discord.Emoji] = None
 
     def __str__(self):
         return self.user.name
@@ -59,7 +63,7 @@ class GoloBot(discord.AutoShardedBot):
         await self.change_presence(activity=activity)
 
         # Emojis personnalisés
-        GoloBotGuild = await self.fetch_guild(1158154606124204072)
+        self.support = GoloBotGuild = await self.fetch_guild(1158154606124204072)
         self.emotes = {e.name: str(e) for e in GoloBotGuild.emojis}
         self.bools = {True: self.emotes['check'], False: self.emotes['denied']}
 
@@ -67,12 +71,16 @@ class GoloBot(discord.AutoShardedBot):
         self.add_view(ViewRoleReact(self))
         self.add_view(ViewDM(self))
 
+        # Clean guilds.log
+        with open('logs/guilds.log', 'w'):
+            pass
+
         for guild in self.guilds:
             # Setup de la Musique
             await register(self, guild)
 
             # Enregistrement des guilds auxquelles le bot appartient
-            with open('logs/guilds.log', 'w') as file:
+            with open('logs/guilds.log', 'a') as file:
                 file.write(f"{guild.name}\n")
 
         # Gestion du PID pour kill proprement

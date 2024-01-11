@@ -68,6 +68,9 @@ class General(commands.Cog):
         commande = cmds[name]
         # Embed des informations sur la commande
         embed = GBEmbed(title="Aide", description=mention, color=ctx.author.color)
+        embed.set_author(name=self.bot.support.name,
+                         url=environ.get('invite_server', ''),
+                         icon_url=self.bot.support.icon.url)
         embed.add_field(name="Description", value=commande.desc, inline=False)
         embed.add_field(name="Permissions Nécessaires", value=commande.perms, inline=False)
         embed.add_field(name="Paramètres", value=str(commande))
@@ -264,13 +267,11 @@ class Admin(commands.Cog):
 j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premiers""", ephemeral=True)
 
         # Préparation de l'affichage des réactions
-        choix = ''
-        for i in range(len(used_alphaB)):
-            choix += f"{used_alphaB[i]} {reponses[i]}\n"
+        choix = [f"{used_alphaB[i]} {reponses[i]}\n" for i in range(len(used_alphaB))]
 
         # Création de l'embed
-        embed = GBEmbed(title="Sondage", description=f"Créé par {ctx.author.mention}", color=ctx.author.color)
-        embed.add_field(name="Question :", value=ANSI.converter(question), inline=False)
+        embed = GBEmbed(user=ctx.author, title="Sondage")
+        embed.add_field(name="Question", value=ANSI.converter(question), inline=False)
         embed.add_field(name="Réponses", value=choix, inline=False)
 
         # Envoi avec les réactions
@@ -405,17 +406,18 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
     @customSlash
     async def user_info(self, ctx, user: discord.Member):
         await ctx.defer(ephemeral=True)
-        embed = GBEmbed(title="Informations", description=f"À propos de {user.mention}", color=user.color)
+        embed = GBEmbed(title="Informations", user=user, guild=ctx.guild)
         embed.add_field(name="Nom", value=str(user), inline=False)
-        embed.set_thumbnail(url=user.avatar.url)
         if user.banner is not None:
-            embed.add_field(name="Bannière", value=user.banner.url, inline=False)
+            embed.set_image(url=user.banner.url)
         embed.add_field(name="Date de Création", value=Timestamp(user.created_at).relative, inline=False)
         embed.add_field(name="Dans le serveur depuis", value=Timestamp(user.joined_at).relative, inline=False)
         if user.premium_since is not None:
             embed.add_field(name="Booste le serveur depuis", value=Timestamp(user.premium_since).relative, inline=False)
         if ctx.channel.permissions_for(ctx.author).manage_roles:
+            # Le 1er rôle de la liste est "everyone"
             roles = [r.mention for r in user.roles[1:]]
+            # On affiche les rôles par ordre de permissions
             roles.reverse()
             embed.add_field(name="Rôles", value="- " + "\n- ".join(roles), inline=False)
         await ctx.respond(embed=embed)
