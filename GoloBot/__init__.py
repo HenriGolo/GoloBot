@@ -267,12 +267,14 @@ class Admin(commands.Cog):
 j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premiers""", ephemeral=True)
 
         # Préparation de l'affichage des réactions
-        choix = [f"{used_alphaB[i]} {reponses[i]}\n" for i in range(len(used_alphaB))]
+        choix = [f"{used_alphaB[i]} {reponses[i]}" for i in range(len(used_alphaB))]
+        final = "\n".join(choix)
+        print(final)
 
         # Création de l'embed
         embed = GBEmbed(user=ctx.author, title="Sondage")
         embed.add_field(name="Question", value=ANSI.converter(question), inline=False)
-        embed.add_field(name="Réponses", value=choix, inline=False)
+        embed.add_field(name="Réponses", value=final, inline=False)
 
         # Envoi avec les réactions
         sondage = await salon.send(embed=embed)
