@@ -86,7 +86,8 @@ Param.instances.sort()
 class Settings:
     template = {p.name: p for p in Param.instances}
     indent = 4
-    path = 'logs/settings.json'
+    path = 'Data/settings.json'
+    excluded = ["id"]
 
     def __init__(self, guild):
         self.guild = guild
@@ -145,7 +146,7 @@ class Settings:
         return self.config[item]
 
     def __str__(self):
-        return "\n".join([str(self.config[p]) for p in self.config if p != "id"])
+        return "\n".join([str(self.config[p]) for p in self.config if not p in self.excluded])
 
     def to_embed(self):
         color = self.guild.owner.color
