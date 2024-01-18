@@ -269,7 +269,6 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         # Préparation de l'affichage des réactions
         choix = [f"{used_alphaB[i]} {reponses[i]}" for i in range(len(used_alphaB))]
         final = "\n".join(choix)
-        print(final)
 
         # Création de l'embed
         embed = GBEmbed(user=ctx.author, title="Sondage")
@@ -287,22 +286,21 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
     @customSlash
     @commands.has_permissions(manage_roles=True)
     @discord.guild_only()
-    async def role_react(self, ctx, roles: str, message: str, message_id: str):
-        if roles == "" and message == "" and message_id == "":
+    async def role_react(self, ctx, roles: str, texte: str, message: discord.Message):
+        if roles == base_value and texte == base_value and message == base_value:
             return await ctx.respond("Veuillez renseigner au moins un paramètre")
 
         await ctx.defer()
         roles = rolesInStr(roles, ctx.guild)
         view = ViewRoleReact(self.bot, roles=roles)
         rolesm = [e.mention for e in roles]
-        if not message_id == base_value:
-            msg = await ctx.channel.fetch_message(int(message_id))
-            await msg.delete()
+        if not message == base_value:
+            await message.delete()
             await ctx.respond(content=msg.content, view=view)
         else:
             content = "Choisis les rôles que tu veux récupérer parmi\n- {}".format('\n- '.join(rolesm))
-            if not message == "":
-                content = message
+            if not texte == "":
+                content = texte
             await ctx.respond(content=content, view=view)
 
     # Nettoyage des messages d'un salon
@@ -487,7 +485,7 @@ class Troll(commands.Cog):
 
     # Spamme un texte (emote ou autre) jusqu'à atteindre la limite de caractères
     @customSlash
-    async def write_emote(self, ctx, mot: str, message_id: str):
+    async def write_emote(self, ctx, mot: str, message: discord.Message):
         await ctx.defer(ephemeral=True)
         nbchars = nb_char_in_str(mot)
         a = ord('a')
@@ -497,13 +495,12 @@ class Troll(commands.Cog):
                 embed = GBEmbed(title="Erreur", description=ANSI.converter(msg), color=ctx.author.color)
                 return await ctx.respond(embed=embed, ephemeral=True)
 
-        msg = await ctx.channel.fetch_message(int(message_id))
         emotes = [self.bot.alphabet[ord(c) - a] for c in mot]
         for e in emotes:
-            await msg.add_reaction(e)
+            await message.add_reaction(e)
         embed = GBEmbed(color=ctx.author.color)
         embed.description = f"""Tu as écrit {' '.join(emotes)} en dessous de ```
-{msg.content}
+{message.content}
 ```(Certaines lettres étaient peut être déjà prises)"""
         await ctx.respond(embed=embed, ephemeral=True)
 
