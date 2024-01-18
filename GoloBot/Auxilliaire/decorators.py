@@ -19,7 +19,7 @@ class BoutonShowFullError(ui.Button):
 
     async def callback(self, interaction: Interaction):
         view = GBView(self.bot)
-        view.add_item(BoutonTransfert(self.bot, self.view.dev, self.view.embed_err, label="Transférer",
+        view.add_item(BoutonTransfert(self.bot, self.view.bot.dev, self.view.embed_err, label="Transférer",
                                       style=ButtonStyle.success))
         await interaction.response.edit_message(embed=self.full, view=view)
 
@@ -57,6 +57,7 @@ class Data:
         # on ne peut pas async un lambda, donc c'est moche
         async def donothing(*args, **kwargs):
             return None
+
         self.action = donothing
 
         if len(args) > 1:
@@ -76,7 +77,7 @@ def logger(func):
     start = now(True)
 
     @wraps(func)
-    async def wrapper_error(*args, **kwargs):
+    async def wrapper(*args, **kwargs):
         args_repr = [repr(a) for a in args]
         kwargs_repr = [f"{k}={v!r}" for k, v in kwargs.items()]
         data = Data(*args)
@@ -126,6 +127,7 @@ def logger(func):
             return result
 
     return wrapper_error
+    return wrapper
 
 
 # Applique une liste de décorateurs
