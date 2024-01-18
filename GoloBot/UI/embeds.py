@@ -264,7 +264,7 @@ class BoutonEnvoyerEmbed(ui.Button):
             await interaction.channel.send(embeds=self.embeds)
         else:
             msg_id = await interaction.channel.fetch_message(int(self.msg_id))
-            await msg_id.edit(embeds=self.embeds, view=None)
+            await msg_id.edit(embeds=self.embeds)
         await interaction.response.edit_message(delete_after=0)
 
 

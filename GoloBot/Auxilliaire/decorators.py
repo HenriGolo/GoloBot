@@ -126,7 +126,26 @@ def logger(func):
                     stdout.write(f"{func.__name__} terminé en {now(True) - start}s")
             return result
 
-    return wrapper_error
+    return wrapper
+
+
+async def disabled(ctx, name):
+    embed = GBEmbed(title="Commande désactivée", color=ctx.author.color)
+    embed.description(f"""{name} a été désactivée sur {ctx.guild.name}.""")
+    await ctx.respond(embed=embed)
+
+
+def disable_slash(func):
+    name = func.__name__.strip('_')
+    disabled = json.load(open("Data/guild_slash_denied.json", 'r'))
+
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        ctx = args[1]
+        if name in disabled[ctx.guild.id]:
+            return await ctx.invoke(disabled(ctx, name))
+        return func(*args, **kwargs)
+
     return wrapper
 
 
