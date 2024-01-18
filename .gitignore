@@ -5,6 +5,7 @@ dist
 logs
 __pycache__
 .idea
+Data
 
 #Fichiers
 infos.py
