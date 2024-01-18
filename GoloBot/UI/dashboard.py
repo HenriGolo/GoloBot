@@ -33,7 +33,7 @@ class SelectDashboard(ui.Select):
     def __init__(self, bot, guild):
         self.bot = bot
         self.guild = guild
-        options = [SelectOption(label=sett) for sett in guild_to_settings[guild].config if sett != "id"]
+        options = [SelectOption(label=sett) for sett in guild_to_settings[guild].config if not sett in Settings.excluded]
         super().__init__(placeholder="Modifier un paramètre", min_values=1, options=options)
 
     @logger
