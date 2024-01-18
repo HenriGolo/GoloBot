@@ -9,7 +9,7 @@ from privatebot import *  # Réponses custom à certains contenus de messages
 
 class GoloBot(discord.AutoShardedBot):
     # Création de session pour les requêtes
-    session = CustomSession()
+    session = GBSession()
 
     # Jeux en cours
     games = dict()

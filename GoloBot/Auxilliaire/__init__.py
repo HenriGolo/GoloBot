@@ -33,7 +33,7 @@ class Exit(Enum):
     Fail = False
 
 
-class CustomSession:
+class GBSession:
     def __init__(self):
         self.s = Session()
         self.cache = dict()
@@ -46,7 +46,7 @@ class CustomSession:
         return len(self.cache)
 
     def get(self, request, timeout=timedelta(hours=1)):
-        t = datetime.now().replace(microsecond=0)
+        t = now()
         try:
             resp = self.cache[request]
             if t - resp.time > timeout:
