@@ -300,7 +300,7 @@ DocCommand("write_emote",
            perm.none(),
            "",
            [Arg("mot", "Mot à écrire."),
-            Arg("message_id", "Identifiant du message.")])
+            Arg("message", "Identifiant du message.")])
 
 DocCommand("dashboard",
            "Affiche un menu de configuration des paramètres locaux du serveur.",
