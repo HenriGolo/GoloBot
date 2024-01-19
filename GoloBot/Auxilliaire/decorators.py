@@ -1,3 +1,4 @@
+import json
 from functools import wraps
 from os import environ
 from discord import Forbidden, ui, Interaction, ButtonStyle
@@ -129,22 +130,19 @@ def logger(func):
     return wrapper
 
 
-async def disabled(ctx, name):
-    embed = GBEmbed(title="Commande désactivée", color=ctx.author.color)
-    embed.description(f"""{name} a été désactivée sur {ctx.guild.name}.""")
-    await ctx.respond(embed=embed)
-
-
-def disable_slash(func):
+def check_disabled(func):
     name = func.__name__.strip('_')
-    disabled = json.load(open("Data/guild_slash_denied.json", 'r'))
 
     @wraps(func)
     async def wrapper(*args, **kwargs):
         ctx = args[1]
-        if name in disabled[ctx.guild.id]:
-            return await ctx.invoke(disabled(ctx, name))
-        return func(*args, **kwargs)
+        disabled = json.load(open("Data/guild_slash_denied.json", 'r'))
+        if str(ctx.guild.id) in disabled:
+            if name in disabled[str(ctx.guild.id)]:
+                embed = GBEmbed(title="Commande désactivée", color=ctx.author.color)
+                embed.description = f"{name} a été désactivée sur {ctx.guild.name}."
+                return await ctx.respond(embed=embed, ephemeral=True)
+        return await func(*args, **kwargs)
 
     return wrapper
 
@@ -163,5 +161,6 @@ def customSlash(func):
     name = func.__name__.strip('_')
     func = logger(func)
     func = apply_list(cmds[name].options)(func)
+    func = check_disabled(func)
     func = slash_command(name=name, description=cmds[name].desc)(func)
     return func
