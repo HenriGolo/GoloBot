@@ -176,7 +176,7 @@ DocCommand("mute",
            "Mute une personne.",
            perm.moderate_members,
            """Durée sous forme d'un nombre et `d` ou `j` (jour), `h` (heure), `m` (minute), `s` (secondes).
-Ne pas combiner, par exemple `3m30s` est invalide, utilisez `210s`.""",
+Ne pas combiner, par exemple `3m30s` est invalide, utiliser `210s` à la place.""",
            [Arg("user", "Utilisateur à mute."),
             Arg("duree", "Durée du mute.", default="30m"),
             Arg("raison", "Motif du mute.", default=" ")])
