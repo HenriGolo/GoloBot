@@ -140,13 +140,12 @@ DocCommand("role_react",
            "Ajoute un menu déroulant à un message pour choisir des rôles.",
            perm.manage_roles,
            """`roles` et `message` n'ont pas besoin d'être renseignés tous les 2.
-Dans le cas où `message_id` est renseigné, un nouveau message avec le même contenu sera envoyé et l'original sera supprimé.
+Dans le cas où `message` est renseigné, un nouveau message avec le même contenu sera envoyé et l'original sera supprimé.
 Si échec suivi d'une possibilité `Actualiser`, choisir `Actualiser` et continuer normalement.""",
            [Arg("roles", "Mentions des rôles à attribuer, avec ou sans séparation."),
-            Arg("message", "Toutes les mentions des rôles à attribuer.", default=base_value),
-            Arg("message_id",
-                "Identifiant d'un message à utiliser. ⚠ le message sera supprimé puis envoyé par le bot.",
-                default=base_value)])
+            Arg("texte", "Toutes les mentions des rôles à attribuer, contenues dans un texte custom.", default=base_value),
+            Arg(name="message", default=base_value,
+                description="Identifiant d'un message à utiliser. ⚠ le message sera supprimé puis envoyé par le bot.")])
 
 DocCommand("spam_emote",
            "Spamme une emote.",
