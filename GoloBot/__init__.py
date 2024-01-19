@@ -1,4 +1,6 @@
 # Code Principal
+import json
+
 import discord
 from discord.ext import commands
 from GoloBot.Auxilliaire import *  # Quelques fonctions utiles
@@ -441,6 +443,25 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         view = GBView(self.bot)
         view.add_item(SelectDashboard(self.bot, ctx.guild))
         await ctx.respond(embed=sett.to_embed(), view=view)
+
+    @customSlash
+    @commands.guild_only()
+    @commands.has_permissions(administrator=True)
+    async def disable(self, ctx, commande: str):
+        await ctx.defer(ephemeral=True)
+        disabled = json.load(open("Data/guild_slash_denied.json", 'r'))
+        name = self.bot.commands_names.search(commande)[0][0]
+        if name == "disable":
+            return await ctx.respond(f"Tu ne peux pas désactiver cette commande", ephemeral=True)
+        if not str(ctx.guild.id) in disabled:
+            disabled[str(ctx.guild.id)] = list()
+        if not name in disabled[str(ctx.guild.id)]:
+            disabled[str(ctx.guild.id)].append(name)
+            await ctx.respond(f"{name} a été désactivée sur {ctx.guild.name}")
+        else:
+            disabled[str(ctx.guild.id)] = [c for c in disabled[str(ctx.guild.id)] if c != name]
+            await ctx.respond(f"{name} a été réactivée sur {ctx.guild.name}")
+        json.dump(disabled, open("Data/guild_slash_denied.json", 'w'))
 
 
 # Fonctions Random

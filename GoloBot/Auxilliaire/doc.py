@@ -308,5 +308,25 @@ DocCommand("dashboard",
            "",
            [])
 
+DocCommand("wows_setup_autorole",
+           "Configure l'attribution automatique des rôles discord en fonction des rôles World of Warships",
+           perm.administrator,
+           """Supprimer le message pour annuler l'autorole.
+Pour modifier un rôle, supprimer le message puis en refaire un.
+:warning: cela nécessite que chaque personne utilise le nouveau bouton""",
+           [Arg("clans", "Tag de clan auquel limiter. Laisser vide pour tous les clans", default=base_value),
+            Arg("commandant", "Rôle à attribuer au Commandant du clan.", default=base_value),
+            Arg("commandant_second", "Rôle à attribuer aux Commandants en Second.", default=base_value),
+            Arg("recruteur", "Rôle à attribuer aux Recruteurs.", default=base_value),
+            Arg("officier_commissionne", "Rôle à attribuer aux Officiers Commissionnés.", default=base_value),
+            Arg("officier_superieur", "Rôle à attribuer aux Officiers Supérieurs.", default=base_value),
+            Arg("aspirant", "Rôle à attribuer aux Aspirants.", default=base_value)])
+
+DocCommand("disable",
+           "(Dés)Active une commande sur ce serveur.",
+           perm.administrator,
+           "",
+           [Arg("commande", "nom de la commande à (dés)activer")])
+
 DocCommand.instances.sort()
 cmds = {d.name: d.set_options() for d in DocCommand.instances}
