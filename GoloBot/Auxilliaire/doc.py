@@ -142,7 +142,7 @@ DocCommand("role_react",
            """`roles` et `message` n'ont pas besoin d'être renseignés tous les 2.
 Dans le cas où `message` est renseigné, un nouveau message avec le même contenu sera envoyé et l'original sera supprimé.
 Si échec suivi d'une possibilité `Actualiser`, choisir `Actualiser` et continuer normalement.""",
-           [Arg("roles", "Mentions des rôles à attribuer, avec ou sans séparation."),
+           [Arg("roles", "Mentions des rôles à attribuer, avec ou sans séparation.", default=base_value),
             Arg("texte", "Toutes les mentions des rôles à attribuer, contenues dans un texte custom.", default=base_value),
             Arg(name="message", default=base_value,
                 description="Identifiant d'un message à utiliser. ⚠ le message sera supprimé puis envoyé par le bot.")])

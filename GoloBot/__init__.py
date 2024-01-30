@@ -1,8 +1,8 @@
 # Code Principal
 import json
-
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
+from discord.commands.context import ApplicationContext
 from GoloBot.Auxilliaire import *  # Quelques fonctions utiles
 from GoloBot.Auxilliaire.aux_maths import *  # Outils mathématiques
 from GoloBot.Auxilliaire.converters import *  # Converters vers mes types custom
@@ -58,7 +58,7 @@ class General(commands.Cog):
 
     # Aide
     @customSlash
-    async def aide(self, ctx, commande: str, visible: bool):
+    async def aide(self, ctx: ApplicationContext, commande: str, visible: bool):
         await ctx.defer(ephemeral=not visible)
         if not commande in cmds:
             commande = self.bot.commands_names.search(commande)[0][0]
@@ -112,7 +112,7 @@ Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({
 
     # Quelques stats sur le nombre de box à ouvrir pour espérer un certain pourcentage
     @customSlash
-    async def droprates(self, ctx, pourcentage: float, nom: str, item: str):
+    async def droprates(self, ctx: ApplicationContext, pourcentage: float, nom: str, item: str):
         await ctx.defer(ephemeral=(nom == "" or item == ""))
         p = pourcentage / 100
         seuils = {50: 0,
@@ -205,7 +205,7 @@ class Dev(commands.Cog):
 
     # Renvoie les logs
     @customSlash
-    async def get_logs(self, ctx, last_x_lines: int):
+    async def get_logs(self, ctx: ApplicationContext, last_x_lines: int):
         await ctx.defer(ephemeral=True)
         # Commande réservée au dev
         if not ctx.author == self.bot.dev:
@@ -242,9 +242,9 @@ class Admin(commands.Cog):
 
     # Création de sondage
     @customSlash
-    async def poll(self, ctx, question: str, reponses: Splitter, salon: discord.TextChannel):
-        await ctx.defer()
-        if salon == "":
+    async def poll(self, ctx: ApplicationContext, question: str, reponses: Splitter, salon: discord.TextChannel):
+        await ctx.defer(ephemeral=True)
+        if salon == base_value:
             salon = ctx.channel
 
         # Discord oblige de répondre aux appels de commande
@@ -288,7 +288,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
     @customSlash
     @commands.has_permissions(manage_roles=True)
     @discord.guild_only()
-    async def role_react(self, ctx, roles: str, texte: str, message: discord.Message):
+    async def role_react(self, ctx: ApplicationContext, roles: str, texte: str, message: discord.Message):
         if roles == base_value and texte == base_value and message == base_value:
             return await ctx.respond("Veuillez renseigner au moins un paramètre")
 
@@ -307,7 +307,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
     # Nettoyage des messages d'un salon
     @customSlash
-    async def clear(self, ctx, nombre: int, salon: discord.TextChannel, user: discord.User):
+    async def clear(self, ctx: ApplicationContext, nombre: int, salon: discord.TextChannel, user: discord.User):
         if salon == base_value:
             salon = ctx.channel
         await ctx.defer(ephemeral=True)
@@ -354,7 +354,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
     @customSlash
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
-    async def ban(self, ctx, user: discord.Member, raison: str):
+    async def ban(self, ctx: ApplicationContext, user: discord.Member, raison: str):
         await ctx.defer(ephemeral=True)
         # Rôle de la cible trop élevé
         if user.top_role >= ctx.author.top_role:
@@ -381,7 +381,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
     @customSlash
     @commands.has_permissions(moderate_members=True)
     @commands.bot_has_permissions(moderate_members=True)
-    async def mute(self, ctx, user: discord.Member, duree: Duree, raison: str):
+    async def mute(self, ctx: ApplicationContext, user: discord.Member, duree: Duree, raison: str):
         await ctx.defer(ephemeral=True)
         end_mute = now() + duree
         # Rôle trop élevé
@@ -406,7 +406,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
     # Affiche les informations d'un Member
     @customSlash
-    async def user_info(self, ctx, user: discord.Member):
+    async def user_info(self, ctx: ApplicationContext, user: discord.Member):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title="Informations", user=user, guild=ctx.guild)
         embed.add_field(name="Nom", value=str(user), inline=False)
@@ -426,7 +426,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
     @customSlash
     @commands.has_permissions(manage_messages=True)
-    async def embed(self, ctx, edit: str):
+    async def embed(self, ctx: ApplicationContext, edit: str):
         if edit == base_value:
             await ctx.send_modal(ModalNewEmbed(self.bot, edit, title="Nouvel Embed"))
         else:
@@ -447,7 +447,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
     @customSlash
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
-    async def disable(self, ctx, commande: str):
+    async def disable(self, ctx: ApplicationContext, commande: str):
         await ctx.defer(ephemeral=True)
         disabled = json.load(open("Data/guild_slash_denied.json", 'r'))
         name = self.bot.commands_names.search(commande)[0][0]
@@ -471,7 +471,7 @@ class MiniGames(commands.Cog):
 
     # QPUP, bon courage pour retrouver le lore ...
     @customSlash
-    async def qpup(self, ctx, nbquestions: int):
+    async def qpup(self, ctx: ApplicationContext, nbquestions: int):
         await ctx.defer()
         self.bot.qpup = read_db(environ['qpup'])
         # Boucle sur le nombre de questions à poser
@@ -483,7 +483,7 @@ class MiniGames(commands.Cog):
 
     # 2048, le _ est nécessaire, une fonction ne commence pas à un chiffre
     @customSlash
-    async def _2048(self, ctx, size: int):
+    async def _2048(self, ctx: ApplicationContext, size: int):
         await ctx.defer()
         # Création d'un 2048
         game = Game2048(size=size)
@@ -506,7 +506,7 @@ class Troll(commands.Cog):
 
     # Spamme un texte (emote ou autre) jusqu'à atteindre la limite de caractères
     @customSlash
-    async def write_emote(self, ctx, mot: str, message: discord.Message):
+    async def write_emote(self, ctx: ApplicationContext, mot: str, message: discord.Message):
         await ctx.defer(ephemeral=True)
         nbchars = nb_char_in_str(mot)
         a = ord('a')
@@ -526,7 +526,7 @@ class Troll(commands.Cog):
         await ctx.respond(embed=embed, ephemeral=True)
 
     @customSlash
-    async def spam_emote(self, ctx, emote: str, user: discord.User):
+    async def spam_emote(self, ctx: ApplicationContext, emote: str, user: discord.User):
         await ctx.defer(ephemeral=True)
         emote = str(emote) + " "
         lim = ""
@@ -544,7 +544,7 @@ class Music(commands.Cog):
 
     @customSlash
     @discord.guild_only()
-    async def play(self, ctx, search: str):
+    async def play(self, ctx: ApplicationContext, search: str):
         await ctx.defer(invisible=False)
         audiocontroller = guild_to_audiocontroller[ctx.guild]
         if await is_connected(ctx) is None:
@@ -647,7 +647,7 @@ class Music(commands.Cog):
 
     @customSlash
     @discord.guild_only()
-    async def volume(self, ctx, volume: int):
+    async def volume(self, ctx: ApplicationContext, volume: int):
         await ctx.defer(ephemeral=True)
         if not await play_check(ctx):
             return
