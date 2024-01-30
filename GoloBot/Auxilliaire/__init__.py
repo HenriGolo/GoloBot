@@ -1,3 +1,4 @@
+import asyncio
 import re
 from collections import namedtuple
 from datetime import datetime, timedelta
@@ -367,3 +368,8 @@ async def usersInStr(string, bot):
     users_ids = [int(u[2:-1]) for u in mentions]
     users = [await bot.fetch_user(u) for u in users_ids]
     return users
+
+
+async def wait_until(dt: datetime):
+    delay = dt - now()
+    await asyncio.sleep(delay.total_seconds())
