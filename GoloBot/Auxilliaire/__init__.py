@@ -161,7 +161,7 @@ class PrivateResponse:
 class Completer(AutoComplete):
     def search(self, word, max_cost=None, size=1):
         if max_cost is None:
-            max_cost = len(sum([w.split("_") for w in word.split(" ")], []))
+            max_cost = len(word)
         return super().search(word=word, max_cost=max_cost, size=size)
 
     @staticmethod
