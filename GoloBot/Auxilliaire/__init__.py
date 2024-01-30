@@ -260,7 +260,7 @@ class GBDecoder(json.JSONDecoder):
             except:
                 pass
             finally:
-                kwargs[elts[i-1][-1]] = data
+                kwargs[elts[i - 1][-1]] = data
         return klass, kwargs
 
     @classmethod
@@ -373,15 +373,15 @@ def eltInStr(string, start, end, to_type=str):
 # Message.role_mentions existe, mais parfois ne marche pas complétement
 def rolesInStr(string, guild):
     mentions = re.findall(role_mentions, string)
-    # Il faut enlever les <> autour de la mention
-    roles_ids = [int(r[2:-1]) for r in mentions]
+    # Il faut enlever les <@&> autour de la mention
+    roles_ids = [int(r[3:-1]) for r in mentions]
     roles = [guild.get_role(r) for r in roles_ids]
     return roles
 
 
 async def usersInStr(string, bot):
     mentions = re.findall(user_mentions, string)
-    # Il faut enlever les <> autour de la mention
+    # Il faut enlever les <@> autour de la mention
     users_ids = [int(u[2:-1]) for u in mentions]
     users = [await bot.fetch_user(u) for u in users_ids]
     return users
