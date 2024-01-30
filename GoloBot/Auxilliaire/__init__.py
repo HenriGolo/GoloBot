@@ -177,6 +177,23 @@ class Completer(AutoComplete):
         return Completer(words=words, synonyms=synonyms)
 
 
+# Stocke un set comme une liste
+class SetEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, set):
+            return [e for e in o]
+        return super().default(o)
+
+
+# Interprête une liste comme un set
+class SetDecoder(json.JSONDecoder):
+    def decode(self, s, _w=...):
+        std = super().decode(s)
+        if isinstance(std, list):
+            return {e for e in std}
+        return std
+
+
 class GBEncoder(json.JSONEncoder):
     def default(self, o):
         try:
