@@ -156,6 +156,8 @@ class PrivateResponse:
     async def do_stuff(self, msg: discord.Message):
         if await self.trigger(msg) and await self.guilds(msg) and await self.users(msg):
             await msg.reply(str(self))
+            return True
+        return False
 
 
 class Completer(AutoComplete):
