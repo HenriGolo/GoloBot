@@ -3,14 +3,14 @@ import json
 import discord
 from discord.ext import commands, tasks
 from discord.commands.context import ApplicationContext
-from GoloBot.Auxilliaire import *  # Quelques fonctions utiles
-from GoloBot.Auxilliaire.aux_maths import *  # Outils mathématiques
-from GoloBot.Auxilliaire.converters import *  # Converters vers mes types custom
-from GoloBot.Auxilliaire.decorators import *  # Decorateurs custom
-from GoloBot.Auxilliaire.doc import *  # Raccourcis et noms customs
-from GoloBot.Auxilliaire.games import *  # Jeux de plateau custom
-from GoloBot.Musique import *  # Adapté de https://github.com/Raptor123471/DingoLingo
-from GoloBot.UI import *  # Les composants de l'UI custom
+from .Auxilliaire import *  # Quelques fonctions utiles
+from .Auxilliaire.aux_maths import *  # Outils mathématiques
+from .Auxilliaire.converters import *  # Converters vers mes types custom
+from .Auxilliaire.decorators import *  # Decorateurs custom
+from .Auxilliaire.doc import *  # Raccourcis et noms customs
+from .Auxilliaire.games import *  # Jeux de plateau custom
+from .Musique import *  # Adapté de https://github.com/Raptor123471/DingoLingo
+from .UI import *  # Les composants de l'UI custom
 
 
 # Code du bot
@@ -154,10 +154,13 @@ class Dev(commands.Cog):
     # Les ID sont ceux de mon serveur de test et du serveur de support
     @commands.slash_command(guild_ids=[664006363508244481, 1158154606124204072],
                             description="Commande de test, ne pas utiliser.")
-    async def test(self, ctx):
+    async def test(self, ctx: ApplicationContext):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title="test", user=ctx.author, guild=ctx.guild)
-        await ctx.respond(embed=embed, ephemeral=True)
+        view = GBView(self.bot)
+        view.add_item(ui.Button(label="test",
+                                url="https://api.worldoftanks.eu/wot/auth/login/?application_id=4b0af0848999fda96db425963e9b29bf"))
+        await ctx.respond(embed=embed, view=view, ephemeral=True)
 
     # Envoie un message privé à un User
     @customSlash
@@ -216,11 +219,12 @@ class Dev(commands.Cog):
             raise Exception("Aucun fichier de log renseigné")
 
         stderr = discord.File(fp=environ['stderr'], filename=environ['stderr'].split("/")[-1])
-        reponse = f"Dernières {last_x_lines} lignes de **{stderr}** :\n{tail(environ['stderr'], last_x_lines)[-1900:]}"
-        await ctx.respond(f"Voici les logs demandés\n{reponse}", files=[stderr], ephemeral=True)
+        embed = GBEmbed(title=f"Dernières {last_x_lines} lignes de {stderr.filename}", user=ctx.author)
+        embed.description = f"```python\n{tail(environ['stderr'], last_x_lines)}\n```"
+        await ctx.respond(embed=embed, files=[stderr], ephemeral=True)
 
     @customSlash
-    async def get_history(self, ctx, last_x_lines: int):
+    async def get_history(self, ctx: ApplicationContext, last_x_lines: int):
         await ctx.defer(ephemeral=True)
         # Commande réservée au dev
         if not ctx.author == self.bot.dev:
@@ -665,4 +669,6 @@ class Music(commands.Cog):
             return
         loop = guild_to_audiocontroller[ctx.guild].playlist.loop
         guild_to_audiocontroller[ctx.guild].playlist.loop = not loop
-        await ctx.respond(f"Changement de la boucle dans la PlayList : {self.bot.bools[loop]} -> {self.bot.bools[not loop]}", ephemeral=True)
+        await ctx.respond(
+            f"Changement de la boucle dans la PlayList : {self.bot.bools[loop]} -> {self.bot.bools[not loop]}",
+            ephemeral=True)
