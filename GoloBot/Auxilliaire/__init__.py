@@ -96,11 +96,12 @@ class GBView(discord.ui.View):
 
 
 class Trigger:
-    def __init__(self, trigger: str, rmurl=True, rmention=True, rmoji=False):
+    def __init__(self, trigger: str, rmurl=True, rmention=True, rmoji=False, casse=True):
         self.trigger = trigger
-        self.rmurl = rmurl
-        self.rmention = rmention
-        self.rmoji = rmoji
+        self.rmurl = rmurl  # Enlever les url
+        self.rmention = rmention  # Enlever les mentions
+        self.rmoji = rmoji  # Enlever les noms des emotes
+        self.casse = casse  # Sensible à la casse
 
     def __str__(self):
         return self.trigger
@@ -114,6 +115,8 @@ class Trigger:
         return retour
 
     def check(self, string: str):
+        if not self.casse:
+            string = string.lower()
         if self.rmurl:
             string = self.remove_pattern(url, string)
         if self.rmention:
