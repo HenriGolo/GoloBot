@@ -21,3 +21,4 @@ class ViewAide(GBView):
         super().__init__(bot)
         self.bot = bot
         self.add_item(BoutonListeCommandes(bot))
+        self.add_item(ui.Button(label="Serveur de Support", url="https://discord.gg/V2spkxSp8N"))
