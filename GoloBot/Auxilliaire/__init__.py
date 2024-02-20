@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from subprocess import check_output
 from traceback import format_exc
 import discord
+from discord.embeds import E
 from fast_autocomplete import AutoComplete
 from requests import Session
 from enum import Enum
@@ -84,6 +85,9 @@ class GBEmbed(discord.Embed):
         if isinstance(user, (discord.User, discord.Member)):
             self.color = user.color
             self.set_author(name=user.name, url=user.jump_url, icon_url=user.avatar.url)
+        
+    def add_field(self: E, *, name: str, value: str, inline: bool = False) -> E:
+        return super().add_field(name=name, value=value, inline=inline)
 
 
 class GBView(discord.ui.View):
