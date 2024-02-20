@@ -41,7 +41,7 @@ class Splitter(Converter):
 
 class Duree(Converter):
     async def convert(self, ctx: Context, argument: str) -> T_co:
-        argument = "".join(argument.split(" "))
+        argument = argument.replace(' ', '')
         jours = heures = minutes = secondes = 0
         number = ""
         for char in argument:
@@ -50,11 +50,11 @@ class Duree(Converter):
             else:
                 if char in "jd":
                     jours = int(number)
-                if char == 'h':
+                elif char == 'h':
                     heures = int(number)
-                if char == 'm':
+                elif char == 'm':
                     minutes = int(number)
-                if char == 's':
+                elif char == 's':
                     secondes = int(number)
                 else:
                     raise Exception(f"Mauvais format de {argument}. Attendu 1j 2h 3m 4s")
