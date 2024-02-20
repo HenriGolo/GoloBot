@@ -413,20 +413,24 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
     async def user_info(self, ctx: ApplicationContext, user: discord.Member):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title="Informations", user=user, guild=ctx.guild)
+        kwargs = {'embed': embed}
         embed.add_field(name="Nom", value=str(user), inline=False)
+        embed.add_field(name="Identifiant", value=user.id, inline=False)
         if user.banner is not None:
             embed.set_image(url=user.banner.url)
         embed.add_field(name="Date de Création", value=Timestamp(user.created_at).relative, inline=False)
         embed.add_field(name="Dans le serveur depuis", value=Timestamp(user.joined_at).relative, inline=False)
         if user.premium_since is not None:
             embed.add_field(name="Booste le serveur depuis", value=Timestamp(user.premium_since).relative, inline=False)
-        if ctx.channel.permissions_for(ctx.author).manage_roles:
+        if ctx.author.guild_permissions.manage_roles:
             # Le 1er rôle de la liste est "everyone"
             roles = [r.mention for r in user.roles[1:]]
             # On affiche les rôles par ordre de permissions
             roles.reverse()
             embed.add_field(name="Rôles", value="- " + "\n- ".join(roles), inline=False)
-        await ctx.respond(embed=embed)
+        if ctx.author.guild_permissions.manage_permissions:
+            kwargs['view'] = ViewUserInfo(self.bot)
+        await ctx.respond(**kwargs)
 
     @customSlash
     @commands.has_permissions(manage_messages=True)
