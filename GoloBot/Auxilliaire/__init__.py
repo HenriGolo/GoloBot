@@ -47,7 +47,7 @@ class GBSession:
     def __len__(self):
         return len(self.cache)
 
-    def get(self, request, timeout=timedelta(hours=1)):
+    def get(self, request, timeout: timedelta = timedelta(hours=1)):
         t = now()
         try:
             resp = self.cache[request]
@@ -74,7 +74,10 @@ class Timestamp:
 
 
 class GBEmbed(discord.Embed):
-    def __init__(self, *args, user=None, guild=None, **kwargs):
+    def __init__(self, *args,
+                 user: discord.User | discord.Member = None,
+                 guild: discord.Guild = None,
+                 **kwargs):
         super().__init__(*args, **kwargs)
         self.timestamp = now()
         if isinstance(guild, discord.Guild):
@@ -91,7 +94,7 @@ class GBEmbed(discord.Embed):
 
 
 class GBView(discord.ui.View):
-    def __init__(self, bot, *args, **kwargs):
+    def __init__(self, bot: discord.AutoShardedBot, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.bot = bot
 
@@ -100,31 +103,36 @@ class GBView(discord.ui.View):
 
 
 class Trigger:
-    def __init__(self, trigger: str, rmurl=True, rmention=True, rmoji=False, casse=True):
+    def __init__(self, trigger: str, rmurl: bool = True,
+                 rmention: bool = True, rmoji: bool = False,
+                 rmstr: list[str] = (), casse: bool = True):
         self.trigger = trigger
         self.rmurl = rmurl  # Enlever les url
         self.rmention = rmention  # Enlever les mentions
         self.rmoji = rmoji  # Enlever les noms des emotes
+        self.rmstr = rmstr  # Enlever certaines str
         self.casse = casse  # Sensible à la casse
 
     def __str__(self):
-        return self.trigger
+        return f"<Trigger {self.trigger}>"
 
     @staticmethod
-    def remove_pattern(pattern, string):
+    def remove_pattern(pattern: re.Pattern, string: str) -> str:
         occs = re.findall(pattern, string)
         retour = string
         for o in occs:
-            retour = "".join(retour.split(o))
+            retour = retour.replace(o, '')
         return retour
 
-    def check(self, string: str):
+    def check(self, string: str) -> bool:
         if not self.casse:
             string = string.lower()
         if self.rmurl:
             string = self.remove_pattern(url, string)
         if self.rmention:
             string = self.remove_pattern(all_mentions, string)
+        for s in self.rmstr:
+            string.replace(s, '')
         if not self.rmoji:
             # Présent dans le nom, mais pas dans l'id
             emotes = re.findall(emoji, string)
@@ -136,7 +144,8 @@ class Trigger:
 
 
 class PrivateResponse:
-    def __init__(self, bot, triggers=(Trigger(""),), message="", allowed_guilds=()):
+    def __init__(self, bot: discord.AutoShardedBot, triggers: list[Trigger] = (Trigger(""),),
+                 message: str = "", allowed_guilds: list[int] = ()):
         self.bot = bot
         self.triggers = triggers  # Contenu d'un message pour activer la réponse
         self.message = message  # Réponse à envoyer
@@ -145,7 +154,7 @@ class PrivateResponse:
     def __str__(self):
         return self.message
 
-    async def trigger(self, msg: discord.Message):
+    async def trigger(self, msg: discord.Message) -> bool:
         content = msg.content
         for t in self.triggers:
             if t.check(content):
@@ -153,14 +162,14 @@ class PrivateResponse:
         return False
 
     @staticmethod
-    async def users(msg: discord.Message):
+    async def users(msg: discord.Message) -> bool:
         user = msg.author
         return not user.bot
 
-    async def guilds(self, msg: discord.Message):
+    async def guilds(self, msg: discord.Message) -> bool:
         return self.Aguilds == () or msg.guild.id in self.Aguilds
 
-    async def do_stuff(self, msg: discord.Message):
+    async def do_stuff(self, msg: discord.Message) -> bool:
         if await self.trigger(msg) and await self.guilds(msg) and await self.users(msg):
             await msg.reply(str(self))
             return True
@@ -168,13 +177,13 @@ class PrivateResponse:
 
 
 class Completer(AutoComplete):
-    def search(self, word, max_cost=None, size=1):
+    def search(self, word: str, max_cost=None, size=1) -> list[list[str]]:
         if max_cost is None:
             max_cost = len(word)
         return super().search(word=word, max_cost=max_cost, size=size)
 
     @staticmethod
-    def from_db(db):
+    def from_db(db) -> Completer:
         words = dict()
         synonyms = dict()
 
@@ -289,7 +298,7 @@ class GBDecoder(json.JSONDecoder):
 
 
 # Commande bash tail avec un peu de traitement
-def tail(file: str, lastN=10):
+def tail(file: str, lastN=10) -> str:
     cmd = check_output(["tail", file, "-n", str(lastN)])
     # On doit convertir l'output de check_output (de type bytes) vers un str
     cmd = str(cmd, 'UTF-8')
@@ -297,7 +306,7 @@ def tail(file: str, lastN=10):
 
 
 # Recherche récursive d'un élément dans une matrice
-def rec_in(matrice: list[list], elt):
+def rec_in(matrice: list[list], elt) -> bool:
     for line in matrice:
         if elt in line:
             return True
@@ -330,27 +339,24 @@ def unpack(item):
     return unpack(item[0])
 
 
-def insert(liste: list, pos: int, elt):
-    liste[pos:pos] = [elt]
-
-
-def nb_char_in_str(string):
+def nb_char_in_str(string: str) -> dict:
     dejavu = dict()
     for c in string:
         dejavu[c] = dejavu.get(c, 0) + 1
     return dejavu
 
 
-def check_unicity(string: str, elt: str):
+def check_unicity(string: str, elt: str) -> bool:
     # existence + unicité
     return len(string.split(elt)) == 2
 
 
-def fail():
+def fail() -> str:
+    # Juste du formatage
     return f"\n{format_exc()}\n\n"
 
 
-def correspond(attendu: list, reponse: str):
+def correspond(attendu: list, reponse: str) -> bool:
     articles = ["le", "la", "les", "l'", "un", "une", "des", "du", "de la"]
     for mot in reponse.split(" "):
         if not (mot in attendu or mot in articles):
@@ -358,29 +364,29 @@ def correspond(attendu: list, reponse: str):
     return True
 
 
-def now(ms: bool = False):
+def now(ms: bool = False) -> datetime:
     time = datetime.now()
     if not ms:
         time.replace(microsecond=0)
     return time
 
 
-async def User2Member(guild, user):
+async def User2Member(guild: discord.Guild, user: discord.User) -> discord.Member:
     return await guild.fetch_member(user.id)
 
 
-async def Member2User(bot, member):
+async def Member2User(bot: discord.AutoShardedBot, member: discord.Member) -> discord.User:
     return await bot.fetch_user(member.id)
 
 
 # Récupère toutes les sous-chaînes encadrées par start et end
-def eltInStr(string, start, end, to_type=str):
+def eltInStr(string: str, start: str, end: str, to_type: type = str):
     sep = [e.split(end) for e in string.split(start)]
     return [to_type(e[0]) for e in sep[1:]]
 
 
 # Message.role_mentions existe, mais parfois ne marche pas complétement
-def rolesInStr(string, guild):
+def rolesInStr(string: str, guild: discord.Guild) -> list[discord.Role]:
     mentions = re.findall(role_mentions, string)
     # Il faut enlever les <@&> autour de la mention
     roles_ids = [int(r[3:-1]) for r in mentions]
@@ -388,7 +394,7 @@ def rolesInStr(string, guild):
     return roles
 
 
-async def usersInStr(string, bot):
+async def usersInStr(string: str, bot: discord.AutoShardedBot) -> list[discord.User]:
     mentions = re.findall(user_mentions, string)
     # Il faut enlever les <@> autour de la mention
     users_ids = [int(u[2:-1]) for u in mentions]

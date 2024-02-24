@@ -15,7 +15,7 @@ from .UI import *  # Les composants de l'UI custom
 
 # Code du bot
 class General(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: discord.AutoShardedBot):
         self.bot = bot
 
     # Gestion des messages
@@ -148,8 +148,8 @@ Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({
 
 # Fonctions Dev
 class Dev(commands.Cog):
-    def __init__(self, used_bot):
-        self.bot = used_bot
+    def __init__(self, bot: discord.AutoShardedBot):
+        self.bot = bot
 
     # Les ID sont ceux de mon serveur de test et du serveur de support
     @commands.slash_command(guild_ids=[664006363508244481, 1158154606124204072],
@@ -241,8 +241,8 @@ class Dev(commands.Cog):
 
 # Fonctions Admin
 class Admin(commands.Cog):
-    def __init__(self, used_bot):
-        self.bot = used_bot
+    def __init__(self, bot: discord.AutoShardedBot):
+        self.bot = bot
 
     # Création de sondage
     @customSlash
@@ -489,8 +489,8 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
 # Fonctions Random
 class MiniGames(commands.Cog):
-    def __init__(self, used_bot):
-        self.bot = used_bot
+    def __init__(self, bot: discord.AutoShardedBot):
+        self.bot = bot
 
     # QPUP, bon courage pour retrouver le lore ...
     @customSlash
@@ -523,7 +523,7 @@ class MiniGames(commands.Cog):
 
 
 class Troll(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: discord.AutoShardedBot):
         self.bot = bot
         super().__init__()
 
@@ -562,7 +562,7 @@ class Troll(commands.Cog):
 
 
 class Music(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: discord.AutoShardedBot):
         self.bot = bot
 
     @customSlash
