@@ -143,7 +143,8 @@ DocCommand("role_react",
 Dans le cas où `message` est renseigné, un nouveau message avec le même contenu sera envoyé et l'original sera supprimé.
 Si échec suivi d'une possibilité `Actualiser`, choisir `Actualiser` et continuer normalement.""",
            [Arg("roles", "Mentions des rôles à attribuer, avec ou sans séparation.", default=base_value),
-            Arg("texte", "Toutes les mentions des rôles à attribuer, contenues dans un texte custom.", default=base_value),
+            Arg("texte", "Toutes les mentions des rôles à attribuer, contenues dans un texte custom.",
+                default=base_value),
             Arg(name="message", default=base_value,
                 description="Identifiant d'un message à utiliser. ⚠ le message sera supprimé puis envoyé par le bot.")])
 
@@ -327,6 +328,14 @@ DocCommand("disable",
            Permissions.administrator,
            "",
            [Arg("commande", "nom de la commande à (dés)activer")])
+
+DocCommand("roles",
+           "Donne un ou plusieurs rôles à une ou plusieurs personnes en même temps",
+           Permissions.manage_roles,
+           "",
+           [Arg("mode", "Ajouter ou retirer les rôles en question", choices=["ajouter", "enlever"]),
+            Arg("users", "Mentions de toutes les personnes (sans séparateur spécifique)"),
+            Arg("roles", "Mentions de tous les rôles (sans séparateur spécifique)")])
 
 DocCommand.instances.sort()
 cmds = {d.name: d.set_options() for d in DocCommand.instances}

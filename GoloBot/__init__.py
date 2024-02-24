@@ -471,6 +471,21 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             await ctx.respond(f"{name} a été réactivée sur {ctx.guild.name}")
         json.dump(disabled, open("Data/guild_slash_denied.json", 'w'))
 
+    # Donner un rôle
+    @customSlash
+    @commands.has_permissions(manage_roles=True)
+    async def roles(self, ctx: ApplicationContext, mode: str, users: str, roles: str):
+        await ctx.defer(ephemeral=True)
+        conversion = {"ajouter": "add", "enlever": "remove"}
+        func = getattr(discord.Member, f"{conversion[mode]}_roles")
+        users = await usersInStr(users, self.bot)
+        members = [await User2Member(ctx.guild, u) for u in users]
+        roles = rolesInStr(roles, ctx.guild)
+        for member in members:
+            await func(member, *roles)
+        await ctx.respond(f"{', '.join([r.mention for r in roles])} {mode[:-2] + 'é'} à {', '.join([m.mention for m in members])}",
+                          ephemeral=True)
+
 
 # Fonctions Random
 class MiniGames(commands.Cog):
