@@ -183,7 +183,7 @@ class Completer(AutoComplete):
         return super().search(word=word, max_cost=max_cost, size=size)
 
     @staticmethod
-    def from_db(db) -> Completer:
+    def from_db(db):
         words = dict()
         synonyms = dict()
 
