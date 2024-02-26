@@ -114,7 +114,7 @@ class Trigger:
         self.casse = casse  # Sensible à la casse
 
     def __str__(self):
-        return f"<Trigger {self.trigger}>"
+        return self.trigger
 
     @staticmethod
     def remove_pattern(pattern: re.Pattern, string: str) -> str:
