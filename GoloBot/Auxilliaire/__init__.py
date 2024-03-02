@@ -78,8 +78,8 @@ class GBEmbed(discord.Embed):
                  user: discord.User | discord.Member = None,
                  guild: discord.Guild = None,
                  **kwargs):
+        kwargs['timestamp'] = kwargs.get('timestamp', now())
         super().__init__(*args, **kwargs)
-        self.timestamp = now()
         if isinstance(guild, discord.Guild):
             self.set_author(name=guild.name, url=guild.jump_url)
             if guild.banner is not None:
