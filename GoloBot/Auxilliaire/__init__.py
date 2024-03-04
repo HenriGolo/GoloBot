@@ -145,10 +145,11 @@ class Trigger:
 
 class PrivateResponse:
     def __init__(self, bot: discord.AutoShardedBot, triggers: list[Trigger] = (Trigger(""),),
-                 message: str = "", allowed_guilds: list[int] = ()):
+                 message: str = "", reac: set[int | discord.Emoji] = (), allowed_guilds: list[int] = ()):
         self.bot = bot
         self.triggers = triggers  # Contenu d'un message pour activer la réponse
         self.message = message  # Réponse à envoyer
+        self.reac = reac  # Réactions à ajouter
         self.Aguilds = allowed_guilds  # Servers sur lesquels la réponse fonctionne ([] = tous)
 
     def __str__(self):
@@ -171,7 +172,18 @@ class PrivateResponse:
 
     async def do_stuff(self, msg: discord.Message) -> bool:
         if await self.trigger(msg) and await self.guilds(msg) and await self.users(msg):
-            await msg.reply(str(self))
+            if self.message.strip():
+                await msg.reply(self.message)
+
+            for reac in self.reac:
+                if isinstance(reac, int):
+                    emoji = self.bot.get_emoji(reac)
+                elif isinstance(reac, discord.Emoji):
+                    emoji = reac
+                else:
+                    return True
+                await msg.add_reaction(emoji)
+
             return True
         return False
 
