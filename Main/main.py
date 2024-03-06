@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from os import getpid
+import discord
 from discord.ext import tasks
 from GoloBot import *  # Contient tout ce qu'il faut, imports compris
 from privatebot import *  # Réponses custom à certains contenus de messages
@@ -100,15 +101,22 @@ class GoloBot(discord.AutoShardedBot):
         with open('logs/guilds.log', 'a') as file:
             file.write(f"{guild.name}\n")
 
-    @staticmethod
     @logger
-    async def on_voice_state_update(member, before, after):
-        # Déconnecte le bot du vocal quand il est tout seul dedans
-        vc = member.guild.voice_client
-        if vc is not None:
-            if len(vc.channel.members) == 1:
-                await guild_to_audiocontroller[vc.guild].stop_player()
-                await vc.disconnect()
+    async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
+        # On ne tient pas compte des join / disconnect des bots
+        if member.bot:
+            return
+        # On prend before pour s'intéresser au vocal dont part la personne
+        if before is not None:
+            # Si le vocal est composé uniquement de bots
+            bots = [m.bot for m in before.channel.members]
+            if not False in bots:
+                for member in before.channel.members:
+                    # On arrête la musique éventuelle en cours
+                    if member.id == self.user.id:
+                        await guild_to_audiocontroller[member.guild].stop_player()
+                    # Déconnexion
+                    await member.move_to(None)
 
 
 # Création du Bot
