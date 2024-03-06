@@ -337,5 +337,13 @@ DocCommand("roles",
             Arg("users", "Mentions de toutes les personnes (sans séparateur spécifique)"),
             Arg("roles", "Mentions de tous les rôles (sans séparateur spécifique)")])
 
+DocCommand("move",
+           "Déplace un ou plusieurs users vers un même salon vocal.",
+           Permissions.move_members,
+           "*users* et *depuis_salon* ne sont pas mutuellement exclusifs.",
+           [Arg("users", "Mentions des users à déplacer", default=base_value),
+            Arg("depuis_salon", "Déplace tous les users du salon en question", default=base_value),
+            Arg("vers_salon", "Déplace les users sélectionnés vers ce salon. Laisser vide pour les déconnecter.", default=base_value)])
+
 DocCommand.instances.sort()
 cmds = {d.name: d.set_options() for d in DocCommand.instances}

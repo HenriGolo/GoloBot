@@ -483,8 +483,39 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         roles = rolesInStr(roles, ctx.guild)
         for member in members:
             await func(member, *roles)
-        await ctx.respond(f"{', '.join([r.mention for r in roles])} {mode[:-2] + 'é'} à {', '.join([m.mention for m in members])}",
-                          ephemeral=True)
+        await ctx.respond(
+            f"{', '.join([r.mention for r in roles])} {mode[:-2] + 'é'} à {', '.join([m.mention for m in members])}",
+            ephemeral=True)
+
+    @customSlash
+    @commands.has_guild_permissions(move_members=True)
+    async def move(self, ctx: ApplicationContext, users: str, depuis_salon: discord.VoiceChannel,
+                   vers_salon: discord.VoiceChannel):
+        await ctx.defer(ephemeral=True)
+        # Pourrait éventuellement ne pas être renseigné
+        embed = GBEmbed(title="Personnes déplacées", user=ctx.author)
+        if isinstance(vers_salon, discord.VoiceChannel):
+            if not vers_salon.permissions_for(ctx.author).connect or \
+                    not vers_salon.permissions_for(ctx.guild.me).connect:
+                raise ManquePerms
+            embed.add_field(name="Vers", value=vers_salon.mention)
+        else:
+            vers_salon = None
+            embed.add_field(name="Vers", value="Aucun, déconnexion")
+        users = await usersInStr(users, self.bot)
+        members = [await User2Member(ctx.guild, u) for u in users]
+        # Pourrait éventuellement ne pas être renseigné
+        if isinstance(depuis_salon, discord.VoiceChannel):
+            members += depuis_salon.members
+        affected = list()
+        for member in members:
+            if member.voice is None or \
+                    not member.voice.channel.permissions_for(ctx.author).connect:
+                continue
+            affected.append(member.mention)
+            await member.move_to(vers_salon)
+        embed.description = '- ' + '\n- '.join(affected)
+        await ctx.respond(embed=embed, ephemeral=True)
 
 
 # Fonctions Random
