@@ -2,10 +2,10 @@ import json
 from functools import wraps
 from os import environ
 from discord import Forbidden, ui, Interaction, ButtonStyle
-from discord.ext.commands import slash_command
+from discord.ext.commands import slash_command, MissingPermissions
 from discord.commands.context import ApplicationContext
-from GoloBot.Auxilliaire import *
-from GoloBot.Auxilliaire.doc import cmds
+from . import *
+from .doc import cmds
 
 
 class ManquePerms(Exception):
@@ -99,7 +99,7 @@ def logger(func):
         try:
             result = await func(*args, **kwargs)
 
-        except (Forbidden, ManquePerms):
+        except (Forbidden, ManquePerms, MissingPermissions):
             await data.action(f"{data.caller.bot.emotes['error']} Manque de permissions", ephemeral=True)
             if 'stderr' in environ:
                 with open(environ['stderr'], 'a') as stderr:
