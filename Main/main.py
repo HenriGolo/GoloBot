@@ -6,7 +6,7 @@ from GoloBot import *  # Contient tout ce qu'il faut, imports compris
 from privatebot import *  # Réponses custom à certains contenus de messages
 
 
-class GoloBot(discord.AutoShardedBot):
+class GoloBot(BotTemplate):
     # Récupération des tokens
     token = environ['token']
 

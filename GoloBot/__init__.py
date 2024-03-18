@@ -11,11 +11,12 @@ from .Auxilliaire.doc import *  # Raccourcis et noms customs
 from .Auxilliaire.games import *  # Jeux de plateau custom
 from .Musique import *  # Adapté de https://github.com/Raptor123471/DingoLingo
 from .UI import *  # Les composants de l'UI custom
+from .template import *  # Signatures du bot défini dans 'main.py' et donc pas importable
 
 
 # Code du bot
 class General(commands.Cog):
-    def __init__(self, bot: discord.AutoShardedBot):
+    def __init__(self, bot: BotTemplate):
         self.bot = bot
 
     # Gestion des messages
@@ -148,7 +149,7 @@ Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({
 
 # Fonctions Dev
 class Dev(commands.Cog):
-    def __init__(self, bot: discord.AutoShardedBot):
+    def __init__(self, bot: BotTemplate):
         self.bot = bot
 
     # Les ID sont ceux de mon serveur de test et du serveur de support
@@ -241,7 +242,7 @@ class Dev(commands.Cog):
 
 # Fonctions Admin
 class Admin(commands.Cog):
-    def __init__(self, bot: discord.AutoShardedBot):
+    def __init__(self, bot: BotTemplate):
         self.bot = bot
 
     # Création de sondage
@@ -520,7 +521,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
 # Fonctions Random
 class MiniGames(commands.Cog):
-    def __init__(self, bot: discord.AutoShardedBot):
+    def __init__(self, bot: BotTemplate):
         self.bot = bot
 
     # QPUP, bon courage pour retrouver le lore ...
@@ -554,7 +555,7 @@ class MiniGames(commands.Cog):
 
 
 class Troll(commands.Cog):
-    def __init__(self, bot: discord.AutoShardedBot):
+    def __init__(self, bot: BotTemplate):
         self.bot = bot
         super().__init__()
 
@@ -593,7 +594,7 @@ class Troll(commands.Cog):
 
 
 class Music(commands.Cog):
-    def __init__(self, bot: discord.AutoShardedBot):
+    def __init__(self, bot: BotTemplate):
         self.bot = bot
 
     @customSlash
