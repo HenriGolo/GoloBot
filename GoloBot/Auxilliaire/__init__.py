@@ -87,6 +87,8 @@ class GBEmbed(discord.Embed):
                  guild: discord.Guild = None,
                  **kwargs):
         kwargs['timestamp'] = kwargs.get('timestamp', now())
+        if hasattr(user, 'color'):
+            kwargs['color'] = user.color
         super().__init__(*args, **kwargs)
         if isinstance(guild, discord.Guild):
             self.set_author(name=guild.name, url=guild.jump_url)
@@ -94,7 +96,6 @@ class GBEmbed(discord.Embed):
                 self.set_image(url=guild.banner.url)
             self.set_thumbnail(url=guild.icon.url)
         if isinstance(user, (discord.User, discord.Member)):
-            self.color = user.color
             self.set_author(name=user.name, url=user.jump_url, icon_url=user.avatar.url)
 
     def add_field(self: E, *, name: str, value: str, inline: bool = False) -> E:
