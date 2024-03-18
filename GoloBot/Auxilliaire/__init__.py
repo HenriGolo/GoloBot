@@ -426,3 +426,20 @@ async def usersInStr(string: str, bot: discord.AutoShardedBot) -> list[discord.U
 async def wait_until(dt: datetime):
     delay = dt - now()
     await asyncio.sleep(delay.total_seconds())
+
+
+def color_permissions(perm: discord.Permissions) -> str:
+    perms = list()
+    perm_list = [k for k, v in discord.Permissions.__dict__.items() if isinstance(v, discord.flags.flag_value)]
+    perm_list.sort()
+    for key in perm_list:
+        if getattr(perm, key):
+            color = "{}"
+            if getattr(Permissions.advanced(), key):
+                color = "<red>{}<reset>"
+            elif getattr(Permissions.general(), key):
+                color = "<yellow>{}<reset>"
+            elif getattr(Permissions.membership(), key):
+                color = "<cyan>{}<reset>"
+            perms.append(color.format(key))
+    return ANSI.converter('\n'.join(perms))
