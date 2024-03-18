@@ -62,8 +62,16 @@ class GBSession:
 
 
 class Timestamp:
-    def __init__(self, dt: datetime):
-        ts = int(dt.timestamp())
+    def __init__(self, dt):
+        if isinstance(dt, int):
+            ts = dt
+        elif isinstance(dt, datetime):
+            ts = int(dt.timestamp())
+        elif isinstance(dt, timedelta):
+            dt = now() + dt
+            ts = int(dt.timestamp())
+        else:
+            raise Exception(f"Mauvais format de {dt}")
         self.relative = f"<t:{ts}:R>"
         self.long_date = f"<t:{ts}:D>"
         self.short_date = f"<t:{ts}:d>"
