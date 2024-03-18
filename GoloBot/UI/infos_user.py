@@ -11,21 +11,8 @@ class BoutonInfos(ui.Button):
     async def callback(self, interaction: Interaction):
         embed = interaction.message.embeds[0]
         [member_id] = [f.value for f in embed.fields if f.name.lower() == "identifiant"]
-        user = await interaction.guild.fetch_member(member_id)
-        perms = list()
-        perm_list = [k for k, v in Permissions.__dict__.items() if isinstance(v, discord.flags.flag_value)]
-        perm_list.sort()
-        for key in perm_list:
-            if getattr(user.guild_permissions, key):
-                color = "{}"
-                if getattr(Permissions.advanced(), key):
-                    color = "<red>{}<reset>"
-                elif getattr(Permissions.general(), key):
-                    color = "<yellow>{}<reset>"
-                elif getattr(Permissions.membership(), key):
-                    color = "<cyan>{}<reset>"
-                perms.append(color.format(key))
-        embed.add_field(name="Permissions", value=ANSI.converter('\n'.join(perms)), inline=False)
+        member = await interaction.guild.fetch_member(member_id)
+        embed.add_field(name="Permissions", value=color_permissions(member.guild_permissions), inline=False)
         await interaction.response.edit_message(embed=embed, view=None)
 
 
