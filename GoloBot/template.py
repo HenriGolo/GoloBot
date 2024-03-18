@@ -11,7 +11,6 @@ class BotTemplate(discord.AutoShardedBot):
     commands_names: Completer
     alphabet = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲',
                 '🇳', '🇴', '🇵', '🇶', '🇷', '🇸', '🇹', '🇺', '🇻', '🇼', '🇽', '🇾', '🇿']
-    bot: BotTemplate
     PR: list[PrivateResponse]
     startTime: datetime
     dev: discord.User
