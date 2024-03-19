@@ -88,8 +88,6 @@ class GBEmbed(discord.Embed):
         super().__init__(*args, **kwargs)
         if isinstance(guild, discord.Guild):
             self.set_author(name=guild.name, url=guild.jump_url)
-            if guild.banner is not None:
-                self.set_image(url=guild.banner.url)
             self.set_thumbnail(url=guild.icon.url)
         if isinstance(user, (discord.User, discord.Member)):
             self.set_author(name=user.name, url=user.jump_url, icon_url=user.avatar.url)
