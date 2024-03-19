@@ -6,6 +6,7 @@ from discord.ext.commands import slash_command, MissingPermissions
 from discord.commands.context import ApplicationContext
 from . import *
 from .doc import cmds
+from ..template import *
 
 
 class ManquePerms(Exception):
@@ -13,7 +14,7 @@ class ManquePerms(Exception):
 
 
 class BoutonShowFullError(ui.Button):
-    def __init__(self, bot, full_embed, *args, **kwargs):
+    def __init__(self, bot: BotTemplate, full_embed, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.bot = bot
         self.full = full_embed
@@ -26,7 +27,7 @@ class BoutonShowFullError(ui.Button):
 
 
 class BoutonTransfert(ui.Button):
-    def __init__(self, bot, user, embed, *args, **kwargs):
+    def __init__(self, bot: BotTemplate, user, embed, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.bot = bot
         self.user = user
@@ -39,7 +40,7 @@ class BoutonTransfert(ui.Button):
 
 
 class ViewError(GBView):
-    def __init__(self, bot, full_embed, embed_err):
+    def __init__(self, bot: BotTemplate, full_embed, embed_err):
         super().__init__(bot)
         self.bot = bot
         self.embed_err = embed_err
