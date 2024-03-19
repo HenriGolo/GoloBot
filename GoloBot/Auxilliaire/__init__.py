@@ -106,6 +106,10 @@ class GBView(discord.ui.View):
     async def on_timeout(self):
         self.disable_all_items()
 
+    def add_links(self, **buttons):
+        for label, url in buttons.items():
+            self.add_item(discord.ui.Button(label=label, url=url))
+
 
 class Trigger:
     def __init__(self, trigger: str, rmurl: bool = True,
