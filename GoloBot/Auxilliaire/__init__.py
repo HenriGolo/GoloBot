@@ -94,7 +94,7 @@ class GBEmbed(discord.Embed):
         if isinstance(user, (discord.User, discord.Member)):
             self.set_author(name=user.name, url=user.jump_url, icon_url=user.avatar.url)
 
-    def add_field(self: discord.embeds.E, *, name: str, value: str, inline: bool = False) -> E:
+    def add_field(self: discord.embeds.E, *, name: str, value: str, inline: bool = False) -> discord.embeds.E:
         return super().add_field(name=name, value=value, inline=inline)
 
 
