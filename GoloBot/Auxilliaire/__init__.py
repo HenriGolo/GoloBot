@@ -13,7 +13,7 @@ import json
 from .converters import ANSI
 
 
-url = re.compile(r'https?://[a-zA-Z0-9/.#-]*')
+url = re.compile(r'https?://[a-zA-Z0-9/.#?-]*')
 all_mentions = re.compile(r'<[@#!&]+[0-9]*>')
 user_mentions = re.compile(r'<@[0-9]*>')
 role_mentions = re.compile(r'<@&[0-9]*>')
