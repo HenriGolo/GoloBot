@@ -433,11 +433,11 @@ def color_permissions(perm: discord.Permissions) -> str:
     for key in perm_list:
         if getattr(perm, key):
             color = "{}"
-            if getattr(Permissions.advanced(), key):
+            if getattr(discord.Permissions.advanced(), key):
                 color = "<red>{}<reset>"
-            elif getattr(Permissions.general(), key):
+            elif getattr(discord.Permissions.general(), key):
                 color = "<yellow>{}<reset>"
-            elif getattr(Permissions.membership(), key):
+            elif getattr(discord.Permissions.membership(), key):
                 color = "<cyan>{}<reset>"
             perms.append(color.format(key))
     return ANSI.converter('\n'.join(perms))
