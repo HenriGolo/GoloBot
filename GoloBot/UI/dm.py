@@ -24,10 +24,9 @@ class ModalDM(ui.Modal):
         await interaction.respond("Message envoyé :", embed=embed, ephemeral=True)
 
 
-class BoutonReponseDM(ui.Button):
+class BoutonReponseDM(GButton):
     def __init__(self, bot):
-        super().__init__(label="Répondre", custom_id="reponse", style=ButtonStyle.success)
-        self.bot = bot
+        super().__init__(bot, label="Répondre", custom_id="reponse", style=ButtonStyle.success)
         self.target = None
 
     async def set_target(self, content):
@@ -42,13 +41,12 @@ class BoutonReponseDM(ui.Button):
         await interaction.response.send_modal(modal)
 
 
-class BoutonSupprimerDM(ui.Button):
+class BoutonSupprimerDM(GButton):
     def __init__(self, bot):
-        super().__init__(label="Supprimer", custom_id="supprimer", style=ButtonStyle.danger)
-        self.bot = bot
+        super().__init__(bot, label="Supprimer", style=ButtonStyle.danger)
 
-    # @logger
     # Supprimer le MP
+    @logger
     async def callback(self, interaction: Interaction):
         await interaction.edit(delete_after=0)
 

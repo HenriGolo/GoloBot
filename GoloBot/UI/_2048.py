@@ -2,10 +2,9 @@ from GoloBot.UI.base_imports import *
 from GoloBot.Auxilliaire.games import *
 
 
-class BoutonDirectionnel2048(ui.Button):
+class BoutonDirectionnel2048(GButton):
     def __init__(self, bot, direction):
-        super().__init__(label=direction.name, style=ButtonStyle.primary)
-        self.bot = bot
+        super().__init__(bot, label=direction.name, style=ButtonStyle.primary)
         self.direction = direction
 
     @logger
@@ -45,10 +44,9 @@ class BoutonDirectionnel2048(ui.Button):
         await interaction.edit(embed=embed, view=self.view)
 
 
-class BoutonStop2048(ui.Button):
+class BoutonStop2048(GButton):
     def __init__(self, bot):
-        super().__init__(label="Arrêter", style=ButtonStyle.danger, emoji=bot.bools[False])
-        self.bot = bot
+        super().__init__(bot, label="Arrêter", style=ButtonStyle.danger, emoji=bot.bools[False])
 
     @logger
     async def callback(self, interaction: Interaction):

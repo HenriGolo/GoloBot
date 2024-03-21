@@ -100,6 +100,7 @@ class GBEmbed(discord.Embed):
 
 class GBView(discord.ui.View):
     def __init__(self, bot: discord.AutoShardedBot, *args, **kwargs):
+        kwargs['timeout'] = None
         super().__init__(*args, **kwargs)
         self.bot = bot
 
@@ -109,6 +110,14 @@ class GBView(discord.ui.View):
     def add_links(self, **buttons):
         for label, url in buttons.items():
             self.add_item(discord.ui.Button(label=label, url=url))
+
+
+class GButton(discord.ui.Button):
+    def __init__(self, bot, *args, **kwargs):
+        kwargs['label'] = kwargs.get('label', "Gneu ! Bouton !")
+        kwargs['custom_id'] = kwargs.get('custom_id', kwargs['label'].lower().replace(' ', '_'))
+        super().__init__(*args, **kwargs)
+        self.bot = bot
 
 
 class Trigger:

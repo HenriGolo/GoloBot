@@ -215,10 +215,9 @@ class SelectRemoveFieldEmbed(ui.Select):
         await interaction.edit(embeds=self.embeds, view=view)
 
 
-class BoutonAjouterChampEmbed(ui.Button):
+class BoutonAjouterChampEmbed(GButton):
     def __init__(self, bot, embeds, embed, msg_id):
-        super().__init__(label="Ajouter un Champ", style=ButtonStyle.primary)
-        self.bot = bot
+        super().__init__(bot, label="Ajouter un Champ", style=ButtonStyle.primary)
         self.embeds = embeds
         self.embed = embed
         self.msg_id = msg_id
@@ -231,10 +230,9 @@ class BoutonAjouterChampEmbed(ui.Button):
         await interaction.edit(embeds=self.embeds, view=view)
 
 
-class BoutonAjouterEmbed(ui.Button):
+class BoutonAjouterEmbed(GButton):
     def __init__(self, bot, embeds, embed, msg_id):
-        super().__init__(label="Ajouter un Embed", style=ButtonStyle.primary)
-        self.bot = bot
+        super().__init__(bot, label="Ajouter un Embed", style=ButtonStyle.primary)
         self.embeds = embeds
         self.embed = embed
         self.msg_id = msg_id
@@ -248,10 +246,9 @@ class BoutonAjouterEmbed(ui.Button):
         await interaction.response.send_modal(modal)
 
 
-class BoutonEnvoyerEmbed(ui.Button):
+class BoutonEnvoyerEmbed(GButton):
     def __init__(self, bot, embeds, msg_id):
-        super().__init__(label="Valider", style=ButtonStyle.success)
-        self.bot = bot
+        super().__init__(bot, label="Valider", style=ButtonStyle.success)
         self.embeds = embeds
         self.msg_id = msg_id
 
@@ -268,10 +265,9 @@ class BoutonEnvoyerEmbed(ui.Button):
         await interaction.edit(delete_after=0)
 
 
-class BoutonSetAuthor(ui.Button):
+class BoutonSetAuthor(GButton):
     def __init__(self, bot, embeds):
-        super().__init__(label="Définir Auteur", style=ButtonStyle.primary)
-        self.bot = bot
+        super().__init__(bot, label="Définir Auteur", style=ButtonStyle.primary)
         self.embeds = embeds
 
     @logger

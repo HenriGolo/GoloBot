@@ -2,10 +2,9 @@ from .base_imports import *
 from discord import Permissions
 
 
-class BoutonInfos(ui.Button):
-    def __init__(self, bot, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.bot = bot
+class BoutonInfos(GButton):
+    def __init__(self, bot):
+        super().__init__(bot, label="Permissions", style=ButtonStyle.primary)
 
     @logger
     async def callback(self, interaction: Interaction):
@@ -19,4 +18,4 @@ class BoutonInfos(ui.Button):
 class ViewUserInfo(GBView):
     def __init__(self, bot, *args, **kwargs):
         super().__init__(bot, *args, **kwargs)
-        self.add_item(BoutonInfos(bot, label="Permissions", style=ButtonStyle.primary))
+        self.add_item(BoutonInfos(bot))

@@ -18,10 +18,9 @@ class ModalQPUP(ui.Modal):
             await interaction.respond(f"Hé non, ce n'est pas {self.children[0].value}", ephemeral=True)
 
 
-class BoutonReponseQPUP(ui.Button):
+class BoutonReponseQPUP(GButton):
     def __init__(self, bot, rep):
-        super().__init__(label="Répondre", style=ButtonStyle.success)
-        self.bot = bot
+        super().__init__(bot, label="Répondre", style=ButtonStyle.success)
         self.rep = rep
 
     @logger
