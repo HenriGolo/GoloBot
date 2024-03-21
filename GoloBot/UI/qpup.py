@@ -12,10 +12,10 @@ class ModalQPUP(ui.Modal):
     @logger
     async def callback(self, interaction: Interaction):
         if correspond(self.children[0].value, self.rep):
-            await interaction.response.send_message(
+            await interaction.respond(
                 f"{interaction.user.mention} a trouvé la bonne réponse : {self.rep}")
         else:
-            await interaction.response.send_message(f"Hé non, ce n'est pas {self.children[0].value}", ephemeral=True)
+            await interaction.respond(f"Hé non, ce n'est pas {self.children[0].value}", ephemeral=True)
 
 
 class BoutonReponseQPUP(ui.Button):

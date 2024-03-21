@@ -21,17 +21,17 @@ class SelectRoleReact(ui.Select):
         msg = interaction.message
         guild = interaction.guild
         if self.values[0] == "Actualiser":
-            await interaction.response.edit_message(view=ViewRoleReact(self.bot, rolesInStr(msg.content, guild)))
+            await interaction.edit(view=ViewRoleReact(self.bot, rolesInStr(msg.content, guild)))
             return
 
         for role in self.roles:
             if self.values[0] == role.name:
                 if role in user.roles:
                     await user.remove_roles(role)
-                    await interaction.response.send_message(content=f"Rôle supprimé : {role.mention}", ephemeral=True)
+                    await interaction.respond(content=f"Rôle supprimé : {role.mention}", ephemeral=True)
                 else:
                     await user.add_roles(role)
-                    await interaction.response.send_message(content=f"Rôle ajouté : {role.mention}", ephemeral=True)
+                    await interaction.respond(content=f"Rôle ajouté : {role.mention}", ephemeral=True)
         await msg.edit(view=ViewRoleReact(self.bot, self.roles))
 
 

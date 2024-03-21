@@ -13,7 +13,7 @@ class BoutonInfos(ui.Button):
         [member_id] = [f.value for f in embed.fields if f.name.lower() == "identifiant"]
         member = await interaction.guild.fetch_member(member_id)
         embed.add_field(name="Permissions", value=color_permissions(member.guild_permissions), inline=False)
-        await interaction.response.edit_message(embed=embed, view=None)
+        await interaction.edit(embed=embed, view=None)
 
 
 class ViewUserInfo(GBView):

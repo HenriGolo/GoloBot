@@ -21,7 +21,7 @@ class ModalDM(ui.Modal):
         if self.target == self.bot.dev:
             content = f"Reçu de {joueur.mention}"
         await self.target.send(content, embed=embed)
-        await interaction.response.send_message("Message envoyé :", embed=embed, ephemeral=True)
+        await interaction.respond("Message envoyé :", embed=embed, ephemeral=True)
 
 
 class BoutonReponseDM(ui.Button):
@@ -47,10 +47,10 @@ class BoutonSupprimerDM(ui.Button):
         super().__init__(label="Supprimer", custom_id="supprimer", style=ButtonStyle.danger)
         self.bot = bot
 
-    @logger
+    # @logger
     # Supprimer le MP
     async def callback(self, interaction: Interaction):
-        await interaction.response.edit_message(delete_after=0)
+        await interaction.edit(delete_after=0)
 
 
 class ViewDM(GBView):

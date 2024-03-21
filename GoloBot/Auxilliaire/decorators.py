@@ -23,7 +23,7 @@ class BoutonShowFullError(ui.Button):
         view = GBView(self.bot)
         view.add_item(BoutonTransfert(self.bot, self.view.bot.dev, self.view.embed_err, label="Transférer",
                                       style=ButtonStyle.success))
-        await interaction.response.edit_message(embed=self.full, view=view)
+        await interaction.edit(embed=self.full, view=view)
 
 
 class BoutonTransfert(ui.Button):
@@ -36,7 +36,7 @@ class BoutonTransfert(ui.Button):
     async def callback(self, interaction: Interaction):
         from GoloBot.UI.dm import BoutonSupprimerDM
         await self.user.send(embed=self.embed, view=GBView(self.bot, BoutonSupprimerDM(self.bot)))
-        await interaction.response.edit_message(delete_after=0)
+        await interaction.edit(delete_after=0)
 
 
 class ViewError(GBView):
@@ -55,24 +55,23 @@ class Data:
         self.caller = args[0]
         self.user = None
         self.guild = None
-
-        # on ne peut pas async un lambda, donc c'est moche
-        async def donothing(*args, **kwargs):
-            return None
-
-        self.action = donothing
+        self.action = self.donothing
 
         if len(args) > 1:
             source = args[1]
-            if isinstance(source, ApplicationContext):
+            self.guild = source.guild
+            self.action = source.respond
+            if hasattr(source, author):
                 self.user = source.author
-                self.guild = source.guild
-                self.action = source.respond
-
-            elif isinstance(source, Interaction):
+            elif hasattr(source, user):
                 self.user = source.user
-                self.guild = source.guild
-                self.action = source.response.send_message
+            else:
+                raise Exception("Mauvais format de l'entrée")
+
+    # on ne peut pas async un lambda, donc c'est moche
+    @staticmethod
+    async def donothing(*args, **kwargs):
+        ...
 
 
 def logger(func):

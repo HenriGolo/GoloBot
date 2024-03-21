@@ -42,7 +42,7 @@ class BoutonDirectionnel2048(ui.Button):
         moves = [f"{to} : {self.bot.bools[game.canMove(to)]}" for to in list()]
         embed.add_field(name="Mouvements", value="\n".join(moves), inline=True)
         embed.add_field(name="Score", value=game.score, inline=True)
-        await interaction.response.edit_message(embed=embed, view=self.view)
+        await interaction.edit(embed=embed, view=self.view)
 
 
 class BoutonStop2048(ui.Button):
@@ -66,7 +66,7 @@ class BoutonStop2048(ui.Button):
         game.duree = now() - game.duree
 
         self.bot.games[joueur.mention] = [g for g in self.bot.games[joueur.mention] if g.jeu != "2048"]
-        await interaction.response.edit_message(view=self.view)
+        await interaction.edit(view=self.view)
 
 
 # Les boutons pour le jeu de 2048

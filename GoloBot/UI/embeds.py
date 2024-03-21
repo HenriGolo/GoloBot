@@ -21,7 +21,7 @@ class ModalNewEmbed(ui.Modal):
         color = Colour(int(self.children[2].value, 16))
         embed = GBEmbed(title=title, description=description, color=color)
         view = ViewEditEmbed(self.bot, [embed], embed, self.msg_id)
-        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+        await interaction.respond(embed=embed, view=view, ephemeral=True)
 
 
 # Modification d'un Embed déjà existant
@@ -48,9 +48,9 @@ class ModalEditEmbed(ui.Modal):
         self.embed.color = color
         view = ViewEditEmbed(self.bot, self.embeds, self.embed, self.msg_id)
         if self.send:
-            await interaction.response.send_message(embeds=self.embeds, view=view, ephemeral=True)
+            await interaction.respond(embeds=self.embeds, view=view, ephemeral=True)
         else:
-            await interaction.response.edit_message(embeds=self.embeds, view=view)
+            await interaction.edit(embeds=self.embeds, view=view)
 
 
 # Modification des champs d'un Embed
@@ -74,7 +74,7 @@ class ModalEditEmbedFields(ui.Modal):
         value = ANSI.converter(self.children[1].value)
         self.embed.set_field_at(self.field, name=name, value=value, inline=False)
         view = ViewEditEmbed(self.bot, self.embeds, self.embed, self.msg_id)
-        await interaction.response.edit_message(embeds=self.embeds, view=view)
+        await interaction.edit(embeds=self.embeds, view=view)
 
 
 class ModalSetAuthor(ui.Modal):
@@ -107,7 +107,7 @@ class ModalSetAuthor(ui.Modal):
                     avatar = interaction.user.avatar.url
 
             embed.set_author(name=name, icon_url=avatar)
-        await interaction.response.edit_message(embeds=self.embeds)
+        await interaction.edit(embeds=self.embeds)
 
 
 # Sélection de l'Embed à modifier
@@ -180,7 +180,7 @@ class SelectRemoveEmbed(ui.Select):
         embed = self.select_embed(self.values[0])
         embeds = [e for e in self.embeds if e != embed]
         view = ViewEditEmbed(self.bot, embeds, embeds[0], self.msg_id)
-        await interaction.response.edit_message(embeds=embeds, view=view)
+        await interaction.edit(embeds=embeds, view=view)
 
 
 # Sélection du champ à supprimer
@@ -207,12 +207,12 @@ class SelectRemoveFieldEmbed(ui.Select):
         if index is None:
             self.embeds = [e for e in self.embeds if e != self.embed]
             if len(self.embeds) == 0:
-                return await interaction.response.edit_message(delete_after=0)
+                return await interaction.edit(delete_after=0)
             view = ViewEditEmbed(self.bot, self.embeds, self.embeds[0], self.msg_id)
         else:
             self.embed.remove_field(index)
             view = ViewEditEmbed(self.bot, self.embeds, self.embed, self.msg_id)
-        await interaction.response.edit_message(embeds=self.embeds, view=view)
+        await interaction.edit(embeds=self.embeds, view=view)
 
 
 class BoutonAjouterChampEmbed(ui.Button):
@@ -228,7 +228,7 @@ class BoutonAjouterChampEmbed(ui.Button):
     async def callback(self, interaction: Interaction):
         self.embed.add_field(name=f"Champ {len(self.embed.fields)}", value="Nouveau", inline=False)
         view = ViewEditEmbed(self.bot, self.embeds, self.embed, self.msg_id)
-        await interaction.response.edit_message(embeds=self.embeds, view=view)
+        await interaction.edit(embeds=self.embeds, view=view)
 
 
 class BoutonAjouterEmbed(ui.Button):
@@ -265,7 +265,7 @@ class BoutonEnvoyerEmbed(ui.Button):
         else:
             msg_id = await interaction.channel.fetch_message(int(self.msg_id))
             await msg_id.edit(embeds=self.embeds)
-        await interaction.response.edit_message(delete_after=0)
+        await interaction.edit(delete_after=0)
 
 
 class BoutonSetAuthor(ui.Button):
