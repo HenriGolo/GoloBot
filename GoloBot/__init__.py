@@ -21,7 +21,6 @@ class General(commands.Cog):
 
     # Gestion des messages
     @commands.Cog.listener()
-    @logger
     async def on_message(self, msg: discord.Message):
         currentTime = now()
         # Message d'un bot / webhook

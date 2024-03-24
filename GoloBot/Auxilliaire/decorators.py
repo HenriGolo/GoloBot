@@ -60,7 +60,8 @@ class Data:
         if len(args) > 1:
             source = args[1]
             self.guild = source.guild
-            self.action = source.respond
+            if hasattr(source, 'respond'):
+                self.action = source.respond
             if hasattr(source, author):
                 self.user = source.author
             elif hasattr(source, user):

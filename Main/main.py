@@ -101,7 +101,6 @@ class GoloBot(BotTemplate):
         with open('logs/guilds.log', 'a') as file:
             file.write(f"{guild.name}\n")
 
-    @logger
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
         # On ne tient pas compte des join / disconnect des bots
         if member.bot:
