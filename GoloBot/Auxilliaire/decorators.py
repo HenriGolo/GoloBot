@@ -62,9 +62,9 @@ class Data:
             self.guild = source.guild
             if hasattr(source, 'respond'):
                 self.action = source.respond
-            if hasattr(source, author):
+            if hasattr(source, 'author'):
                 self.user = source.author
-            elif hasattr(source, user):
+            elif hasattr(source, 'user'):
                 self.user = source.user
             else:
                 raise Exception("Mauvais format de l'entrée")
