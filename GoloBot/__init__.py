@@ -157,10 +157,10 @@ class Dev(commands.Cog):
     async def test(self, ctx: ApplicationContext):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title="test", user=ctx.author, guild=ctx.guild)
-        view = GBView(self.bot)
-        view.add_item(ui.Button(label="test",
-                                url="https://api.worldoftanks.eu/wot/auth/login/?application_id=4b0af0848999fda96db425963e9b29bf"))
-        await ctx.respond(embed=embed, view=view, ephemeral=True)
+        ts = Timestamp(now())
+        values = [ts.relative, ts.long_date, ts.short_date, ts.long_time, ts.short_time, ts.long_datetime, ts.short_datetime]
+        embed.description = '\n'.join(values)
+        await ctx.respond(embed=embed, ephemeral=True)
 
     # Envoie un message privé à un User
     @customSlash
