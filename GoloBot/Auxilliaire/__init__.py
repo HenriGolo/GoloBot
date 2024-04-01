@@ -93,8 +93,9 @@ class GBEmbed(discord.Embed):
             self.set_thumbnail(url=guild.icon.url)
         if isinstance(user, (discord.User, discord.Member)):
             name = user.name
-            if isinstance(user, discord.Member):
-                name = f"{user.name} - {user.nick}"
+            if hasattr(user, 'nick'):
+                if user.nick is not None:
+                    name += f" - {user.nick}"
             self.set_author(name=name, url=user.jump_url, icon_url=user.avatar.url)
 
     def add_field(self: discord.embeds.E, *, name: str, value: str, inline: bool = False) -> discord.embeds.E:
