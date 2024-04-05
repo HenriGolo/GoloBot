@@ -114,6 +114,7 @@ class GBView(discord.ui.View):
     def add_links(self, **buttons):
         for label, url in buttons.items():
             self.add_item(discord.ui.Button(label=label, url=url))
+        return self
 
 
 class GButton(discord.ui.Button):
