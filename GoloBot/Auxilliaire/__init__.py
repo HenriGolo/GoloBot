@@ -111,9 +111,14 @@ class GBView(discord.ui.View):
     async def on_timeout(self):
         self.disable_all_items()
 
-    def add_links(self, **buttons):
+    def add_links(self, *, meme_ligne: bool = True, **buttons):
+        row = 0
+        if len(buttons) > 5:
+            meme_ligne = True
         for label, url in buttons.items():
-            self.add_item(discord.ui.Button(label=label, url=url))
+            self.add_item(discord.ui.Button(label=label, url=url, row=row))
+            if not meme_ligne:
+                row += 1
         return self
 
 
