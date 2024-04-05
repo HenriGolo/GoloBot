@@ -78,12 +78,7 @@ class GoloBot(BotTemplate):
             pass
 
         for guild in self.guilds:
-            # Setup de la Musique
-            await register(self, guild)
-
-            # Enregistrement des guilds auxquelles le bot appartient
-            with open('logs/guilds.log', 'a') as file:
-                file.write(f"{guild.name}\n")
+            await self.on_guild_join(guild)
 
         # Gestion du PID pour kill proprement
         with open(environ['pidfile'], 'w') as pid:
@@ -93,13 +88,22 @@ class GoloBot(BotTemplate):
         print(f"{self} connecté !")
 
     @logger
-    async def on_guild_join(self, guild):
+    async def on_guild_join(self, guild: discord.Guild):
         # Setup de la Musique
         await register(self, guild)
 
         # Enregistrement des guilds auxquelles le bot appartient
+        invs = await guild.invites()
+        dico = {i.uses: i for i in invs if i.expires_at is None}
+        # On met de côté une invitation au cas où
+        inv = None
+        if dico.keys():
+            inv = dico[max(dico.keys())]
         with open('logs/guilds.log', 'a') as file:
-            file.write(f"{guild.name}\n")
+            txt = guild.name
+            if isinstance(inv, discord.Invite):
+                txt += f' - {inv.url}'
+            file.write(f"{txt}\n")
 
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
         # On ne tient pas compte des join / disconnect des bots
