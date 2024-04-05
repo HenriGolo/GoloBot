@@ -87,18 +87,20 @@ class GoloBot(BotTemplate):
         # c'est bon, on est prêt
         print(f"{self} connecté !")
 
-    @logger
     async def on_guild_join(self, guild: discord.Guild):
         # Setup de la Musique
         await register(self, guild)
 
         # Enregistrement des guilds auxquelles le bot appartient
-        invs = await guild.invites()
-        dico = {i.uses: i for i in invs if i.expires_at is None}
-        # On met de côté une invitation au cas où
         inv = None
-        if dico.keys():
-            inv = dico[max(dico.keys())]
+        try:
+            invs = await guild.invites()
+            dico = {i.uses: i for i in invs if i.expires_at is None}
+            # On met de côté une invitation au cas où
+            if dico.keys():
+                inv = dico[max(dico.keys())]
+        except:
+            pass
         with open('logs/guilds.log', 'a') as file:
             txt = guild.name
             if isinstance(inv, discord.Invite):
