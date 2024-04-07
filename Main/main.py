@@ -123,6 +123,41 @@ class GoloBot(BotTemplate):
                     # Déconnexion
                     await member.move_to(None)
 
+    async def on_message(self, message: discord.Message):
+        currentTime = now()
+        # Message d'un bot / webhook
+        if message.author.bot:
+            if message.guild is None:
+                return
+            if message.reference is None:
+                if guild_to_settings[message.guild].config["autopublish bots"]:
+                    try:
+                        await message.publish()
+                    except:
+                        pass
+            return
+
+        # Message privé → transmission au dev
+        if message.channel.type == discord.ChannelType.private:
+            if not message.author == self.dev:
+                embed = GBEmbed(title="Nouveau Message", description=message.content, color=message.author.color)
+                # Transmission des pièces jointes
+                files = [await fichier.to_file() for fichier in message.attachments]
+                await self.dev.send(f"Reçu de {message.author.mention}",
+                                    embed=embed,
+                                    files=files,
+                                    view=ViewDM(bot=self))
+                if 'dm' in environ:
+                    with open(environ['dm'], 'a') as fichier:
+                        fichier.write(f"\n{currentTime} {message.author.name} a envoyé un DM :\n{message.content}\n")
+                await message.add_reaction(self.bools[True])
+        else:
+            if guild_to_settings[message.guild].config["reponses custom"]:
+                # S'obtient avec un '@silent ' devant le message
+                if not message.flags.suppress_notifications:
+                    for pr in self.PR:
+                        await pr.do_stuff(message)
+
 
 # Création du Bot
 intents = discord.Intents.all()

@@ -19,43 +19,6 @@ class General(commands.Cog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
 
-    # Gestion des messages
-    @commands.Cog.listener()
-    async def on_message(self, msg: discord.Message):
-        currentTime = now()
-        # Message d'un bot / webhook
-        if msg.author.bot:
-            if msg.guild is None:
-                return
-            if msg.reference is None:
-                if guild_to_settings[msg.guild].config["autopublish bots"]:
-                    try:
-                        await msg.publish()
-                    except:
-                        pass
-            return
-
-        # Message privé → transmission au dev
-        if msg.channel.type == discord.ChannelType.private:
-            if not msg.author == self.bot.dev:
-                embed = GBEmbed(title="Nouveau Message", description=msg.content, color=msg.author.color)
-                # Transmission des pièces jointes
-                files = [await fichier.to_file() for fichier in msg.attachments]
-                await self.bot.dev.send(f"Reçu de {msg.author.mention}",
-                                        embed=embed,
-                                        files=files,
-                                        view=ViewDM(bot=self.bot))
-                if 'dm' in environ:
-                    with open(environ['dm'], 'a') as fichier:
-                        fichier.write(f"\n{currentTime} {msg.author.name} a envoyé un DM :\n{msg.content}\n")
-                await msg.add_reaction(self.bot.bools[True])
-        else:
-            if guild_to_settings[msg.guild].config["reponses custom"]:
-                # S'obtient avec un '@silent ' devant le message
-                if not msg.flags.suppress_notifications:
-                    for pr in self.bot.PR:
-                        await pr.do_stuff(msg)
-
     # Aide
     @customSlash
     async def aide(self, ctx: ApplicationContext, commande: str, visible: bool):
