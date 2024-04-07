@@ -351,19 +351,22 @@ def tail(file: str, lastN=10) -> str:
     return cmd
 
 
-# Recherche récursive d'un élément dans une matrice
+# Recherche récursive
 def rec_in(search, elt, profondeur=-1) -> bool:
-    # Profondeur -1 posur chercher partout
+    # Profondeur -1 pour chercher partout
     if profondeur == 0:
         # On ne cherche pas plus loin
         try:
+            # Évaluation paresseuse :
+            # si == le 'in' ne sera pas évalué,
+            # même si censé produire une erreur
             return elt == search or elt in search
         except:
             return False
 
     try:
         for sub in search:
-            trouve = rec_in(sub, elt, 0)  # On a troyvé ce qu'on cherche
+            trouve = rec_in(sub, elt, 0)  # On a trouvé ce qu'on cherche
             if trouve or rec_in(sub, elt, profondeur-1):
                 # On l'a trouvé dans les appels récursifs
                 return True
