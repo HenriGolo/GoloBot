@@ -1,5 +1,6 @@
 from GoloBot.UI.base_imports import *
 from GoloBot.Auxilliaire.settings import *
+import json
 
 
 class ModalDashboard(ui.Modal):
@@ -17,7 +18,7 @@ class ModalDashboard(ui.Modal):
     @logger
     async def callback(self, interaction: Interaction):
         value = self.children[0].value
-        value = GBDecoder().decode(value)  # oui c'est overkill de load du json pour ça
+        value = json.loads(value, cls=GBDecoder)  # oui c'est overkill de load du json pour ça
         update = self.sett.write(self.setting, value)
         if update == Exit.Success:
             msg = f"Paramètre <cyan>{self.setting}<reset> modifié avec <green>succès"
