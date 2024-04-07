@@ -269,6 +269,9 @@ class GBDecoder(json.JSONDecoder):
         self.create_instance = True
 
     def decode(self, s, _w=...):
+        if not isinstance(s, str):
+            return s
+
         s = s.strip('"').strip("'")
         if s.startswith('<') and s.endswith('>'):
             s = s[1:-1].strip('"').strip("'")
