@@ -352,8 +352,8 @@ def tail(file: str, lastN=10) -> str:
 
 
 # Recherche récursive d'un élément dans une matrice
-def rec_in(search, elt, profondeur=2) -> bool:
-    # Profondeur -1 pour chercher partout
+def rec_in(search, elt, profondeur=-1) -> bool:
+    # Profondeur -1 posur chercher partout
     if profondeur == 0:
         # On ne cherche pas plus loin
         try:
