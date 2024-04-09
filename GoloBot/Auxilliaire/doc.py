@@ -214,12 +214,6 @@ DocCommand("qpup",
            "Tellement de lore derrière ce nom ... Même avec le nom vous devinerez pas ...",
            [Arg("nbquestions", "Nombre de questions désirées.", default=1)])
 
-DocCommand("user_info",
-           "Donne des informations sur la personne demandée.",
-           Permissions.none(),
-           "Nom, date de création du compte, membre du serveur depuis <date>, rôles (si permission `Gérer les Rôles`))",
-           [Arg("user", "Utilisateur ciblé.")])
-
 DocCommand("2048",
            "Démarre une partie de 2048.",
            Permissions.none(),
