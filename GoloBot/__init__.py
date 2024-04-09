@@ -693,3 +693,20 @@ class UserCommands(commands.Cog):
         if ctx.author.guild_permissions.manage_permissions:
             kwargs['view'] = ViewUserInfo(self.bot)
         await ctx.respond(**kwargs)
+
+
+class MSGCommands(commands.Cog):
+    def __int__(self, bot: BotTemplate):
+        self.bot = bot
+
+    @CustomMsg
+    async def informations(self, ctx: ApplicationContext, message: discord.Message):
+        await ctx.defer(ephemeral=True)
+        embed = GBEmbed(title="Informations")
+        kwargs = {'embed': embed, 'ephemeral': True}
+        embed.add_field(name="Auteur", value=f"{message.author.mention}")
+        embed.add_field(name="Identifiant", value=message.id)
+        embed.add_field(name="Date d'envoi", value=Timestamp(message.created_at).relative)
+        if message.edited_at is not None:
+            embed.add_field(name="Dernière modification", value=Timestamp(message.edited_at).relative)
+        await ctx.respond(**kwargs)
