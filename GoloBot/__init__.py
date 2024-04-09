@@ -663,13 +663,13 @@ class Music(commands.Cog):
             ephemeral=True)
 
 
-class UserCommands(commands.Cog):
+class CommandesPasSlash(commands.Cog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
 
     # Affiche les informations d'un Member
     @CustomUser
-    async def informations(self, ctx: ApplicationContext, member: discord.Member):
+    async def informations_utilisateur(self, ctx: ApplicationContext, member: discord.Member):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title="Informations", user=member, guild=ctx.guild)
         kwargs = {'embed': embed, 'ephemeral': True}
@@ -691,13 +691,8 @@ class UserCommands(commands.Cog):
             kwargs['view'] = ViewUserInfo(self.bot)
         await ctx.respond(**kwargs)
 
-
-class MSGCommands(commands.Cog):
-    def __int__(self, bot: BotTemplate):
-        self.bot = bot
-
     @CustomMsg
-    async def informations(self, ctx: ApplicationContext, message: discord.Message):
+    async def informations_message(self, ctx: ApplicationContext, message: discord.Message):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title="Informations")
         kwargs = {'embed': embed, 'ephemeral': True}
