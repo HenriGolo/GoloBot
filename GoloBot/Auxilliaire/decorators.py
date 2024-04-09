@@ -2,7 +2,7 @@ import json
 from functools import wraps
 from os import environ
 from discord import Forbidden, ui, Interaction, ButtonStyle
-from discord.ext.commands import slash_command, MissingPermissions
+from discord.ext.commands import slash_command, user_command, message_command, MissingPermissions
 from discord.commands.context import ApplicationContext
 from . import *
 from .doc import cmds
@@ -164,4 +164,18 @@ def customSlash(func):
     func = apply_list(cmds[name].options)(func)
     func = check_disabled(func)
     func = slash_command(name=name, description=cmds[name].desc)(func)
+    return func
+
+
+def CustomUser(func):
+    name = func.__name__.strip('_')
+    func = logger(func)
+    func = user_command(name=name.title())(func)
+    return func
+
+
+def CustomMsg(func):
+    name = func.__name__.strip('_')
+    func = logger(func)
+    func = message_command(name=name.title())(func)
     return func
