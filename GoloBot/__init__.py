@@ -51,7 +51,7 @@ class General(commands.Cog):
     @CustomSlash
     async def invite(self, ctx):
         await ctx.defer(ephemeral=True)
-        embed = GBEmbed(title=f"Inviter {self.bot.user.name}",
+        embed = GBEmbed(title=f"Inviter {self.bot.user.display_name}",
                         description=f"""Tu peux m'inviter avec [ce lien]({environ.get('invite_bot', None)})
 Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci]({environ.get('invite_server', None)})""",
                         color=ctx.author.color)
@@ -294,7 +294,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
                         pass
 
                 await ctx.respond(f"Mes derniers messages ont été clear", ephemeral=True)
-                logs.write(f"\n{now()} Les derniers messages envoyés à {ctx.author.name} on été effacés\n")
+                logs.write(f"\n{now()} Les derniers messages envoyés à {ctx.author.display_name} on été effacés\n")
             return
 
         # Manque de permissions
@@ -327,11 +327,11 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         if user.top_role >= ctx.author.top_role:
             await ctx.respond(f"Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
             await self.bot.dev.send(f"{ctx.author.mention} a voulu ban {user.mention} de {ctx.guild}")
-            await ctx.author.timeout(until=now() + timedelta(minutes=2), reason=f"A voulu ban {user.name}")
+            await ctx.author.timeout(until=now() + timedelta(minutes=2), reason=f"A voulu ban {user.display_name}")
             raise ManquePerms("Rôle trop faible")
 
         try:
-            who = f" (demandé par {ctx.author.name})"
+            who = f" (demandé par {ctx.author.display_name})"
             raison += who
             await user.ban(reason=raison)
             await ctx.respond(f"{user.mention} a été ban, raison : **{raison[:-len(who)]}**", ephemeral=True)
@@ -354,11 +354,11 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         # Rôle trop élevé
         if user.top_role >= ctx.author.top_role:
             await ctx.respond(f"Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
-            await ctx.author.timeout(until=end_mute, reason=f"A voulu mute {user.name}")
+            await ctx.author.timeout(until=end_mute, reason=f"A voulu mute {user.display_name}")
             raise ManquePerms("Rôle trop faible")
 
         try:
-            who = f" (demandé par {ctx.author.name})"
+            who = f" (demandé par {ctx.author.display_name})"
             raison += who
             await user.timeout(until=end_mute, reason=raison)
             await ctx.respond(f"{user.mention} a été mute, raison : **{raison[:-len(who)]}**", ephemeral=True)
@@ -485,7 +485,7 @@ class MiniGames(commands.Cog):
         embed = GBEmbed(title="2048", color=ctx.author.color)
         # Envoie du jeu formatté en python ou n'importe quel autre langage
         # pour colorer les chiffres et ajouter un effet visuel
-        embed.add_field(name=f"Partie de {ctx.author.name}", value=str(game), inline=True)
+        embed.add_field(name=f"Partie de {ctx.author.display_name}", value=str(game), inline=True)
         moves = [f"{to} : {self.bot.bools[game.canMove(to)]}" for to in list(Directions)]
         embed.add_field(name="Mouvements", value="\n".join(moves), inline=True)
         embed.add_field(name="Score", value=game.score, inline=True)
