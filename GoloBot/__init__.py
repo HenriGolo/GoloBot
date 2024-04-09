@@ -661,3 +661,35 @@ class Music(commands.Cog):
         await ctx.respond(
             f"Changement de la boucle dans la PlayList : {self.bot.bools[loop]} -> {self.bot.bools[not loop]}",
             ephemeral=True)
+
+
+class UserCommands(commands.Cog):
+    def __init__(self, bot: BotTemplate):
+        self.bot = bot
+
+    # Affiche les informations d'un Member
+    @CustomUser
+    async def informations(self, ctx: ApplicationContext, member: discord.Member):
+        await ctx.defer(ephemeral=True)
+        print(member.name)
+        print(member.display_name)
+        print(member.nick)
+        embed = GBEmbed(title="Informations", user=member, guild=ctx.guild)
+        kwargs = {'embed': embed, 'ephemeral': True}
+        embed.add_field(name="Nom", value=f"{member.display_name} - {member.nick}", inline=False)
+        embed.add_field(name="Identifiant", value=member.id, inline=False)
+        if member.banner is not None:
+            embed.set_image(url=member.banner.url)
+        embed.add_field(name="Date de Création", value=Timestamp(member.created_at).relative, inline=False)
+        embed.add_field(name="Dans le serveur depuis", value=Timestamp(member.joined_at).relative, inline=False)
+        if member.premium_since is not None:
+            embed.add_field(name="Booste le serveur depuis", value=Timestamp(member.premium_since).relative, inline=False)
+        if ctx.author.guild_permissions.manage_roles:
+            # Le 1er rôle de la liste est "everyone"
+            roles = [r.mention for r in member.roles[1:]]
+            # On affiche les rôles par ordre de permissions
+            roles.reverse()
+            embed.add_field(name="Rôles", value="- " + "\n- ".join(roles), inline=False)
+        if ctx.author.guild_permissions.manage_permissions:
+            kwargs['view'] = ViewUserInfo(self.bot)
+        await ctx.respond(**kwargs)
