@@ -671,9 +671,6 @@ class UserCommands(commands.Cog):
     @CustomUser
     async def informations(self, ctx: ApplicationContext, member: discord.Member):
         await ctx.defer(ephemeral=True)
-        print(member.name)
-        print(member.display_name)
-        print(member.nick)
         embed = GBEmbed(title="Informations", user=member, guild=ctx.guild)
         kwargs = {'embed': embed, 'ephemeral': True}
         embed.add_field(name="Nom", value=f"{member.display_name} - {member.nick}", inline=False)
