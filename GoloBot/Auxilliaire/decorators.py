@@ -168,14 +168,14 @@ def CustomSlash(func):
 
 
 def CustomUser(func):
-    name = func.__name__.strip('_')
+    name = func.__name__.replace('_', ' ').strip()
     func = logger(func)
     func = user_command(name=name.title())(func)
     return func
 
 
 def CustomMsg(func):
-    name = func.__name__.strip('_')
+    name = func.__name__.replace('_', ' ').strip()
     func = logger(func)
     func = message_command(name=name.title())(func)
     return func
