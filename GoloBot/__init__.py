@@ -20,7 +20,7 @@ class General(commands.Cog):
         self.bot = bot
 
     # Aide
-    @customSlash
+    @CustomSlash
     async def aide(self, ctx: ApplicationContext, commande: str, visible: bool):
         await ctx.defer(ephemeral=not visible)
         if not commande in cmds:
@@ -48,7 +48,7 @@ class General(commands.Cog):
         await ctx.respond(embed=embed, view=ViewAide(self.bot), ephemeral=not visible)
 
     # Renvoie un lien pour inviter le bot
-    @customSlash
+    @CustomSlash
     async def invite(self, ctx):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title=f"Inviter {self.bot.user.name}",
@@ -61,7 +61,7 @@ Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci
         await ctx.respond(embed=embed, ephemeral=True)
 
     # Renvoie le code source du bot
-    @customSlash
+    @CustomSlash
     async def github(self, ctx):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title="Code Source",
@@ -74,7 +74,7 @@ Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({
         await ctx.respond(embed=embed, ephemeral=True)
 
     # Quelques stats sur le nombre de box à ouvrir pour espérer un certain pourcentage
-    @customSlash
+    @CustomSlash
     async def droprates(self, ctx: ApplicationContext, pourcentage: float, nom: str, item: str):
         await ctx.defer(ephemeral=(nom == "" or item == ""))
         p = pourcentage / 100
@@ -126,7 +126,7 @@ class Dev(commands.Cog):
         await ctx.respond(embed=embed, ephemeral=True)
 
     # Envoie un message privé à un User
-    @customSlash
+    @CustomSlash
     async def dm(self, ctx):
         # Commande réservée au dev
         if not ctx.author == self.bot.dev:
@@ -136,7 +136,7 @@ class Dev(commands.Cog):
         await ctx.send_modal(ModalDM(bot=self.bot, title="Envoyer un message privé"))
 
     # Déconnecte le bot
-    @customSlash
+    @CustomSlash
     async def logout(self, ctx):
         await ctx.defer(ephemeral=True)
         # Commande réservée aux User dans la whitelist
@@ -153,7 +153,7 @@ class Dev(commands.Cog):
         await self.bot.close()
 
     # Renvoie le ping et d'autres informations
-    @customSlash
+    @CustomSlash
     async def ping(self, ctx):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title="Ping et autres informations", color=ctx.author.color)
@@ -165,12 +165,12 @@ class Dev(commands.Cog):
         await ctx.respond(embed=embed, ephemeral=True)
 
     # Propose une suggestion
-    @customSlash
+    @CustomSlash
     async def suggestions(self, ctx):
         await ctx.send_modal(ModalDM(bot=self.bot, target=self.bot.dev, title="Suggestion"))
 
     # Renvoie les logs
-    @customSlash
+    @CustomSlash
     async def get_logs(self, ctx: ApplicationContext, last_x_lines: int):
         await ctx.defer(ephemeral=True)
         # Commande réservée au dev
@@ -186,7 +186,7 @@ class Dev(commands.Cog):
         embed.description = f"```python\n{tail(environ['stderr'], last_x_lines)}\n```"
         await ctx.respond(embed=embed, files=[stderr], ephemeral=True)
 
-    @customSlash
+    @CustomSlash
     async def get_history(self, ctx: ApplicationContext, last_x_lines: int):
         await ctx.defer(ephemeral=True)
         # Commande réservée au dev
@@ -208,7 +208,7 @@ class Admin(commands.Cog):
         self.bot = bot
 
     # Création de sondage
-    @customSlash
+    @CustomSlash
     async def poll(self, ctx: ApplicationContext, question: str, reponses: Splitter, salon: discord.TextChannel):
         await ctx.defer(ephemeral=True)
         if salon == base_value:
@@ -252,7 +252,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         await ctx.respond("Sondage créé !", ephemeral=True)
 
     # Role react
-    @customSlash
+    @CustomSlash
     @commands.has_permissions(manage_roles=True)
     @discord.guild_only()
     async def role_react(self, ctx: ApplicationContext, roles: str, texte: str, message: discord.Message):
@@ -273,7 +273,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             await ctx.respond(content=content, view=view)
 
     # Nettoyage des messages d'un salon
-    @customSlash
+    @CustomSlash
     async def clear(self, ctx: ApplicationContext, nombre: int, salon: discord.TextChannel, user: discord.User):
         if salon == base_value:
             salon = ctx.channel
@@ -318,7 +318,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         await ctx.respond(f"{salon.mention} a été clear de {cpt} messages", ephemeral=True, delete_after=10)
 
     # Bannir un Member
-    @customSlash
+    @CustomSlash
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
     async def ban(self, ctx: ApplicationContext, user: discord.Member, raison: str):
@@ -345,7 +345,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             await ctx.respond(msg, ephemeral=True)
 
     # Mute un Member
-    @customSlash
+    @CustomSlash
     @commands.has_permissions(moderate_members=True)
     @commands.bot_has_permissions(moderate_members=True)
     async def mute(self, ctx: ApplicationContext, user: discord.Member, duree: Duree, raison: str):
@@ -371,31 +371,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
                 msg += "(message d'erreur envoyé au dev en copie)"
             await ctx.respond(msg, ephemeral=True)
 
-    # Affiche les informations d'un Member
-    @customSlash
-    async def user_info(self, ctx: ApplicationContext, user: discord.Member):
-        await ctx.defer(ephemeral=True)
-        embed = GBEmbed(title="Informations", user=user, guild=ctx.guild)
-        kwargs = {'embed': embed}
-        embed.add_field(name="Nom", value=str(user), inline=False)
-        embed.add_field(name="Identifiant", value=user.id, inline=False)
-        if user.banner is not None:
-            embed.set_image(url=user.banner.url)
-        embed.add_field(name="Date de Création", value=Timestamp(user.created_at).relative, inline=False)
-        embed.add_field(name="Dans le serveur depuis", value=Timestamp(user.joined_at).relative, inline=False)
-        if user.premium_since is not None:
-            embed.add_field(name="Booste le serveur depuis", value=Timestamp(user.premium_since).relative, inline=False)
-        if ctx.author.guild_permissions.manage_roles:
-            # Le 1er rôle de la liste est "everyone"
-            roles = [r.mention for r in user.roles[1:]]
-            # On affiche les rôles par ordre de permissions
-            roles.reverse()
-            embed.add_field(name="Rôles", value="- " + "\n- ".join(roles), inline=False)
-        if ctx.author.guild_permissions.manage_permissions:
-            kwargs['view'] = ViewUserInfo(self.bot)
-        await ctx.respond(**kwargs)
-
-    @customSlash
+    @CustomSlash
     @commands.has_permissions(manage_messages=True)
     async def embed(self, ctx: ApplicationContext, edit: str):
         if edit == base_value:
@@ -406,7 +382,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             embed = embeds[0]
             await ctx.send_modal(ModalEditEmbed(self.bot, embeds, embed, edit, send_new=True, title="Modifier l'Embed"))
 
-    @customSlash
+    @CustomSlash
     @commands.has_permissions(manage_guild=True)
     async def dashboard(self, ctx):
         await ctx.defer()
@@ -415,7 +391,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         view.add_item(SelectDashboard(self.bot, ctx.guild))
         await ctx.respond(embed=sett.to_embed(), view=view)
 
-    @customSlash
+    @CustomSlash
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
     async def disable(self, ctx: ApplicationContext, commande: str):
@@ -435,7 +411,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         json.dump(disabled, open("Data/guild_slash_denied.json", 'w'))
 
     # Donner un rôle
-    @customSlash
+    @CustomSlash
     @commands.has_permissions(manage_roles=True)
     async def roles(self, ctx: ApplicationContext, mode: str, users: str, roles: str):
         await ctx.defer(ephemeral=True)
@@ -450,7 +426,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             f"{', '.join([r.mention for r in roles])} {mode[:-2] + 'é'} à {', '.join([m.mention for m in members])}",
             ephemeral=True)
 
-    @customSlash
+    @CustomSlash
     @commands.has_guild_permissions(move_members=True)
     async def move(self, ctx: ApplicationContext, users: str, depuis_salon: discord.VoiceChannel,
                    vers_salon: discord.VoiceChannel):
@@ -487,7 +463,7 @@ class MiniGames(commands.Cog):
         self.bot = bot
 
     # QPUP, bon courage pour retrouver le lore ...
-    @customSlash
+    @CustomSlash
     async def qpup(self, ctx: ApplicationContext, nbquestions: int):
         await ctx.defer()
         self.bot.qpup = read_db(environ['qpup'])
@@ -499,7 +475,7 @@ class MiniGames(commands.Cog):
             await ctx.respond(self.bot.qpup[line][0], view=ViewQPUP(self.bot, rep=self.bot.qpup[line][1]))
 
     # 2048, le _ est nécessaire, une fonction ne commence pas à un chiffre
-    @customSlash
+    @CustomSlash
     async def _2048(self, ctx: ApplicationContext, size: int):
         await ctx.defer()
         # Création d'un 2048
@@ -522,7 +498,7 @@ class Troll(commands.Cog):
         super().__init__()
 
     # Spamme un texte (emote ou autre) jusqu'à atteindre la limite de caractères
-    @customSlash
+    @CustomSlash
     async def write_emote(self, ctx: ApplicationContext, mot: str, message: discord.Message):
         await ctx.defer(ephemeral=True)
         nbchars = nb_char_in_str(mot)
@@ -542,7 +518,7 @@ class Troll(commands.Cog):
 ```(Certaines lettres étaient peut être déjà prises)"""
         await ctx.respond(embed=embed, ephemeral=True)
 
-    @customSlash
+    @CustomSlash
     async def spam_emote(self, ctx: ApplicationContext, emote: str, user: discord.User):
         await ctx.defer(ephemeral=True)
         emote = str(emote) + " "
@@ -559,7 +535,7 @@ class Music(commands.Cog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
 
-    @customSlash
+    @CustomSlash
     @discord.guild_only()
     async def play(self, ctx: ApplicationContext, search: str):
         await ctx.defer(invisible=False)
@@ -586,7 +562,7 @@ class Music(commands.Cog):
         elif song.origin == Origins.Playlist:
             await ctx.invoke(self.playlist)
 
-    @customSlash
+    @CustomSlash
     @discord.guild_only()
     async def playlist(self, ctx):
         try:
@@ -614,7 +590,7 @@ class Music(commands.Cog):
         else:
             await ctx.respond(embed=embed)
 
-    @customSlash
+    @CustomSlash
     @discord.guild_only()
     async def stop(self, ctx):
         await ctx.defer(ephemeral=True)
@@ -626,7 +602,7 @@ class Music(commands.Cog):
         await ctx.guild.voice_client.disconnect()
         await ctx.respond(f"Arrêt de la musique {self.bot.bools[False]}")
 
-    @customSlash
+    @CustomSlash
     @discord.guild_only()
     async def skip(self, ctx):
         await ctx.defer(ephemeral=True)
@@ -643,7 +619,7 @@ class Music(commands.Cog):
         ctx.guild.voice_client.stop()
         await ctx.respond(f"Passage à la musique suivante {self.bot.emotes['skip']}")
 
-    @customSlash
+    @CustomSlash
     @discord.guild_only()
     async def songinfo(self, ctx):
         await ctx.defer(ephemeral=True)
@@ -654,7 +630,7 @@ class Music(commands.Cog):
             return
         await ctx.respond(embed=song.info.format_output("Infos", color=ctx.author.color))
 
-    @customSlash
+    @CustomSlash
     @discord.guild_only()
     async def historique(self, ctx):
         await ctx.defer(ephemeral=True)
@@ -662,7 +638,7 @@ class Music(commands.Cog):
             return
         await ctx.respond(guild_to_audiocontroller[ctx.guild].track_history())
 
-    @customSlash
+    @CustomSlash
     @discord.guild_only()
     async def volume(self, ctx: ApplicationContext, volume: int):
         await ctx.defer(ephemeral=True)
@@ -674,7 +650,7 @@ class Music(commands.Cog):
         guild_to_audiocontroller[ctx.guild].volume = volume
         await ctx.respond(f"Nouveau volume défini sur {volume}")
 
-    @customSlash
+    @CustomSlash
     @discord.guild_only()
     async def loop(self, ctx):
         await ctx.defer(ephemeral=True)

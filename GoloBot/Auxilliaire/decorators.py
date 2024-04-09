@@ -158,7 +158,7 @@ def apply_list(decorators):
     return wrapper
 
 
-def customSlash(func):
+def CustomSlash(func):
     name = func.__name__.strip('_')
     func = logger(func)
     func = apply_list(cmds[name].options)(func)
