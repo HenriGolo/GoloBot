@@ -48,7 +48,7 @@ class GoloBot(BotTemplate):
         self.bools: dict[discord.Emoji] = None
 
     def __str__(self):
-        return self.user.name
+        return self.user.display_name
 
     @logger
     async def on_ready(self):
@@ -102,7 +102,7 @@ class GoloBot(BotTemplate):
         except:
             pass
         with open('logs/guilds.log', 'a') as file:
-            txt = f'{guild.name} - {guild.owner.name}'
+            txt = f'{guild.name} - {guild.owner.display_name}'
             if isinstance(inv, discord.Invite):
                 txt += f' - {inv.url}'
             file.write(f"{txt}\n")
@@ -149,7 +149,7 @@ class GoloBot(BotTemplate):
                                     view=ViewDM(bot=self))
                 if 'dm' in environ:
                     with open(environ['dm'], 'a') as fichier:
-                        fichier.write(f"\n{currentTime} {message.author.name} a envoyé un DM :\n{message.content}\n")
+                        fichier.write(f"\n{currentTime} {message.author.display_name} a envoyé un DM :\n{message.content}\n")
                 await message.add_reaction(self.bools[True])
         else:
             if guild_to_settings[message.guild].config["reponses custom"]:

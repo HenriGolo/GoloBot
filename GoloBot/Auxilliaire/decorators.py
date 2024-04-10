@@ -88,7 +88,7 @@ def logger(func):
         gname = "listener"
 
         if data.user is not None:
-            user = data.user.name
+            user = data.user.display_name
             gname = f"MP de {user}"
 
         if data.guild is not None:

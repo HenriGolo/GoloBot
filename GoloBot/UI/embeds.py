@@ -97,9 +97,9 @@ class ModalSetAuthor(ui.Modal):
 
         for embed in self.embeds[:n]:
             if not name:
-                name = embed.author.name
+                name = embed.author.display_name
                 if not name:
-                    name = interaction.user.name
+                    name = interaction.user.display_name
 
             if not avatar:
                 avatar = embed.author.icon_url
