@@ -89,7 +89,7 @@ class GBEmbed(discord.Embed):
             kwargs['color'] = user.color
         super().__init__(*args, **kwargs)
         if isinstance(guild, discord.Guild):
-            self.set_author(name=guild.display_name, url=guild.jump_url)
+            self.set_author(name=guild.name, url=guild.jump_url)
             self.set_thumbnail(url=guild.icon.url)
         if isinstance(user, (discord.User, discord.Member)):
             name = user.display_name
