@@ -93,11 +93,7 @@ class GBEmbed(discord.Embed):
             self.set_author(name=guild.name, url=guild.jump_url)
             self.set_thumbnail(url=guild.icon.url)
         if isinstance(user, (discord.User, discord.Member)):
-            name = user.display_name
-            if hasattr(user, 'nick'):
-                if user.nick is not None:
-                    name += f" - {user.nick}"
-            self.set_author(name=name, url=user.jump_url, icon_url=user.avatar.url)
+            self.set_author(name=user.display_name, url=user.jump_url, icon_url=user.avatar.url)
 
     def add_field(self: discord.embeds.E, *, name: str, value: str, inline: bool = False) -> discord.embeds.E:
         return super().add_field(name=name, value=value, inline=inline)
