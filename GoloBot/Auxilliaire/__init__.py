@@ -87,6 +87,7 @@ class GBEmbed(discord.Embed):
         kwargs['timestamp'] = kwargs.get('timestamp', now())
         if hasattr(user, 'color'):
             kwargs['color'] = user.color
+        kwargs['color'] = kwargs.get('color', 0xffffff)
         super().__init__(*args, **kwargs)
         if isinstance(guild, discord.Guild):
             self.set_author(name=guild.name, url=guild.jump_url)
