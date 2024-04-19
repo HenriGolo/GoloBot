@@ -279,7 +279,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             salon = ctx.channel
         await ctx.defer(ephemeral=True)
         if ctx.channel.type == discord.ChannelType.private:
-            with open("logs/logs_dm.txt", "a") as logs:
+            with open(path + "logs/logs_dm.txt", "a") as logs:
                 await ctx.respond("Début du clear", ephemeral=True, delete_after=2)
                 hist = ctx.channel.history(limit=nombre).flatten()
                 for msg in await hist:
@@ -304,7 +304,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
         await ctx.respond(f"Début du clear de {salon.mention}", ephemeral=True)
         cpt = 0
-        with open(f'logs/logs_{ctx.guild.name}.txt', 'a') as logs:
+        with open(path + f'logs/logs_{ctx.guild.name}.txt', 'a') as logs:
             hist = await salon.history(limit=nombre).flatten()
             for msg in hist:
                 if user == base_value or user == msg.author:
@@ -396,7 +396,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
     @commands.has_permissions(administrator=True)
     async def disable(self, ctx: ApplicationContext, commande: str):
         await ctx.defer(ephemeral=True)
-        disabled = json.load(open("Data/guild_slash_denied.json", 'r'))
+        disabled = json.load(open(path + "Data/guild_slash_denied.json", 'r'))
         name = self.bot.commands_names.search(commande)[0][0]
         if name == "disable":
             return await ctx.respond(f"Tu ne peux pas désactiver cette commande", ephemeral=True)
@@ -408,7 +408,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         else:
             disabled[str(ctx.guild.id)] = [c for c in disabled[str(ctx.guild.id)] if c != name]
             await ctx.respond(f"{name} a été réactivée sur {ctx.guild.name}")
-        json.dump(disabled, open("Data/guild_slash_denied.json", 'w'))
+        json.dump(disabled, open(path + "Data/guild_slash_denied.json", 'w'))
 
     # Donner un rôle
     @CustomSlash
@@ -466,7 +466,7 @@ class MiniGames(commands.Cog):
     @CustomSlash
     async def qpup(self, ctx: ApplicationContext, nbquestions: int):
         await ctx.defer()
-        self.bot.qpup = read_db(environ['qpup'])
+        self.bot.qpup = read_db(path + environ['qpup'])
         # Boucle sur le nombre de questions à poser
         for loop in range(nbquestions):
             # Tirage au sort d'une question

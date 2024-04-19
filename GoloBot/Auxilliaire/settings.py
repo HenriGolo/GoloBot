@@ -1,7 +1,7 @@
 import json
 import discord
-from GoloBot.Auxilliaire import *
-from GoloBot.Auxilliaire.converters import ANSI
+from . import *
+from .converters import ANSI
 
 guild_to_settings = dict()
 
@@ -86,7 +86,7 @@ Param.instances.sort()
 class Settings:
     template = {p.name: p for p in Param.instances}
     indent = 4
-    path = 'Data/settings.json'
+    chemin = path + 'Data/settings.json'
     excluded = ["id"]
 
     def __init__(self, guild):
@@ -99,13 +99,13 @@ class Settings:
     def write(self, setting, value):
         params = {p.name: p for p in Param.instances}
         response = self.config.get(setting, params[setting]).update(value)
-        with open(self.path, 'w') as source:
+        with open(self.chemin, 'w') as source:
             json.dump(self.json_data, source, cls=GBEncoder, indent=self.indent)
         self.reload()
         return response
 
     def reload(self):
-        source = open(self.path, 'r')
+        source = open(self.chemin, 'r')
         self.json_data = json.load(source, cls=GBDecoder)
         target = None
         for server in self.json_data:
@@ -131,14 +131,14 @@ class Settings:
             self.config[key] = self.template.get(key)
             refresh = True
         if refresh:
-            with open(self.path, 'w') as source:
+            with open(self.chemin, 'w') as source:
                 json.dump(self.json_data, source, cls=GBEncoder, indent=self.indent)
             self.reload()
 
     def create(self):
         self.json_data[self.guild.id] = self.template
         self.json_data[self.guild.id]['id'] = self.guild.id
-        with open(self.path, 'w') as source:
+        with open(self.chemin, 'w') as source:
             json.dump(self.json_data, source, cls=GBEncoder, indent=self.indent)
         self.reload()
 

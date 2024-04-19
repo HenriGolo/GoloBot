@@ -13,6 +13,8 @@ import json
 from .converters import ANSI
 
 
+path = '/'.join(__file__.split('/')[:-3]) + '/'
+
 url = re.compile(r'https?://[a-zA-Z0-9/.#?-]*')
 all_mentions = re.compile(r'<[@#!&]+[0-9]*>')
 user_mentions = re.compile(r'<@[0-9]*>')

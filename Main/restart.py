@@ -3,16 +3,16 @@ from os import environ
 from subprocess import Popen, DEVNULL
 
 # kill ancien bot, si existant
-with open(environ['pidfile'], 'r') as pid:
+with open(path + environ['pidfile'], 'r') as pid:
     try:
         Popen(["kill", pid.read()])
     except:
         pass
     finally:
         # lancement du bot
-        Popen([environ['bot_path']],
+        Popen([path + environ['bot_path']],
               stdin=DEVNULL,
               stdout=DEVNULL,
-              stderr=open(environ['stderr'], 'a'),
+              stderr=open(path + environ['stderr'], 'a'),
               start_new_session=True,
               shell=True)
