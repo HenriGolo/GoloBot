@@ -320,10 +320,12 @@ class GBDecoder(json.JSONDecoder):
                 std = s
 
         if isinstance(std, str):
-            if std.lower() in ["oui", "o", "yes", "y", "vrai", "v", "true"]:
+            if std.lower() in ['oui', 'o', 'yes', 'y', 'vrai', 'v', 'true']:
                 std = True
-            elif std.lower() in ["non", "n", "no", "faux", "f", "false"]:
+            elif std.lower() in ['non', 'n', 'no', 'faux', 'f', 'false']:
                 std = False
+            elif std.lower() in ['none', 'null']:
+                std = None
         return std
 
     @classmethod
