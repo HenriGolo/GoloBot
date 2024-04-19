@@ -25,6 +25,25 @@ emoji = re.compile(r'<a?:[a-zA-Z0-9]*:[0-9]*>')
 timestamp = re.compile(r'<t:[0-9]*:[RDdTtFf]>')
 
 
+class Token:
+    def __init__(self, **kwargs):
+        self.nombre = len(kwargs)
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    def __add__(self, other):
+        if isinstance(other, dict):
+            for key, value in other.items():
+                if not key in self:
+                    setattr(self, key, value)
+
+    def __sub__(self, other):
+        if isinstance(other, dict):
+            for key in other:
+                if key in self:
+                    delattr(self, key)
+
+
 class Cycle(list):
     def __getitem__(self, item):
         return super().__getitem__(item % len(self))
