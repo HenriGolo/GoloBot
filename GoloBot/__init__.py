@@ -466,7 +466,7 @@ class MiniGames(commands.Cog):
     @CustomSlash
     async def qpup(self, ctx: ApplicationContext, nbquestions: int):
         await ctx.defer()
-        self.bot.qpup = read_db(path + environ['qpup'])
+        self.bot.qpup = json.load(open(path + environ['qpup']))
         # Boucle sur le nombre de questions à poser
         for loop in range(nbquestions):
             # Tirage au sort d'une question
