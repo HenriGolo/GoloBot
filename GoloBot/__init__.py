@@ -118,12 +118,12 @@ class Dev(commands.Cog):
     @commands.slash_command(guild_ids=[664006363508244481, 1158154606124204072],
                             description="Commande de test, ne pas utiliser.")
     async def test(self, ctx: ApplicationContext):
-        await ctx.defer(ephemeral=True)
+        await ctx.defer(ephemeral=...)
         embed = GBEmbed(title="test", user=ctx.author, guild=ctx.guild)
-        ts = Timestamp(now())
-        values = [ts.relative, ts.long_date, ts.short_date, ts.long_time, ts.short_time, ts.long_datetime, ts.short_datetime]
-        embed.description = '\n'.join(values)
-        await ctx.respond(embed=embed, ephemeral=True)
+        values = list()
+        ...  # values.append(truc à afficher)
+        embed.description = '\n'.join([str(e) for e in values])
+        await ctx.respond(embed=embed)
 
     # Envoie un message privé à un User
     @CustomSlash
