@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 from os import environ
 from subprocess import Popen, DEVNULL
-from GoloBot.Auxilliaire import path
+
+path = '/'.join(__file__.split('/')[:-1]) + '/'
 
 # kill ancien bot, si existant
 with open(path + environ['pidfile'], 'r') as pid:
