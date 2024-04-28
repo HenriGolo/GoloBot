@@ -4,6 +4,7 @@ from . import *
 from .converters import ANSI
 
 guild_to_settings = dict()
+path = '/'.join(__file__.split('/')[:-2]) + '/'
 
 
 class Param:

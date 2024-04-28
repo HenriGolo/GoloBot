@@ -9,6 +9,9 @@ from .doc import cmds
 from ..template import *
 
 
+path = '/'.join(__file__.split('/')[:-2]) + '/'
+
+
 class ManquePerms(Exception):
     pass
 
