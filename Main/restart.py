@@ -2,7 +2,7 @@
 from os import environ
 from subprocess import Popen, DEVNULL
 
-path = '/'.join(__file__.split('/')[:-1]) + '/'
+path = '/'.join(__file__.split('/')[:-2]) + '/'
 
 # kill ancien bot, si existant
 with open(path + environ['pidfile'], 'r') as pid:
