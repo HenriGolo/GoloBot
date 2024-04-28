@@ -119,6 +119,8 @@ class GBEmbed(discord.Embed):
             if hasattr(user.avatar, 'url'):
                 kwargs['icon_url'] = user.avatar.url
             self.set_author(**kwargs)
+            if not self.description:
+                self.description = user.mention
 
     def add_field(self: discord.embeds.E, *, name: str, value: str, inline: bool = False) -> discord.embeds.E:
         return super().add_field(name=name, value=value, inline=inline)
