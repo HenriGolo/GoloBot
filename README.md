@@ -29,7 +29,8 @@ Certaines ne vont pas causer d'erreurs si non renseignées, mais risque de rendr
 | github                     | Lien vers le repository [GitHub](https://github.com)                        | string |
 | invite_server              | Lien vers votre serveur de support                                          | string |
 | support_qr                 | Pareil mais un lien avec un QR Code                                         | string |
-| stdout, stderr, dm         | Chemins (en dur ou relatif) aux fichiers de log correspondants              | string |
-| qpup                       | Chemins (en dur ou relatif) vers une DB de question / réponse               | string |
-| pidfile, restart, bot_path | Chemins (en dur ou relatif) aux fichiers correspondants                     | string |
+| path                       | Chemin relatif vers le dossier principal du bot                             | string |
+| stdout, stderr, dm         | Chemins relatifs aux fichiers de log correspondants                         | string |
+| qpup                       | Chemins relatifs vers une DB de question / réponse                          | string |
+| pidfile, restart, bot_path | Chemins relatifs aux fichiers correspondants                                | string |
 | error_msg                  | Message à envoyer en cas d'erreur                                           | string |
