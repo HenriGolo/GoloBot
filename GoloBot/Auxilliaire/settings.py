@@ -4,7 +4,6 @@ from . import *
 from .converters import ANSI
 
 guild_to_settings = dict()
-path = '/'.join(__file__.split('/')[:-2]) + '/'
 
 
 class Param:
@@ -87,7 +86,7 @@ Param.instances.sort()
 class Settings:
     template = {p.name: p for p in Param.instances}
     indent = 4
-    chemin = path + 'Data/settings.json'
+    chemin = GBpath + 'Data/settings.json'
     excluded = ["id"]
 
     def __init__(self, guild):

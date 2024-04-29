@@ -14,9 +14,6 @@ from .UI import *  # Les composants de l'UI custom
 from .template import *  # Signatures du bot défini dans 'main.py' et donc pas importable
 
 
-path = '/'.join(__file__.split('/')[:-2]) + '/'
-
-
 # Code du bot
 class General(commands.Cog):
     def __init__(self, bot: BotTemplate):

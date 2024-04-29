@@ -9,9 +9,6 @@ from .doc import cmds
 from ..template import *
 
 
-path = '/'.join(__file__.split('/')[:-2]) + '/'
-
-
 class ManquePerms(Exception):
     pass
 
@@ -106,7 +103,7 @@ def logger(func):
         except (Forbidden, ManquePerms, MissingPermissions):
             await data.action(f"{data.caller.bot.emotes['error']} Manque de permissions", ephemeral=True)
             if 'stderr' in environ:
-                with open(path + environ['stderr'], 'a') as stderr:
+                with open(GBpath + environ['stderr'], 'a') as stderr:
                     stderr.write(f"\n{start}\n{fail()}\n")
 
         except Exception:
@@ -119,13 +116,13 @@ def logger(func):
             view = ViewError(data.caller.bot, full_embed, embed_err)
             await data.action(embed=embed, view=view, ephemeral=True)
             if 'stderr' in environ:
-                with open(path + environ['stderr'], 'a') as stderr:
+                with open(GBpath + environ['stderr'], 'a') as stderr:
                     stderr.write(f"\n{start}\n{err}\n")
 
         else:
             # Sera exécuté si aucune exception n'est soulevée
             if 'stdout' in environ:
-                with open(path + environ['stdout'], 'a') as stdout:
+                with open(GBpath + environ['stdout'], 'a') as stdout:
                     stdout.write(f"\n{time} {user} : {cname}.{func.__name__} "
                                  f"dans {gname} avec comme arguments\n\t{signature}")
                     stdout.write(f"{func.__name__} terminé en {now(True) - start}s")
@@ -140,7 +137,7 @@ def check_disabled(func):
     @wraps(func)
     async def wrapper(*args, **kwargs):
         ctx = args[1]
-        disabled = json.load(open(path + "Data/guild_slash_denied.json", 'r'))
+        disabled = json.load(open(GBpath + "Data/guild_slash_denied.json", 'r'))
         if str(ctx.guild.id) in disabled:
             if name in disabled[str(ctx.guild.id)]:
                 embed = GBEmbed(title="Commande désactivée", color=ctx.author.color)
