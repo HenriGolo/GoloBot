@@ -112,7 +112,7 @@ class GoloBot(BotTemplate):
         if member.bot:
             return
         # On prend before pour s'intéresser au vocal dont part la personne
-        if before is not None:
+        if before is not None and before.channel is not None:
             # Si le vocal est composé uniquement de bots
             bots = [m.bot for m in before.channel.members]
             if not False in bots:
