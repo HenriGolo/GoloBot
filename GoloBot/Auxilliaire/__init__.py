@@ -156,15 +156,17 @@ class GButton(discord.ui.Button):
 
 
 class Trigger:
-    def __init__(self, trigger: str, rmurl: bool = True,
-                 rmention: bool = True, rmoji: bool = False,
-                 rmstr: list[str] = (), casse: bool = True):
+    def __init__(self, trigger: str, *,
+                 rmurl: bool = True, rmention: bool = True,
+                 rmoji: bool = False, rmstr: list[str] = (),
+                 casse: bool = True, complet: bool = False):
         self.trigger = trigger
         self.rmurl = rmurl  # Enlever les url
         self.rmention = rmention  # Enlever les mentions
         self.rmoji = rmoji  # Enlever les noms des emotes
         self.rmstr = rmstr  # Enlever certaines str
         self.casse = casse  # Sensible à la casse
+        self.complet = complet  # Mot complet
 
     def __str__(self):
         return self.trigger
@@ -193,7 +195,13 @@ class Trigger:
                 if str(self).strip(':') in e.split(':')[1]:
                     return True
         string = self.remove_pattern(emoji, string)
-        return str(self) in string
+        pattern = str(self)
+        if self.complet:
+            sep = "[ \.\?!]"
+            pattern = sep + pattern + sep
+            string = ' ' + string + ' '
+        pattern = re.compile(pattern)
+        return len(re.findall(pattern, string)) > 0
 
 
 class PrivateResponse:
