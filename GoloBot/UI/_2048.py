@@ -1,5 +1,5 @@
-from GoloBot.UI.base_imports import *
-from GoloBot.Auxilliaire.games import *
+from base_imports import *
+from ..Auxilliaire.games import *
 
 
 class BoutonDirectionnel2048(GButton):

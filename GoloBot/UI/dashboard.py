@@ -1,5 +1,5 @@
-from GoloBot.UI.base_imports import *
-from GoloBot.Auxilliaire.settings import *
+from base_imports import *
+from ..Auxilliaire.settings import *
 import json
 
 

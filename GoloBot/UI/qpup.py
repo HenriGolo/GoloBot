@@ -1,4 +1,4 @@
-from GoloBot.UI.base_imports import *
+from base_imports import *
 
 
 # QPUP (non, vous n'aurez pas le lore)

@@ -1,5 +1,5 @@
-from GoloBot.UI.base_imports import *
-from GoloBot.Auxilliaire.doc import base_value
+from base_imports import *
+from ..Auxilliaire.doc import base_value
 from discord import Colour
 
 
