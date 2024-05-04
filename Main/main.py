@@ -47,6 +47,7 @@ class GoloBot(BotTemplate):
         self.support: discord.Guild = None
         self.emotes: dict[discord.Emoji] = None
         self.bools: dict[discord.Emoji] = None
+        self.setup_fini: bool = False
 
     def __str__(self):
         return self.user.display_name
@@ -87,6 +88,7 @@ class GoloBot(BotTemplate):
 
         # c'est bon, on est prêt
         print(f"{self} connecté !")
+        self.setup_fini = True
 
     async def on_guild_join(self, guild: discord.Guild):
         # Setup de la Musique

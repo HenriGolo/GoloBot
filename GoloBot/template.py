@@ -17,3 +17,4 @@ class BotTemplate(discord.AutoShardedBot):
     support: discord.Guild
     emotes: dict[str: discord.Emoji]
     bools: dict[bool: discord.Emoji]
+    setup_fini: bool
