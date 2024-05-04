@@ -8,7 +8,8 @@ from privatebot import *  # Réponses custom à certains contenus de messages
 
 class GoloBot(BotTemplate):
     # Récupération des tokens
-    token = environ['token']
+    token = DictPasPareil(discord=environ['token'],
+                          twitch=AccessToken(environ['twitchID'], environ['twitchSecret']))
 
     # Création de session pour les requêtes
     session = GBSession()
@@ -164,4 +165,4 @@ intents = discord.Intents.all()
 bot = GoloBot(intents=intents)
 
 # Run
-bot.run(token=bot.token)
+bot.run(token=bot.token.discord)

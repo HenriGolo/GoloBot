@@ -26,23 +26,19 @@ emoji = re.compile(r'<a?:[a-zA-Z0-9]*:[0-9]*>')
 timestamp = re.compile(r'<t:[0-9]*:[RDdTtFf]>')
 
 
-class Token:
+class DictPasPareil:
     def __init__(self, **kwargs):
-        self.nombre = len(kwargs)
         for key, value in kwargs.items():
             setattr(self, key, value)
 
     def __add__(self, other):
-        if isinstance(other, dict):
-            for key, value in other.items():
-                if not key in self:
-                    setattr(self, key, value)
-
-    def __sub__(self, other):
-        if isinstance(other, dict):
-            for key in other:
-                if key in self:
-                    delattr(self, key)
+        if isinstance(other, self.__class__):
+            kwargs = self.__dict__
+            for key, value in other.__dict__.items():
+                if not key in kwargs:
+                    kwargs[key] = value
+            return self.__class__(**kwargs)
+        raise Exception(f"{type(other)} n'est pas un type valide pour une addition avec {type(self)}")
 
 
 class Cycle(list):

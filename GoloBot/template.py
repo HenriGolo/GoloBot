@@ -3,7 +3,7 @@ from .Auxilliaire import *
 
 # Signature de la classe du bot
 class BotTemplate(discord.AutoShardedBot):
-    token: str
+    token: DictPasPareil
     session: GBSession
     games: dict
     words: dict[str: set]
