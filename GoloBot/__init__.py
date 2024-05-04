@@ -15,7 +15,7 @@ from .template import *  # Signatures du bot défini dans 'main.py' et donc pas 
 
 
 # Code du bot
-class General(commands.Cog):
+class CogGeneral(commands.Cog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
 
@@ -110,7 +110,7 @@ Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({
 
 
 # Fonctions Dev
-class Dev(commands.Cog):
+class CogDev(commands.Cog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
 
@@ -203,7 +203,7 @@ class Dev(commands.Cog):
 
 
 # Fonctions Admin
-class Admin(commands.Cog):
+class CogAdmin(commands.Cog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
 
@@ -401,14 +401,14 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         if name == "disable":
             return await ctx.respond(f"Tu ne peux pas désactiver cette commande", ephemeral=True)
         if not str(ctx.guild.id) in disabled:
-            disabled[str(ctx.guild.id)] = list()
-        if not name in disabled[str(ctx.guild.id)]:
-            disabled[str(ctx.guild.id)].append(name)
+            disabled[ctx.guild.id] = list()
+        if not name in disabled[ctx.guild.id]:
+            disabled[ctx.guild.id].append(name)
             await ctx.respond(f"{name} a été désactivée sur {ctx.guild.name}")
         else:
-            disabled[str(ctx.guild.id)] = [c for c in disabled[str(ctx.guild.id)] if c != name]
+            disabled[ctx.guild.id] = [c for c in disabled[ctx.guild.id] if c != name]
             await ctx.respond(f"{name} a été réactivée sur {ctx.guild.name}")
-        json.dump(disabled, open(GBpath + "Data/guild_slash_denied.json", 'w'))
+        json.dump(disabled, open(GBpath + "Data/guild_slash_denied.json", 'w'), indent=4)
 
     # Donner un rôle
     @CustomSlash
@@ -458,7 +458,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
 
 # Fonctions Random
-class MiniGames(commands.Cog):
+class CogMiniGames(commands.Cog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
 
@@ -492,7 +492,7 @@ class MiniGames(commands.Cog):
         await ctx.respond(embed=embed, view=View2048(self.bot))
 
 
-class Troll(commands.Cog):
+class CogTroll(commands.Cog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
         super().__init__()
@@ -531,7 +531,7 @@ class Troll(commands.Cog):
         await ctx.respond(emote, ephemeral=True)
 
 
-class Music(commands.Cog):
+class CogMusic(commands.Cog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
 
@@ -663,7 +663,7 @@ class Music(commands.Cog):
             ephemeral=True)
 
 
-class CommandesPasSlash(commands.Cog):
+class CogCommandesPasSlash(commands.Cog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
 
