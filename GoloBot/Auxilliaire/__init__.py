@@ -57,6 +57,14 @@ class GBSession(Session):
         self._cache = dict()
         self.data = namedtuple("RequestResult", ["result", "time"])
 
+    def __repr__(self):
+        std = repr(self.__class__)  # de la forme <class 'nom'>
+        cls = std.split("'")[1]
+        keys = [k for k in self.__dict__ if k in self.__init__.__code__.co_varnames]
+        keys.sort()
+        attr = [f"{k}={self.__dict__[k]}" for k in keys]
+        return f"<{cls} {' '.join(attr)}>"
+
     def get(self, url, *, timeout=timedelta(hours=1), **kwargs):
         t = now()
         try:
