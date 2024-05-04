@@ -328,15 +328,7 @@ class GBDecoder(json.JSONDecoder):
             cls = self.instanciate(cls)
             if not self.create_instance:
                 return cls
-
-            if hasattr(cls, "instances"):
-                instances_dict = {i.name: i for i in cls.instances}
-                item = instances_dict.get(kwargs["name"], cls(**kwargs))
-                for key, value in kwargs.items():
-                    setattr(item, key, value)
-                return item
-            else:
-                return cls(**kwargs)
+            return cls(**kwargs)
 
         try:
             std = super().decode(s)
@@ -353,6 +345,10 @@ class GBDecoder(json.JSONDecoder):
                 std = False
             elif std.lower() in ['none', 'null']:
                 std = None
+        elif isinstance(std, (list, tuple)):
+            return [self.decode(e) for e in std]
+        elif isinstance(std, dict):
+            return {self.decode(key): self.decode(value) for key, value in std.items()}
         return std
 
     @classmethod
