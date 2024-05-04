@@ -288,7 +288,7 @@ class SetDecoder(json.JSONDecoder):
     def decode(self, s, _w=...):
         std = super().decode(s)
         if isinstance(std, list):
-            return {e for e in std}
+            return {self.decode(e) for e in std}
         return std
 
 
