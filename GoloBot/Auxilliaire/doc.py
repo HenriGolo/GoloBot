@@ -339,11 +339,5 @@ DocCommand("move",
             Arg("depuis_salon", "Déplace tous les users du salon en question", default=base_value),
             Arg("vers_salon", "Déplace les users sélectionnés vers ce salon. Laisser vide pour les déconnecter.", default=base_value)])
 
-DocCommand("",
-           "Permet de gérer les annonces de stream des différentes chaines",
-           Permissions.manage_messages,
-           "Fonctionne de façon similaire à /dashboard",
-           [])
-
 DocCommand.instances.sort()
 cmds = {d.name: d.set_options() for d in DocCommand.instances}
