@@ -121,7 +121,7 @@ class Dev(commands.Cog):
         await ctx.defer(ephemeral=...)
         embed = GBEmbed(title="test", user=ctx.author, guild=ctx.guild)
         values = list()
-        ...  # values.append(truc à afficher)
+        values.append("truc à afficher")
         embed.description = '\n'.join([str(e) for e in values])
         await ctx.respond(embed=embed)
 
