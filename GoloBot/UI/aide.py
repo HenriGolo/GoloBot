@@ -1,4 +1,4 @@
-from base_imports import *
+from .base_imports import *
 
 
 class BoutonListeCommandes(GButton):

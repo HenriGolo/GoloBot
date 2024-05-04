@@ -1,4 +1,4 @@
-from base_imports import *
+from .base_imports import *
 from ..Auxilliaire.doc import base_value
 from discord import Colour
 
