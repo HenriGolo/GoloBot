@@ -13,7 +13,6 @@ import json
 from .converters import ANSI
 from os import environ
 
-
 GBpath = environ.get('path', '')
 
 url = re.compile(r'https?://[a-zA-Z0-9/.#?-]*')
@@ -406,7 +405,7 @@ def rec_in(search, elt, profondeur=-1) -> bool:
     try:
         for sub in search:
             trouve = rec_in(sub, elt, 0)  # On a trouvé ce qu'on cherche
-            if trouve or rec_in(sub, elt, profondeur-1):
+            if trouve or rec_in(sub, elt, profondeur - 1):
                 # On l'a trouvé dans les appels récursifs
                 return True
     except:
