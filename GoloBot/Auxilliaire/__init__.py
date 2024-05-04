@@ -51,29 +51,37 @@ class Exit(Enum):
     Fail = False
 
 
-class GBSession:
-    def __init__(self):
-        self.s = Session()
-        self.cache = dict()
+class GBSession(Session):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._cache = dict()
         self.data = namedtuple("RequestResult", ["result", "time"])
 
-    def __str__(self):
-        return f"{str(self.s)}\n{[key for key in self.cache]}"
-
-    def __len__(self):
-        return len(self.cache)
-
-    def get(self, request, timeout: timedelta = timedelta(hours=1)):
+    def get(self, url, *, timeout=timedelta(hours=1), **kwargs):
         t = now()
         try:
-            resp = self.cache[request]
+            resp = self._cache[f"GET {url}"]
             if t - resp.time > timeout:
                 raise KeyError  # Va se faire attraper par l'except
             return resp.result
 
         except KeyError:
-            r = self.s.get(request)
-            self.cache[request] = self.data(r, t)
+            r = super().get(url, **kwargs)
+            self._cache[f"GET {url}"] = self.data(r, t)
+            return r
+
+    def post(self, url, *, timeout=timedelta(hours=1), **kwargs):
+        # idem que get, mais pour post
+        t = now()
+        try:
+            resp = self._cache[f"POST {url}"]
+            if t - resp.time > timeout:
+                raise KeyError  # Va se faire attraper par l'except
+            return resp.result
+
+        except KeyError:
+            r = super().post(url, **kwargs)
+            self._cache[f"POST {url}"] = self.data(r, t)
             return r
 
 
