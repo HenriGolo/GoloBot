@@ -12,6 +12,7 @@ from functools import partial
 import json
 from .converters import ANSI
 from os import environ
+from unicodedata import normalize
 
 GBpath = environ.get('path', '')
 
@@ -534,3 +535,8 @@ async def jumpurl2Message(bot: discord.AutoShardedBot, url: str) -> discord.Mess
         return message
     except:
         return None
+
+
+def strip_accents(text: str):
+    text = normalize('NFD', text).encode('ascii', 'ignore').decode('utf-8')
+    return text
