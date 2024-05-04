@@ -1,4 +1,5 @@
 # Code Principal
+import asyncio
 import json
 import discord
 from discord.ext import commands, tasks
@@ -12,6 +13,7 @@ from .Auxilliaire.games import *  # Jeux de plateau custom
 from .Musique import *  # Adapté de https://github.com/Raptor123471/DingoLingo
 from .UI import *  # Les composants de l'UI custom
 from .template import *  # Signatures du bot défini dans 'main.py' et donc pas importable
+from .Twitch import *
 
 
 # Code du bot
@@ -702,3 +704,100 @@ class CogCommandesPasSlash(commands.Cog):
         if message.edited_at is not None:
             embed.add_field(name="Dernière modification", value=Timestamp(message.edited_at).relative)
         await ctx.respond(**kwargs)
+
+
+class CogTwitch(commands.Cog):
+    def __init__(self, bot: BotTemplate):
+        self.bot = bot
+        self.task_annonces.start()
+
+    @tasks.loop(minutes=10)
+    async def task_annonces(self):
+        while not self.bot.setup_fini:
+            await asyncio.sleep(1)
+        annonces = json.load(open(GBpath + 'Data/annonces_streams.json', 'r'), cls=GBDecoder)
+        for guild_id, channels in annonces.items():
+            guild = await self.bot.fetch_guild(guild_id)
+            for channel_id, streamers in channels.items():
+                channel = await guild.fetch_channel(channel_id)
+                for i in range(len(streamers)):
+                    kwargs = streamers[i]
+                    streamer = Streamer(token=self.bot.token.twitch, session=self.bot.session, **kwargs)
+                    await streamer.annonce(self.bot, channel)
+                    kwargs['msg_url'] = streamer.msg_url  # on note qu'un message a été créé
+                    annonces[guild_id][channel_id][i] = kwargs
+        json.dump(annonces, open(GBpath + 'Data/annonces_streams.json', 'w'), cls=GBEncoder, indent=4)
+
+    @CustomSlash
+    async def liste_streams(self, ctx: ApplicationContext):
+        await ctx.defer(ephemeral=True)
+        embed = GBEmbed(title="Alertes de streams", guild=ctx.guild)
+        db = json.load(open(GBpath + 'Data/annonces_streams.json', 'r'), cls=GBDecoder)
+        if not ctx.guild.id in db:
+            await ctx.respond(f"Aucune alerte configurée sur ce serveur")
+            return
+
+        for channel_id, streamers in db[ctx.guild.id].items():
+            channel = await ctx.guild.fetch_channel(channel_id)
+            values = [f"https://twitch.tv/{s['login']}" for s in streamers]
+            values.sort()
+            embed.add_field(name=f"Poste dans {channel.name}",
+                            value='- ' + '\n- '.join(values))
+        await ctx.respond(embed=embed)
+
+    @CustomSlash
+    async def add_stream(self, ctx: ApplicationContext, chaine: str, salon: discord.TextChannel, notif: str):
+        await ctx.defer(ephemeral=True)
+        streamer = Streamer(self.bot.token.twitch, chaine, notif, None, session=self.bot.session)
+        db = json.load(open(GBpath + 'Data/annonces_streams.json', 'r'), cls=GBDecoder)
+        gid = salon.guild.id
+        cid = salon.id
+        if not gid in db:
+            db[gid] = dict()
+        if not cid in db[gid]:
+            db[gid][cid] = list()
+        kwargs = {prop: getattr(streamer, prop) for prop in ['login', 'notif', 'msg_url']}
+        if not kwargs in db[gid][cid]:
+            db[gid][cid].append(kwargs)
+            json.dump(db, open(GBpath + 'Data/annonces_streams.json', 'w'), cls=GBEncoder, indent=4)
+            await ctx.respond(f"{streamer.url} va maintenant être annoncé dans {salon.mention}")
+        else:
+            await ctx.respond(f"{streamer.url} est déjà annoncé dans {salon.mention}")
+
+    @CustomSlash
+    async def remove_stream(self, ctx: ApplicationContext, chaine: str, salon: discord.TextChannel):
+        await ctx.defer(ephemeral=True)
+        db = json.load(open(GBpath + 'Data/annonces_streams.json', 'r'), cls=GBDecoder)
+        suppr = list()
+        gid = ctx.guild.id
+        gdel = list()  # guilds à supprimer après le parcours
+        if gid in db:
+            cdel = list()  # salons à supprimer après le parcous
+            for cid, streamers in db[gid].items():
+                skip = False
+                if isinstance(salon, discord.TextChannel):
+                    skip = not int(cid) == salon.id
+                if skip:
+                    continue
+
+                for i in range(len(streamers)):
+                    kwargs = streamers[i]
+                    kwargs['token'] = self.bot.token.twitch
+                    kwargs['session'] = self.bot.session
+                    streamer = Streamer(**kwargs)
+                    if streamer.url.strip('/').endswith(chaine):
+                        suppr.append(f'<#{cid}>')
+                        del db[gid][cid][i]
+
+                if len(streamers) == 0:
+                    cdel.append(cid)
+            for cid in cdel:
+                del db[gid][cid]
+
+            if len(db[gid]) == 0:
+                gdel.append(gid)
+        for gid in gdel:
+            del db[gid]
+
+        json.dump(db, open(GBpath + 'Data/annonces_streams.json', 'w'), cls=GBEncoder, indent=4)
+        await ctx.respond(f"Les annonces de stream de {chaine} ne seront plus postées dans {', '.join(suppr)}")

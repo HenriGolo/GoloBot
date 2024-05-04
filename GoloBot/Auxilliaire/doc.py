@@ -339,5 +339,26 @@ DocCommand("move",
             Arg("depuis_salon", "Déplace tous les users du salon en question", default=base_value),
             Arg("vers_salon", "Déplace les users sélectionnés vers ce salon. Laisser vide pour les déconnecter.", default=base_value)])
 
+DocCommand("liste_streams",
+           "Permet de gérer les annonces de stream des différentes chaines",
+           Permissions.manage_messages,
+           "Fonctionne de façon similaire à /dashboard",
+           [])
+
+DocCommand("add_stream",
+           "Ajoute un streamer à annoncer lors de ses lives Twitch",
+           Permissions.manage_messages,
+           "",
+           [Arg("chaine", "Nom ou url de la chaine Twitch concernée"),
+            Arg("salon", "Salon où poster les annonces"),
+            Arg("notif", "Message personnalisé pour la notification", default=base_value)])
+
+DocCommand("remove_stream",
+           "Supprime les annonces live d'un streamer",
+           Permissions.manage_messages,
+           "Préciser le salon permet de n'enlever le streamer que de ce salon, au cas où il serait dans plusieurs",
+           [Arg("chaine", "Nom ou url de la chaine Twitch concernée"),
+            Arg("salon", "Salon concerné par la suppression des annonces", default=base_value)])
+
 DocCommand.instances.sort()
 cmds = {d.name: d.set_options() for d in DocCommand.instances}
