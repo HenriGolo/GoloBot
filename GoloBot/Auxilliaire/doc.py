@@ -29,7 +29,7 @@ class Arg:
     def __str__(self):
         name = self.name
         if not self.required:
-            name += " (optionnel)"
+            name += " <yellow>(optionnel)"
         affichage = f"""- <cyan>{name}<reset>
     {self.desc}"""
         if self.default is not None and self.default != base_value:
