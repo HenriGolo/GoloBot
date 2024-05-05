@@ -531,8 +531,8 @@ def color_permissions(perm: discord.Permissions) -> str:
 
 async def jumpurl2Message(bot: discord.AutoShardedBot, url: str) -> discord.Message:
     # url au format "https://discord.com/channels/guild_id/channel_id/message_id"
-    gid, cid, mid = url.strip('/').split('/')[-3:]
     try:
+        gid, cid, mid = url.strip('/').split('/')[-3:]
         guild = await bot.fetch_guild(gid)
         chanel = await guild.fetch_channel(cid)
         message = await chanel.fetch_message(mid)
