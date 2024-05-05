@@ -104,7 +104,8 @@ class Streamer:
         if not streams:
             return None
         stream = streams[0]
-        embed = GBEmbed(title=stream['title'], color=0xffffff, url=self.url)
+        embed = GBEmbed(title=stream['title'], color=0xffffff, url=self.url,
+                        timestamp=datetime.fromisoformat(stream['started_at'][:-1]))
         embed.set_author(name=self.login, icon_url=self.profile_image_url)
         embed.set_thumbnail(url=f"https://static-cdn.jtvnw.net/ttv-boxart/{stream['game_id']}-570x760.jpg")
         embed.add_field(name="Jeu", value=stream['game_name'])
