@@ -693,7 +693,7 @@ class CogTwitch(commands.Cog):
         self.db = kwargs.get('db', GBpath + 'Data/annonces_streams.json')
         self.task_annonces.start()
 
-    @tasks.loop(minutes=10)
+    @tasks.loop(minutes=5)
     async def task_annonces(self):
         while not self.bot.setup_fini:
             await asyncio.sleep(1)
