@@ -83,6 +83,9 @@ class Streamer:
             return login and notif and msg
         return False
 
+    def __str__(self):
+        return self.url
+
     def json(self):
         kwargs = {prop: getattr(self, prop) for prop in ['id', 'msg_url', 'notif']}
         return kwargs
