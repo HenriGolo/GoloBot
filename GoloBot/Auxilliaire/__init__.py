@@ -305,6 +305,9 @@ class GBEncoder(json.JSONEncoder):
         try:
             return super().default(o)
         except TypeError:
+            if hasattr(o, 'json'):
+                if isinstance(o.json, function):
+                    return o.json()
             return repr(o)
 
 
@@ -314,7 +317,13 @@ class GBDecoder(json.JSONDecoder):
         self.create_instance = True
 
     def decode(self, s, _w=...):
-        if not isinstance(s, str):
+        if isinstance(s, (list, tuple)):
+            return [self.decode(e) for e in s]
+        elif isinstance(s, set):
+            return {self.decode(e) for e in s}
+        elif isinstance(s, dict):
+            return {self.decode(k): self.decode(v) for k, v in s.items()}
+        elif not isinstance(s, str):
             return s
 
         s = s.strip('"').strip("'")
@@ -348,7 +357,7 @@ class GBDecoder(json.JSONDecoder):
         elif isinstance(std, (list, tuple)):
             return [self.decode(e) for e in std]
         elif isinstance(std, dict):
-            return {self.decode(key): self.decode(value) for key, value in std.items()}
+            return {self.decode(k): self.decode(v) for k, v in std.items()}
         return std
 
     @classmethod
