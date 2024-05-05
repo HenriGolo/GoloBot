@@ -42,8 +42,8 @@ class AccessToken:
             setattr(self, 'expires_at', now() + timedelta(seconds=self.expires_in))
 
 
-def get_streams(user, token: AccessToken, *, session=GBSession()):
-    request = f'https://api.twitch.tv/helix/streams?user_login={user}'
+def get_streams(login, token: AccessToken, *, session=GBSession()):
+    request = f'https://api.twitch.tv/helix/streams?user_login={login}'
     headers = {'Content-Type': 'application/json',
                'Authorization': f'Bearer {token.use()}',
                'Client-Id': token.twitchID}
@@ -52,8 +52,10 @@ def get_streams(user, token: AccessToken, *, session=GBSession()):
     return data
 
 
-def get_users(user, token: AccessToken, *, session=GBSession()):
-    request = f'https://api.twitch.tv/helix/users?login={user}'
+def get_users(login, id, token: AccessToken, *, session=GBSession()):
+    request = f'https://api.twitch.tv/helix/users?login={login}'
+    if id:
+        request = f'https://api.twitch.tv/helix/users?id={id}'
     headers = {'Content-Type': 'application/json',
                'Authorization': f'Bearer {token.use()}',
                'Client-Id': token.twitchID}
