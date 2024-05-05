@@ -124,6 +124,7 @@ class Streamer:
         if embed is None:
             if message is not None:
                 await message.delete()
+                self.msg_url = ''
             return False
 
         if message is None:
