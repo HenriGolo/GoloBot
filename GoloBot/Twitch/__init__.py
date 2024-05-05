@@ -65,9 +65,10 @@ def get_users(login, id, token: AccessToken, *, session=GBSession()):
 
 
 class Streamer:
-    def __init__(self, token: AccessToken, login: str, notif: str, msg_url: str, *, session=GBSession()):
+    def __init__(self, token: AccessToken, login: str = '', id: int = 0, notif: str = '', msg_url: str = '', *, session=GBSession()):
         self.token = token
         self.login = login.strip('/').split('/')[-1]
+        self.id = id
         self.notif = notif
         self.msg_url = msg_url
         self.session = session
@@ -82,12 +83,12 @@ class Streamer:
             return login and notif and msg
         return False
 
-    def __repr__(self):
-        kwargs = {prop: getattr(self, prop) for prop in ['login', 'msg_url', 'notif']}
-        return str(kwargs)
+    def json(self):
+        kwargs = {prop: getattr(self, prop) for prop in ['id', 'msg_url', 'notif']}
+        return kwargs
 
     def reload(self):
-        data = get_users(self.login, self.token, session=self.session)[0]
+        data = get_users(login=self.login, id=self.id, token=self.token, session=self.session)[0]
         for key, value in data.items():
             if key == 'created_at':
                 value = datetime.fromisoformat(value[:-1])  # format RFC3339, termine par Z
