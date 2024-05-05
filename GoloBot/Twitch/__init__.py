@@ -87,7 +87,7 @@ class Streamer:
         return self.url
 
     def json(self):
-        kwargs = {prop: getattr(self, prop) for prop in ['id', 'msg_url', 'notif']}
+        kwargs = {prop: getattr(self, prop) for prop in ['login', 'id', 'msg_url', 'notif']}
         return kwargs
 
     def reload(self):
