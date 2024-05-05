@@ -131,23 +131,6 @@ def logger(func):
     return wrapper
 
 
-def check_disabled(func):
-    name = func.__name__.strip('_')
-
-    @wraps(func)
-    async def wrapper(*args, **kwargs):
-        ctx = args[1]
-        disabled = json.load(open(GBpath + "Data/guild_slash_denied.json", 'r'))
-        if str(ctx.guild.id) in disabled:
-            if name in disabled[str(ctx.guild.id)]:
-                embed = GBEmbed(title="Commande désactivée", color=ctx.author.color)
-                embed.description = f"{name} a été désactivée sur {ctx.guild.name}."
-                return await ctx.respond(embed=embed, ephemeral=True)
-        return await func(*args, **kwargs)
-
-    return wrapper
-
-
 # Applique une liste de décorateurs
 def apply_list(decorators):
     def wrapper(func):
@@ -162,7 +145,6 @@ def CustomSlash(func):
     name = func.__name__.strip('_')
     func = logger(func)
     func = apply_list(cmds[name].options)(func)
-    func = check_disabled(func)
     func = slash_command(name=name, description=cmds[name].desc)(func)
     return func
 

@@ -393,25 +393,6 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         view.add_item(SelectDashboard(self.bot, ctx.guild))
         await ctx.respond(embed=sett.to_embed(), view=view)
 
-    @CustomSlash
-    @commands.guild_only()
-    @commands.has_permissions(administrator=True)
-    async def disable(self, ctx: ApplicationContext, commande: str):
-        await ctx.defer(ephemeral=True)
-        disabled = json.load(open(GBpath + "Data/guild_slash_denied.json", 'r'))
-        name = self.bot.commands_names.search(commande)[0][0]
-        if name == "disable":
-            return await ctx.respond(f"Tu ne peux pas désactiver cette commande", ephemeral=True)
-        if not str(ctx.guild.id) in disabled:
-            disabled[ctx.guild.id] = list()
-        if not name in disabled[ctx.guild.id]:
-            disabled[ctx.guild.id].append(name)
-            await ctx.respond(f"{name} a été désactivée sur {ctx.guild.name}")
-        else:
-            disabled[ctx.guild.id] = [c for c in disabled[ctx.guild.id] if c != name]
-            await ctx.respond(f"{name} a été réactivée sur {ctx.guild.name}")
-        json.dump(disabled, open(GBpath + "Data/guild_slash_denied.json", 'w'), indent=4)
-
     # Donner un rôle
     @CustomSlash
     @commands.has_permissions(manage_roles=True)

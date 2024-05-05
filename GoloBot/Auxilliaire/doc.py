@@ -317,12 +317,6 @@ Pour modifier un rôle, supprimer le message puis en refaire un.
             Arg("officier_superieur", "Rôle à attribuer aux Officiers Supérieurs.", default=base_value),
             Arg("aspirant", "Rôle à attribuer aux Aspirants.", default=base_value)])
 
-DocCommand("disable",
-           "(Dés)Active une commande sur ce serveur.",
-           Permissions.administrator,
-           "",
-           [Arg("commande", "nom de la commande à (dés)activer")])
-
 DocCommand("roles",
            "Donne un ou plusieurs rôles à une ou plusieurs personnes en même temps",
            Permissions.manage_roles,
