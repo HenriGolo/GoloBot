@@ -688,15 +688,16 @@ class CogCommandesPasSlash(commands.Cog):
 
 
 class CogTwitch(commands.Cog):
-    def __init__(self, bot: BotTemplate):
+    def __init__(self, bot: BotTemplate, **kwargs):
         self.bot = bot
+        self.db = kwargs.get('db', GBpath + 'Data/annonces_streams.json')
         self.task_annonces.start()
 
     @tasks.loop(minutes=10)
     async def task_annonces(self):
         while not self.bot.setup_fini:
             await asyncio.sleep(1)
-        annonces = json.load(open(GBpath + 'Data/annonces_streams.json', 'r'), cls=GBDecoder)
+        annonces = json.load(open(self.db, 'r'), cls=GBDecoder)
         for guild_id, channels in annonces.items():
             guild = await self.bot.fetch_guild(guild_id)
             for channel_id, streamers in channels.items():
@@ -707,20 +708,21 @@ class CogTwitch(commands.Cog):
                     await streamer.annonce(self.bot, channel)
                     kwargs['msg_url'] = streamer.msg_url  # on note qu'un message a été créé / modifié
                     annonces[guild_id][channel_id][i] = kwargs
-        json.dump(annonces, open(GBpath + 'Data/annonces_streams.json', 'w'), cls=GBEncoder, indent=4)
+        json.dump(annonces, open(self.db, 'w'), cls=GBEncoder, indent=4)
 
     @CustomSlash
     async def liste_streams(self, ctx: ApplicationContext):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title="Alertes de streams", guild=ctx.guild)
-        db = json.load(open(GBpath + 'Data/annonces_streams.json', 'r'), cls=GBDecoder)
+        db = json.load(open(self.db, 'r'), cls=GBDecoder)
         if not ctx.guild.id in db:
             await ctx.respond(f"Aucune alerte configurée sur ce serveur")
             return
 
-        for channel_id, streamers in db[ctx.guild.id].items():
+        for channel_id, kwargs in db[ctx.guild.id].items():
             channel = await ctx.guild.fetch_channel(channel_id)
-            values = [f"https://twitch.tv/{s['login']}" for s in streamers]
+            streamers = [Streamer(token=self.bot.token.twitch, session=self.bot.session, **k) for k in kwargs]
+            values = [s.url for s in streamers]
             values.sort()
             embed.add_field(name=f"Poste dans {channel.name}",
                             value='- ' + '\n- '.join(values))
@@ -730,17 +732,17 @@ class CogTwitch(commands.Cog):
     async def add_stream(self, ctx: ApplicationContext, chaine: str, salon: discord.TextChannel, notif: str):
         await ctx.defer(ephemeral=True)
         streamer = Streamer(self.bot.token.twitch, chaine, notif, None, session=self.bot.session)
-        db = json.load(open(GBpath + 'Data/annonces_streams.json', 'r'), cls=GBDecoder)
+        db = json.load(open(self.db, 'r'), cls=GBDecoder)
         gid = salon.guild.id
         cid = salon.id
         if not gid in db:
             db[gid] = dict()
         if not cid in db[gid]:
             db[gid][cid] = list()
-        kwargs = {prop: getattr(streamer, prop) for prop in ['login', 'notif', 'msg_url']}
+        kwargs = streamer.json()
         if not kwargs in db[gid][cid]:
             db[gid][cid].append(kwargs)
-            json.dump(db, open(GBpath + 'Data/annonces_streams.json', 'w'), cls=GBEncoder, indent=4)
+            json.dump(db, open(self.db, 'w'), cls=GBEncoder, indent=4)
             await ctx.respond(f"{streamer.url} va maintenant être annoncé dans {salon.mention}")
         else:
             await ctx.respond(f"{streamer.url} est déjà annoncé dans {salon.mention}")
@@ -748,7 +750,7 @@ class CogTwitch(commands.Cog):
     @CustomSlash
     async def remove_stream(self, ctx: ApplicationContext, chaine: str, salon: discord.TextChannel):
         await ctx.defer(ephemeral=True)
-        db = json.load(open(GBpath + 'Data/annonces_streams.json', 'r'), cls=GBDecoder)
+        db = json.load(open(self.db, 'r'), cls=GBDecoder)
         suppr = list()
         gid = ctx.guild.id
         gdel = list()  # guilds à supprimer après le parcours
@@ -780,5 +782,5 @@ class CogTwitch(commands.Cog):
         for gid in gdel:
             del db[gid]
 
-        json.dump(db, open(GBpath + 'Data/annonces_streams.json', 'w'), cls=GBEncoder, indent=4)
+        json.dump(db, open(self.db, 'w'), cls=GBEncoder, indent=4)
         await ctx.respond(f"Les annonces de stream de {chaine} ne seront plus postées dans {', '.join(suppr)}")
