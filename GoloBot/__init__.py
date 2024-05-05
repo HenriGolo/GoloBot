@@ -706,8 +706,8 @@ class CogTwitch(commands.Cog):
                     kwargs = streamers[i]
                     streamer = Streamer(token=self.bot.token.twitch, session=self.bot.session, **kwargs)
                     await streamer.annonce(self.bot, channel)
-                    kwargs['msg_url'] = streamer.msg_url  # on note qu'un message a été créé / modifié
-                    annonces[guild_id][channel_id][i] = kwargs
+                    # on note qu'un message a été créé / modifié
+                    annonces[guild_id][channel_id][i] = streamer.json()
         json.dump(annonces, open(self.db, 'w'), cls=GBEncoder, indent=4)
 
     @CustomSlash
