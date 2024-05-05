@@ -772,7 +772,7 @@ class CogTwitch(commands.Cog):
         gid = ctx.guild.id
         gdel = list()  # guilds à supprimer après le parcours
         if gid in db:
-            cdel = list()  # salons à supprimer après le parcous
+            cdel = list()  # salons à supprimer après le parcours
             for cid, streamers in db[gid].items():
                 skip = False
                 if isinstance(salon, discord.TextChannel):
