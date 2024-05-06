@@ -35,7 +35,7 @@ class AccessToken:
         data = {'client_id': self.twitchID,
                 'client_secret': self.twitchSecret,
                 'grant_type': 'client_credentials'}
-        response = self.session.post(request, headers=headers, data=data)
+        response = self.session.post(request, headers=headers, data=data, timeout=timedelta(seconds=1))
         for key, value in response.json().items():
             setattr(self, key, value)
         if hasattr(self, 'expires_in'):
@@ -47,7 +47,7 @@ def get_streams(login, token: AccessToken, *, session=GBSession()):
     headers = {'Content-Type': 'application/json',
                'Authorization': f'Bearer {token.use()}',
                'Client-Id': token.twitchID}
-    response = session.get(request, headers=headers)
+    response = session.get(request, headers=headers, timeout=timedelta(minutes=1))
     data = response.json()['data']
     return data
 
@@ -59,7 +59,7 @@ def get_users(login, id, token: AccessToken, *, session=GBSession()):
     headers = {'Content-Type': 'application/json',
                'Authorization': f'Bearer {token.use()}',
                'Client-Id': token.twitchID}
-    response = session.get(request, headers=headers)
+    response = session.get(request, headers=headers, timeout=timedelta(minutes=1))
     data = response.json()['data']
     return data
 
