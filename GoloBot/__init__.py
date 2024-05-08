@@ -697,6 +697,7 @@ class CogTwitch(commands.Cog):
     async def task_annonces(self):
         while not self.bot.setup_fini:
             await asyncio.sleep(1)
+        self.bot.token.twitch.reload()
         annonces = json.load(open(self.db, 'r'), cls=GBDecoder)
         for guild_id, channels in annonces.items():
             guild = await self.bot.fetch_guild(guild_id)
