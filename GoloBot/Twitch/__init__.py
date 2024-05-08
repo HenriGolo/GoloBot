@@ -1,3 +1,5 @@
+import discord
+
 from ..Auxilliaire import *
 from ..template import *
 import requests
@@ -86,7 +88,7 @@ class Streamer:
     def __str__(self):
         return self.url
 
-    def json(self):
+    def json(self) -> dict:
         kwargs = {prop: getattr(self, prop) for prop in ['login', 'id', 'msg_url', 'notif']}
         return kwargs
 
@@ -98,8 +100,9 @@ class Streamer:
             elif key == 'login':
                 self.url = f'https://twitch.tv/{value}'
             setattr(self, key, value)
+        return self
 
-    def generate_embed(self):
+    def generate_embed(self) -> GBEmbed:
         streams = get_streams(self.login, self.token, session=self.session)
         if not streams:
             return None
@@ -113,7 +116,7 @@ class Streamer:
         embed.set_image(url=stream['thumbnail_url'].format(width=1920, height=1080))
         return embed
 
-    async def annonce(self, bot: BotTemplate, channel: discord.TextChannel):
+    async def annonce(self, bot: BotTemplate, channel: discord.TextChannel) -> bool:
         embed = self.generate_embed()
         view = GBView(bot).add_links(**{'Y aller': self.url})
 
