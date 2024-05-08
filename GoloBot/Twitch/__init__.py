@@ -2,6 +2,7 @@ from ..Auxilliaire import *
 from ..template import *
 import requests
 import json
+from discord.ext import tasks
 
 
 class AccessToken:
@@ -9,7 +10,7 @@ class AccessToken:
         self.twitchID = twitchID
         self.twitchSecret = twitchSecret
         self.session = session
-        self.reload()
+        self.reload.start()
 
     def __repr__(self):
         std = repr(self.__class__)  # de la forme <class 'nom'>
@@ -22,24 +23,19 @@ class AccessToken:
     def use(self):
         if not hasattr(self, 'access_token'):
             self.reload()
-        if hasattr(self, 'expires_at'):
-            if now() > self.expires_at:
-                self.reload()
-        else:
-            self.reload()
         return self.access_token
 
+    @tasks.loop(minutes=1)
     def reload(self):
         request = 'https://id.twitch.tv/oauth2/token'
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         data = {'client_id': self.twitchID,
                 'client_secret': self.twitchSecret,
                 'grant_type': 'client_credentials'}
-        response = self.session.post(request, headers=headers, data=data, timeout=timedelta(seconds=1))
+        response = self.session.post(request, headers=headers, data=data,
+                                     timeout=timedelta(seconds=1))
         for key, value in response.json().items():
             setattr(self, key, value)
-        if hasattr(self, 'expires_in'):
-            setattr(self, 'expires_at', now() + timedelta(seconds=self.expires_in))
 
 
 def get_streams(login, token: AccessToken, *, session=GBSession()):
