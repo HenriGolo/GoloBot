@@ -22,11 +22,11 @@ class AccessToken:
 
     def use(self):
         if not hasattr(self, 'access_token'):
-            self.reload()
+            self.reload.restart()
         return self.access_token
 
     @tasks.loop(minutes=1)
-    def reload(self):
+    async def reload(self):
         request = 'https://id.twitch.tv/oauth2/token'
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         data = {'client_id': self.twitchID,
