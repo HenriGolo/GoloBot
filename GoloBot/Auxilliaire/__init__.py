@@ -354,6 +354,8 @@ class GBDecoder(json.JSONDecoder):
                 std = False
             elif std.lower() in ['none', 'null']:
                 std = None
+            elif std.isdigit():
+                std = int(std)
         elif isinstance(std, (list, tuple)):
             return [self.decode(e) for e in std]
         elif isinstance(std, dict):
