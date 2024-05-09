@@ -8,11 +8,9 @@ __pycache__
 Data
 
 #Fichiers
+*.txt
+*.json
+*.pid
 infos.py
-infos.txt
-qpup.txt
-discord.pid
 privatebot.py
-cookies.txt
-cron.txt
 time
