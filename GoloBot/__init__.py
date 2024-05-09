@@ -39,7 +39,7 @@ class CogGeneral(commands.Cog):
                          url=environ.get('invite_server', ''),
                          icon_url=self.bot.support.icon.url)
         embed.add_field(name="Description", value=commande.desc, inline=False)
-        embed.add_field(name="Permissions Nécessaires", value=commande.perms, inline=False)
+        embed.add_field(name="Permissions Nécessaires", value=', '.join(commande.perms), inline=False)
         embed.add_field(name="Paramètres", value=str(commande))
         # Dans un if, car potentiellement non renseigné
         if not commande.aide == "":
