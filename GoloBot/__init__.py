@@ -759,6 +759,7 @@ class CogTwitch(commands.Cog):
             cdel = list()  # salons à supprimer après le parcours
             for cid, streamers in db[gid].items():
                 skip = False
+                remove = list()
                 if isinstance(salon, discord.TextChannel):
                     skip = not int(cid) == salon.id
                 if skip:
@@ -770,8 +771,12 @@ class CogTwitch(commands.Cog):
                     kwargs['session'] = self.bot.session
                     streamer = Streamer(**kwargs)
                     if streamer.url.strip('/').endswith(chaine):
-                        suppr.append(f'<#{cid}>')
-                        del db[gid][cid][i]
+                        suppr.append(f'<#{cid}>')  # pour l'affichage à la fin
+                        remove.append(i)  # on ajoute l'indice à la liste de suppression
+
+                # parcours en sens inverse pour éviter les out of range
+                for i in reversed(remove):
+                    del db[gid][cid][i]
 
                 if len(streamers) == 0:
                     cdel.append(cid)
