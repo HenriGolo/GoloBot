@@ -99,6 +99,8 @@ class Streamer:
                 value = datetime.fromisoformat(value[:-1])  # format RFC3339, termine par Z
             elif key == 'login':
                 self.url = f'https://twitch.tv/{value}'
+            elif key == 'id':
+                value = int(value)
             setattr(self, key, value)
         return self
 

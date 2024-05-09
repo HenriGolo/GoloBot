@@ -740,9 +740,8 @@ class CogTwitch(commands.Cog):
             db[gid] = dict()
         if not cid in db[gid]:
             db[gid][cid] = list()
-        kwargs = streamer.json()
-        if not kwargs in db[gid][cid]:
-            db[gid][cid].append(kwargs)
+        if not rec_in(db[gid][cid], streamer.id):
+            db[gid][cid].append(streamer.json())
             json.dump(db, open(self.db, 'w'), cls=GBEncoder, indent=4)
             await ctx.respond(f"{streamer.url} va maintenant être annoncé dans {salon.mention}")
         else:
