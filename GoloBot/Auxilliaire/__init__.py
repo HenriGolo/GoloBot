@@ -405,6 +405,9 @@ def tail(file: str, lastN=10) -> str:
 
 # Recherche récursive
 def rec_in(search, elt, profondeur=-1) -> bool:
+    # Comme ça on cherche autant dans les clés que dans les valeurs
+    if isinstance(search, dict):
+        search = search.items()
     # Profondeur -1 pour chercher partout
     if profondeur == 0:
         # On ne cherche pas plus loin
