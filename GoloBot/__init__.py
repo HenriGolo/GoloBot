@@ -255,7 +255,6 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
     # Role react
     @CustomSlash
-    @commands.has_permissions(manage_roles=True)
     @discord.guild_only()
     async def role_react(self, ctx: ApplicationContext, roles: str, texte: str, message: discord.Message):
         if roles == base_value and texte == base_value and message == base_value:
@@ -321,7 +320,6 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
     # Bannir un Member
     @CustomSlash
-    @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
     async def ban(self, ctx: ApplicationContext, user: discord.Member, raison: str):
         await ctx.defer(ephemeral=True)
@@ -348,7 +346,6 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
     # Mute un Member
     @CustomSlash
-    @commands.has_permissions(moderate_members=True)
     @commands.bot_has_permissions(moderate_members=True)
     async def mute(self, ctx: ApplicationContext, user: discord.Member, duree: Duree, raison: str):
         await ctx.defer(ephemeral=True)
@@ -374,7 +371,6 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             await ctx.respond(msg, ephemeral=True)
 
     @CustomSlash
-    @commands.has_permissions(manage_messages=True)
     async def embed(self, ctx: ApplicationContext, edit: str):
         if edit == base_value:
             await ctx.send_modal(ModalNewEmbed(self.bot, edit, title="Nouvel Embed"))
@@ -385,7 +381,6 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             await ctx.send_modal(ModalEditEmbed(self.bot, embeds, embed, edit, send_new=True, title="Modifier l'Embed"))
 
     @CustomSlash
-    @commands.has_permissions(manage_guild=True)
     async def dashboard(self, ctx):
         await ctx.defer()
         sett = guild_to_settings[ctx.guild]
@@ -395,7 +390,6 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
     # Donner un rôle
     @CustomSlash
-    @commands.has_permissions(manage_roles=True)
     async def roles(self, ctx: ApplicationContext, mode: str, users: str, roles: str):
         await ctx.defer(ephemeral=True)
         conversion = {"ajouter": "add", "enlever": "remove"}
@@ -410,7 +404,6 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             ephemeral=True)
 
     @CustomSlash
-    @commands.has_guild_permissions(move_members=True)
     async def move(self, ctx: ApplicationContext, users: str, depuis_salon: discord.VoiceChannel,
                    vers_salon: discord.VoiceChannel):
         await ctx.defer(ephemeral=True)

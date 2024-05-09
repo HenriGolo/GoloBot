@@ -1,6 +1,6 @@
-from discord import Permissions
+from discord import Permissions, flags
 from discord.commands import option
-from varname import nameof
+from discord.ext.commands import has_permissions
 from GoloBot.Auxilliaire.converters import ANSI
 
 docs = {"pycord": "https://docs.pycord.dev/en/stable/",
@@ -62,16 +62,11 @@ class Arg:
 class DocCommand:
     instances = list()
 
-    def __init__(self, name: str, desc: str, perms, aide: str, args: list[Arg]):
+    def __init__(self, name: str, desc: str, perms: list[str], aide: str, args: list[Arg]):
         self.options = None
         self.name = name
         self.desc = desc
-        if isinstance(perms, Permissions):
-            self.perms = nameof(perms)
-            if perms == Permissions.none():
-                self.perms = "Aucune"
-        else:
-            self.perms = "Développeur"
+        self.perms = perms
         self.aide = aide
         args.sort()
         self.args = {a.name: a for a in args}
@@ -79,6 +74,12 @@ class DocCommand:
 
     def set_options(self):
         self.options = [self.args[arg].option for arg in self.args]
+        kwargs = dict()
+        for perm in self.perms:
+            if perms.lower() in [k for k, v in Permissions.__dict__.items() if isinstance(v, flags.flag_value)]:
+                kwargs[perm] = True
+        if kwargs:
+            self.options.append(has_permissions(**kwargs))
         return self
 
     def __str__(self):
@@ -107,32 +108,32 @@ class DocCommand:
 
 DocCommand("aide",
            "Affiche la liste des commandes.",
-           Permissions.none(),
+           ['Aucune'],
            "",
            [Arg("commande", "Une commande en particulier.", default="aide"),
             Arg("visible", "Affiche la fenêtre d'aide à tout le monde.", default=False)])
 
 DocCommand("dm",
            "Envoie un MP",
-           "dev",
+           ['Développeur'],
            "",
            [])
 
 DocCommand("logout",
            "Déconnecte le bot.",
-           "dev",
+           ['Développeur'],
            "",
            [])
 
 DocCommand("ping",
            "Ping et autres infos",
-           Permissions.none(),
+           ['Aucune'],
            "Informations : latence du bot, running time ... ce genre de trucs.",
            [])
 
 DocCommand("poll",
            "Crée un sondage, séparer les réponses par un point virgule.",
-           Permissions.none(),
+           ['Aucune'],
            "",
            [Arg("question", "Question à poser dans le sondage."),
             Arg("reponses", "Réponses possibles dans le sondage, séparer par un point virgule."),
@@ -140,7 +141,7 @@ DocCommand("poll",
 
 DocCommand("role_react",
            "Ajoute un menu déroulant à un message pour choisir des rôles.",
-           Permissions.manage_roles,
+           ['manage_roles'],
            """`roles` et `message` n'ont pas besoin d'être renseignés tous les 2.
 Dans le cas où `message` est renseigné, un nouveau message avec le même contenu sera envoyé et l'original sera supprimé.
 Si échec suivi d'une possibilité `Actualiser`, choisir `Actualiser` et continuer normalement.""",
@@ -152,7 +153,7 @@ Si échec suivi d'une possibilité `Actualiser`, choisir `Actualiser` et continu
 
 DocCommand("spam_emote",
            "Spamme une emote.",
-           Permissions.none(),
+           ['Aucune'],
            "",
            [Arg("emote",
                 "Une emote qui va être spam pour atteindre la limite de 2000 caractères.",
@@ -161,7 +162,7 @@ DocCommand("spam_emote",
 
 DocCommand("clear",
            "Nettoie un salon.",
-           Permissions.manage_messages,
+           ['manage_messages'],
            "Préciser le nombre de messages et le salon (par défaut : le salon actuel), éventuellement l'auteur.",
            [Arg("nombre", "Nombre de messages à chercher dans l'historique."),
             Arg("salon", "Salon où supprimer les messages.", default=base_value),
@@ -170,14 +171,14 @@ DocCommand("clear",
 
 DocCommand("ban",
            "Si tu sais pas ce que c'est, t'es pas concerné.",
-           Permissions.ban_members,
+           ['ban_members'],
            "",
            [Arg("user", "Utilisateur à bannir."),
             Arg("raison", "Motif du ban.", default=" ")])
 
 DocCommand("mute",
            "Mute une personne.",
-           Permissions.moderate_members,
+           ['moderate_members'],
            """Durée sous forme d'un nombre et `d` ou `j` (jour), `h` (heure), `m` (minute), `s` (secondes).
 Ne pas combiner, par exemple `3m30s` est invalide, utiliser `210s` à la place.""",
            [Arg("user", "Utilisateur à mute."),
@@ -186,13 +187,13 @@ Ne pas combiner, par exemple `3m30s` est invalide, utiliser `210s` à la place."
 
 DocCommand("invite",
            "Affiche un lien pour inviter le bot.",
-           Permissions.none(),
+           ['Aucune'],
            "",
            [])
 
 DocCommand("github",
            "Lien vers GitHub pour accéder aux fichiers du bot.",
-           Permissions.none(),
+           ['Aucune'],
            f"""Doc Pycord : [ici]({docs['pycord']}).
 Portail des Développeurs : [ici]({docs['discord developpers']}).
 Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']}).""",
@@ -200,37 +201,37 @@ Doc Cron : [ici]({docs['crontab']}) et [là]({docs['cron']}).""",
 
 DocCommand("get_logs",
            "Envoie les logs des erreurs.",
-           "dev",
+           ['Développeur'],
            "",
            [Arg("last_x_lines", "Les X dernières lignes de stderr.", default=50)])
 
 DocCommand("get_history",
            "Envoie les logs de stdout.",
-           "dev",
+           ['Développeur'],
            "",
            [Arg("last_x_lines", "Les X dernières lignes de stdout.", default=50)])
 
 DocCommand("qpup",
            "Lance le quiz Questions Pour Un Poulet !",
-           Permissions.none(),
+           ['Aucune'],
            "Tellement de lore derrière ce nom ... Même avec le nom vous devinerez pas ...",
            [Arg("nbquestions", "Nombre de questions désirées.", default=1)])
 
 DocCommand("2048",
            "Démarre une partie de 2048.",
-           Permissions.none(),
+           ['Aucune'],
            "",
            [Arg("size", "Taille de la grille.", default=4)])
 
 DocCommand("suggestions",
            "Envoie un MP au dev à propos d'une suggestion que vous avez.",
-           Permissions.none(),
+           ['Aucune'],
            "Vous pouvze aussi passer par le Serveur de Support",
            [])
 
 DocCommand("droprates",
            "Indique le nombre de lootbox attendu pour une certaine probabilité de drop.",
-           Permissions.none(),
+           ['Aucune'],
            "Renseigner le nom de la lootbox **et** l'item voulu va afficher la fenêtre de résultats à tout le monde.",
            [Arg("pourcentage", "Pourcentage de drop de l'item désiré."),
             Arg("nom", "Nom de la lootbox.", default=base_value),
@@ -238,7 +239,7 @@ DocCommand("droprates",
 
 DocCommand("embed",
            "Crée un nouvel embed, entièrement customisable.",
-           Permissions.none(),
+           ['manage_messages'],
            f"""Si modification d'un Embed existant : aucune modification n'est effective avant de valider à la toute fin.
 Documention sur les [couleurs ANSI]({docs['ansi']}).
 Utilisation avec le bot : <couleur>, <bgcouleur> ou <reset>.""",
@@ -246,68 +247,68 @@ Utilisation avec le bot : <couleur>, <bgcouleur> ou <reset>.""",
 
 DocCommand("play",
            "Joue une musiqe / playlist à partir d'une recherche / url.",
-           Permissions.none(),
+           ['Aucune'],
            "Sources supportées : YouTube, Twitter, SoundCloud, BandCamp",
            [Arg("search", "Mots clé ou URL de la vidéo / playlist à jouer.")])
 
 DocCommand("playlist",
            "Affiche la playlist en cours.",
-           Permissions.none(),
+           ['Aucune'],
            "",
            [])
 
 DocCommand("stop",
            "Arrête la musique et déconnecte le bot du vocal.",
-           Permissions.none(),
+           ['Aucune'],
            "",
            [])
 
 DocCommand("skip",
            "Joue la prochaine musique de la playlist.",
-           Permissions.none(),
+           ['Aucune'],
            "",
            [])
 
 DocCommand("songinfo",
            "Des informations sur la musique en cours.",
-           Permissions.none(),
+           ['Aucune'],
            "Provenance et durée de la musique.",
            [])
 
 DocCommand("historique",
            "Affiche l'historique des musiques jouées.",
-           Permissions.none(),
+           ['Aucune'],
            "",
            [])
 
 DocCommand("volume",
            "Change le volume de la musique.",
-           Permissions.none(),
+           ['Aucune'],
            "",
            [Arg("volume", "Compris entre 1 et 100 (inclus).")])
 
 DocCommand("loop",
            "(Dés)active la boucle de la PlayList.",
-           Permissions.none(),
+           ['Aucune'],
            "",
            [])
 
 DocCommand("write_emote",
            "Écrit un mot avec des réactions sous un message",
-           Permissions.none(),
+           ['Aucune'],
            "",
            [Arg("mot", "Mot à écrire."),
             Arg("message", "Identifiant du message.")])
 
 DocCommand("dashboard",
            "Affiche un menu de configuration des paramètres locaux du serveur.",
-           Permissions.manage_guild,
+           ['manage_guild'],
            "",
            [])
 
 DocCommand("wows_setup_autorole",
            "Configure l'attribution automatique des rôles discord en fonction des rôles World of Warships",
-           Permissions.administrator,
+           ['administrator'],
            """Supprimer le message pour annuler l'autorole.
 Pour modifier un rôle, supprimer le message puis en refaire un.
 :warning: cela nécessite que chaque personne utilise le nouveau bouton""",
@@ -321,7 +322,7 @@ Pour modifier un rôle, supprimer le message puis en refaire un.
 
 DocCommand("roles",
            "Donne un ou plusieurs rôles à une ou plusieurs personnes en même temps",
-           Permissions.manage_roles,
+           ['manage_roles'],
            "",
            [Arg("mode", "Ajouter ou retirer les rôles en question", choices=["ajouter", "enlever"]),
             Arg("users", "Mentions de toutes les personnes (sans séparateur spécifique)"),
@@ -329,7 +330,7 @@ DocCommand("roles",
 
 DocCommand("move",
            "Déplace un ou plusieurs users vers un même salon vocal.",
-           Permissions.move_members,
+           ['move_members'],
            "*users* et *depuis_salon* ne sont pas mutuellement exclusifs.",
            [Arg("users", "Mentions des users à déplacer", default=base_value),
             Arg("depuis_salon", "Déplace tous les users du salon en question", default=base_value),
@@ -337,13 +338,13 @@ DocCommand("move",
 
 DocCommand("liste_streams",
            "Permet de gérer les annonces de stream des différentes chaines",
-           Permissions.manage_messages,
+           ['manage_messages'],
            "Fonctionne de façon similaire à /dashboard",
            [])
 
 DocCommand("add_stream",
            "Ajoute un streamer à annoncer lors de ses lives Twitch",
-           Permissions.manage_messages,
+           ['manage_messages'],
            "",
            [Arg("chaine", "Nom ou url de la chaine Twitch concernée"),
             Arg("salon", "Salon où poster les annonces"),
@@ -351,7 +352,7 @@ DocCommand("add_stream",
 
 DocCommand("remove_stream",
            "Supprime les annonces live d'un streamer",
-           Permissions.manage_messages,
+           ['manage_messages'],
            "Préciser le salon permet de n'enlever le streamer que de ce salon, au cas où il serait dans plusieurs",
            [Arg("chaine", "Nom ou url de la chaine Twitch concernée"),
             Arg("salon", "Salon concerné par la suppression des annonces", default=base_value)])
