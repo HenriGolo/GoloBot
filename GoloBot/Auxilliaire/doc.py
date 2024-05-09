@@ -76,7 +76,7 @@ class DocCommand:
         self.options = [self.args[arg].option for arg in self.args]
         kwargs = dict()
         for perm in self.perms:
-            if perms.lower() in [k for k, v in Permissions.__dict__.items() if isinstance(v, flags.flag_value)]:
+            if perm.lower() in [k for k, v in Permissions.__dict__.items() if isinstance(v, flags.flag_value)]:
                 kwargs[perm] = True
         if kwargs:
             self.options.append(has_permissions(**kwargs))
