@@ -39,14 +39,16 @@ class Arg:
 
     def __eq__(self, other):  # self == other
         if isinstance(other, self.__class__):
-            return self.name == other.name and self.desc == other.desc
+            return (self.name == other.name and
+                    self.desc == other.desc and
+                    self.required == other.required)
         return False
 
     def __lt__(self, other):  # self < other
         if isinstance(other, self.__class__):
             if self.required == other.required:
                 return self.name < other.name
-            return self.required
+            return not self.required
         return False
 
     def __gt__(self, other):  # self > other
