@@ -136,7 +136,21 @@ class Streamer:
         if message is None:
             func = channel.send
         else:
-            func = message.edit
+            # On cherche à savoir si l'embed généré contient des nouveautés
+            previous = message.embeds[0]
+            modif = False
+            for elt in ['title', 'description']:
+                if not getattr(embed, elt) == getattr(previous, elt):
+                    modif = True
+
+            for i in range(len(embed.fields)):
+                if not embed.fields[i].value == previous.fields[i].value:
+                    modif = True
+
+            if modif:
+                func = message.edit
+            else:
+                return False
 
         message = await func(self.notif, embed=embed, view=view)
         self.msg_url = message.jump_url
