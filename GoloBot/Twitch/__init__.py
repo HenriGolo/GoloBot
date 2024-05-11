@@ -111,13 +111,11 @@ class Streamer:
         stream = streams[0]
         started_at = datetime.fromisoformat(stream['started_at'][:-1])
         started_at = convert_timezone(started_at, 'UTC', 'Europe/Paris')
-        embed = GBEmbed(title=stream['title'], color=0xffffff, url=self.url,
-                        timestamp=started_at)
-        embed.set_author(name=self.login, icon_url=self.profile_image_url)
-        embed.set_thumbnail(url=f"https://static-cdn.jtvnw.net/ttv-boxart/{stream['game_id']}-570x760.jpg")
+        embed = GBEmbed(title=stream['title'], color=0xffffff, url=self.url, timestamp=started_at)
+        embed.set_author(name=self.display_name, icon_url=self.profile_image_url)
+        embed.set_image(url=f"https://static-cdn.jtvnw.net/ttv-boxart/{stream['game_id']}-570x760.jpg")
         embed.add_field(name="Jeu", value=stream['game_name'])
         embed.set_footer(text=f"{stream['viewer_count']} viewers")
-        embed.set_image(url=stream['thumbnail_url'].format(width=1920, height=1080))
         return embed
 
     async def annonce(self, bot: BotTemplate, channel: discord.TextChannel) -> bool:
