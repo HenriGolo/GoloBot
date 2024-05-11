@@ -1,6 +1,6 @@
 from discord import Permissions, flags
 from discord.commands import option
-from discord.ext.commands import has_permissions
+from discord.ext.commands import has_guild_permissions
 from GoloBot.Auxilliaire.converters import ANSI
 
 docs = {"pycord": "https://docs.pycord.dev/en/stable/",
@@ -79,7 +79,7 @@ class DocCommand:
             if perm.lower() in [k for k, v in Permissions.__dict__.items() if isinstance(v, flags.flag_value)]:
                 kwargs[perm] = True
         if kwargs:
-            self.options.append(has_permissions(**kwargs))
+            self.options.append(has_guild_permissions(**kwargs))
         return self
 
     def __str__(self):
