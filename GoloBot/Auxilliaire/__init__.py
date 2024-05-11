@@ -13,6 +13,7 @@ import json
 from .converters import ANSI
 from os import environ
 from unicodedata import normalize
+import pytz
 
 GBpath = environ.get('path', '')
 
@@ -558,3 +559,14 @@ async def jumpurl2Message(bot: discord.AutoShardedBot, url: str) -> discord.Mess
 def strip_accents(text: str):
     text = normalize('NFD', text).encode('ascii', 'ignore').decode('utf-8')
     return text
+
+
+# liste des timezones dans pytz.all_timezones
+def convert_timezone(dt: datetime, tz1, tz2) -> datetime:
+    tz1 = pytz.timezone(tz1)
+    tz2 = pytz.timezone(tz2)
+    if not isinstance(dt, datetime):
+        dt = datetime.strptime(dt, "%Y-%m%d %H:%M:%S")
+    dt = tz1.localize(dt)
+    dt = dt.astimezone(tz2)
+    return dt
