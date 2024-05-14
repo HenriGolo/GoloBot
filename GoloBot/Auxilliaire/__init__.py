@@ -570,3 +570,18 @@ def convert_timezone(dt: datetime, tz1, tz2) -> datetime:
     dt = tz1.localize(dt)
     dt = dt.astimezone(tz2)
     return dt
+
+
+def get_all(parse):
+    if isinstance(parse, dict):
+        parse = parse.items()
+
+    if isinstance(parse, str):
+        yield parse
+
+    try:
+        for elt in parse:
+            for e in get_all(elt):
+                yield e
+    except:
+        yield parse
