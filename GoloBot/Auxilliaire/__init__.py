@@ -1,19 +1,20 @@
+from .converters import ANSI
 import asyncio
-import re
 from collections import namedtuple
 from datetime import datetime, timedelta
-from subprocess import check_output
-from traceback import format_exc
 import discord
-from fast_autocomplete import AutoComplete
-from requests import Session
 from enum import Enum
+from fast_autocomplete import AutoComplete
 from functools import partial
 import json
-from .converters import ANSI
 from os import environ
-from unicodedata import normalize
 import pytz
+import re
+from requests import Session
+from subprocess import check_output
+from traceback import format_exc
+from unicodedata import normalize
+
 
 GBpath = environ.get('path', '')
 
