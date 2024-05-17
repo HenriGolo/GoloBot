@@ -3,6 +3,7 @@ import asyncio
 from collections import namedtuple
 from datetime import datetime, timedelta
 import discord
+from discord.ext import tasks
 from enum import Enum
 from fast_autocomplete import AutoComplete
 from functools import partial
@@ -586,3 +587,9 @@ def get_all(parse):
                 yield e
     except:
         yield parse
+
+
+@tasks.loop(count=1)
+async def delay(until: datetime, coro, *args, **kwargs):
+    await wait_until(until)
+    await coro(*args, **kwargs)
