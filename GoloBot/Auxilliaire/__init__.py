@@ -593,3 +593,12 @@ def get_all(parse):
 async def delay(until: datetime, coro, *args, **kwargs):
     await wait_until(until)
     await coro(*args, **kwargs)
+
+
+# générateur qui renvoie un gradient de couleur
+def grad(start: discord.Color, end: discord.Color, nb: int):
+    pas = {c: (getattr(end, c) - getattr(start, c))//nb for c in 'rgb'}
+    for i in range(nb):
+        kwargs = {c: getattr(start, c) + i * pas[c] for c in 'rgb'}
+        yield Color.from_rgb(**kwargs)
+    yield end
