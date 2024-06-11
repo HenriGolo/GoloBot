@@ -124,8 +124,8 @@ def logger(func):
             if 'stdout' in environ:
                 with open(GBpath + environ['stdout'], 'a') as stdout:
                     stdout.write(f"\n{time} {user} : {cname}.{func.__name__} "
-                                 f"dans {gname} avec comme arguments\n\t{signature}")
-                    stdout.write(f"{func.__name__} terminé en {now(True) - start}s")
+                                 f"dans {gname} avec comme arguments\n\t{signature}\n")
+                    stdout.write(f"{func.__name__} terminé en {now(True) - start}s\n")
             return result
 
     return wrapper
