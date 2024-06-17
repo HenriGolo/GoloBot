@@ -7,7 +7,8 @@ from enum import Enum
 
 
 class CompNInt(Converter):
-    async def convert(self, ctx: Context, argument: str) -> T_co:
+    @classmethod
+    def converter(cls, argument):
         compint = namedtuple("CompNInt", ["comp", "int"])
         default = ">="
         try:
@@ -31,16 +32,24 @@ class CompNInt(Converter):
                 value = int(argument[1:])
         return compint(comp, value)
 
+    async def convert(self, ctx: Context, argument: str) -> T_co:
+        return self.converter(argument)
+
 
 class Splitter(Converter):
-    async def convert(self, ctx: Context, argument: str) -> T_co:
+    @classmethod
+    def converter(cls, argument):
         if argument is None:
             return []
         return [e.strip() for e in argument.split(";")]
 
+    async def convert(self, ctx: Context, argument: str) -> T_co:
+        return self.converter(argument)
+
 
 class Duree(Converter):
-    async def convert(self, ctx: Context, argument: str) -> T_co:
+    @classmethod
+    def converter(cls, argument: str):
         argument = argument.replace(' ', '')
         jours = heures = minutes = secondes = 0
         number = ""
@@ -60,6 +69,9 @@ class Duree(Converter):
                     raise Exception(f"Mauvais format de {argument}. Attendu 1j 2h 3m 4s")
                 number = ""
         return timedelta(days=jours, hours=heures, minutes=minutes, seconds=secondes)
+
+    async def convert(self, ctx: Context, argument: str) -> T_co:
+        return self.converter(argument)
 
 
 class TextColor(Enum):
@@ -86,7 +98,7 @@ class BackgroundColor(Enum):
 
 class ANSI(Converter):
     @classmethod
-    def converter(cls, argument):
+    def converter(cls, argument: str):
         colors = {f"<{c.name}>": f"\u001b[{c.value}m" for c in TextColor}
         colors["<reset>"] = f"\u001b[0m"
         bgcolors = {f"<bg_{c.name}>": f"\u001b[{c.value}m" for c in BackgroundColor}
