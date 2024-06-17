@@ -108,6 +108,8 @@ class ANSI(Converter):
                 if pattern in bgcolors:
                     part = part.replace(pattern, bgcolors[pattern])
                     need_wrap = True
+            if not part:  # str vide
+                need_wrap = False
             if need_wrap:
                 part = f"```ansi\n{part}\n```"
             modified.append(part)
