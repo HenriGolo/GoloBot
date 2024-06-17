@@ -21,7 +21,6 @@ dependencies = [
     "py-cord[voice]",
     "pytz",
     "requests",
-    "varname",
     "yt_dlp",
     "youtube_search"
 ]
