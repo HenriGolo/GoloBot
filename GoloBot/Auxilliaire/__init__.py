@@ -29,6 +29,16 @@ emoji = re.compile(r'<a?:[a-zA-Z0-9]*:[0-9]*>')
 timestamp = re.compile(r'<t:[0-9]*:[RDdTtFf]>')
 
 
+class Storable:
+    def to_json(self):
+        std = repr(self.__class__)  # de la forme <class 'nom'>
+        cls = std.split("'")[1]
+        keys = [k for k in self.__dict__ if k in self.__init__.__code__.co_varnames]
+        keys.sort()
+        attr = [f"{k}={self.__dict__[k]}" for k in keys]
+        return f"<{cls} {' '.join(attr)}>"
+
+
 class DictPasPareil:
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
@@ -54,19 +64,11 @@ class Exit(Enum):
     Fail = False
 
 
-class GBSession(Session):
+class GBSession(Storable, Session):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._cache = dict()
         self.data = namedtuple("RequestResult", ["result", "time"])
-
-    def __repr__(self):
-        std = repr(self.__class__)  # de la forme <class 'nom'>
-        cls = std.split("'")[1]
-        keys = [k for k in self.__dict__ if k in self.__init__.__code__.co_varnames]
-        keys.sort()
-        attr = [f"{k}={self.__dict__[k]}" for k in keys]
-        return f"<{cls} {' '.join(attr)}>"
 
     def get(self, url, *, timeout=timedelta(hours=1), **kwargs):
         t = now()
@@ -77,7 +79,7 @@ class GBSession(Session):
             return resp.result
 
         except KeyError:
-            r = super().get(url, **kwargs)
+            r = super(Session, self).get(url, **kwargs)
             self._cache[f"GET {url}"] = self.data(r, t)
             return r
 
@@ -311,6 +313,9 @@ class GBEncoder(json.JSONEncoder):
             if hasattr(o, 'json'):
                 if isinstance(o.json, function):
                     return o.json()
+            if hasattr(o, 'to_json'):
+                if isinstance(o.to_json, function):
+                    return o.to_json()
             return repr(o)
 
 

@@ -6,20 +6,12 @@ import requests
 import json
 
 
-class AccessToken:
+class AccessToken(Storable):
     def __init__(self, twitchID, twitchSecret, *, session=GBSession()):
         self.twitchID = twitchID
         self.twitchSecret = twitchSecret
         self.session = session
         self.reload()
-
-    def __repr__(self):
-        std = repr(self.__class__)  # de la forme <class 'nom'>
-        cls = std.split("'")[1]
-        keys = [k for k in self.__dict__ if k in self.__init__.__code__.co_varnames if not k == 'session']
-        keys.sort()
-        attr = [f"{k}={self.__dict__[k]}" for k in keys]
-        return f"<{cls} {' '.join(attr)}>"
 
     def use(self):
         if not hasattr(self, 'access_token'):

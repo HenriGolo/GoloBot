@@ -6,7 +6,7 @@ from .converters import ANSI
 guild_to_settings = dict()
 
 
-class Param:
+class Param(Storable):
     instances = list()
 
     def __init__(self, name, desc, value, _type):
@@ -15,14 +15,6 @@ class Param:
         self.value = value
         self._type = _type
         self.__class__.instances.append(self)
-
-    def __repr__(self):
-        std = repr(self.__class__)  # de la forme <class 'nom'>
-        cls = std.split("'")[1]
-        keys = [k for k in self.__dict__ if k in self.__init__.__code__.co_varnames]
-        keys.sort()
-        attr = [f"{k}={self.__dict__[k]}" for k in keys]
-        return f"<{cls} {' '.join(attr)}>"
 
     def __str__(self):
         raw = f"<green>{self.name}<reset> : {self.desc}"
