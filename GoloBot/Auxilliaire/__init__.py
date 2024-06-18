@@ -78,7 +78,7 @@ class GBSession(Storable, Session):
             return resp.result
 
         except KeyError:
-            r = super(Session, self).get(url, **kwargs)
+            r = super().get(url, **kwargs)
             self._cache[f"GET {url}"] = self.data(r, t)
             return r
 
