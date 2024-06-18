@@ -696,12 +696,10 @@ class CogTwitch(commands.Cog):
             guild = await self.bot.fetch_guild(guild_id)
             for channel_id, streamers in channels.items():
                 channel = await guild.fetch_channel(channel_id)
-                for i in range(len(streamers)):
-                    kwargs = streamers[i]
-                    streamer = Streamer(token=self.bot.token.twitch, session=self.bot.session, **kwargs)
+                for streamer in streamers:
                     await streamer.annonce(self.bot, channel)
                     # on note qu'un message a été créé / modifié
-                    annonces[guild_id][channel_id][i] = streamer.json()
+                    # annonces[guild_id][channel_id][i] = streamer.json()
         json.dump(annonces, open(self.db, 'w'), cls=GBEncoder, indent=4)
 
     @CustomSlash
@@ -713,9 +711,8 @@ class CogTwitch(commands.Cog):
             await ctx.respond(f"Aucune alerte configurée sur ce serveur")
             return
 
-        for channel_id, kwargs in db[ctx.guild.id].items():
+        for channel_id, streamers in db[ctx.guild.id].items():
             channel = await ctx.guild.fetch_channel(channel_id)
-            streamers = [Streamer(token=self.bot.token.twitch, session=self.bot.session, **k) for k in kwargs]
             values = [s.url for s in streamers]
             values.sort()
             embed.add_field(name=f"Poste dans {channel.name}",
@@ -734,7 +731,7 @@ class CogTwitch(commands.Cog):
         if not cid in db[gid]:
             db[gid][cid] = list()
         if not rec_in(db[gid][cid], streamer.id):
-            db[gid][cid].append(streamer.json())
+            db[gid][cid].append(streamer.to_json())
             json.dump(db, open(self.db, 'w'), cls=GBEncoder, indent=4)
             await ctx.respond(f"{streamer.url} va maintenant être annoncé dans {salon.mention}")
         else:
@@ -758,10 +755,7 @@ class CogTwitch(commands.Cog):
                     continue
 
                 for i in range(len(streamers)):
-                    kwargs = streamers[i]
-                    kwargs['token'] = self.bot.token.twitch
-                    kwargs['session'] = self.bot.session
-                    streamer = Streamer(**kwargs)
+                    streamer = streamers[i]
                     if streamer.url.strip('/').endswith(chaine):
                         suppr.append(f'<#{cid}>')  # pour l'affichage à la fin
                         remove.append(i)  # on ajoute l'indice à la liste de suppression

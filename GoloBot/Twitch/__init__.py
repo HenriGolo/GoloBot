@@ -58,7 +58,7 @@ def get_users(login, id, token: AccessToken, *, session=GBSession()):
     return data
 
 
-class Streamer:
+class Streamer(Storable):
     def __init__(self, token: AccessToken, login: str = '', id: int = 0, notif: str = '', msg_url: str = '', *, session=GBSession()):
         self.token = token
         self.login = login.strip('/').split('/')[-1]
@@ -79,10 +79,6 @@ class Streamer:
 
     def __str__(self):
         return self.url
-
-    def json(self) -> dict:
-        kwargs = {prop: getattr(self, prop) for prop in ['login', 'id', 'msg_url', 'notif']}
-        return kwargs
 
     def reload(self):
         data = get_users(login=self.login, id=self.id, token=self.token, session=self.session)[0]
