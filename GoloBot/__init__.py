@@ -438,7 +438,7 @@ class CogMiniGames(commands.Cog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
 
-    # QPUP, bon courage pour retrouver le lore ...
+    # QPUP, bon courage pour retrouver le lore...
     @CustomSlash
     async def qpup(self, ctx: ApplicationContext, nbquestions: int):
         await ctx.defer()
@@ -658,7 +658,7 @@ class CogCommandesPasSlash(commands.Cog):
         if member.premium_since is not None:
             embed.add_field(name="Booste le serveur depuis", value=Timestamp(member.premium_since).relative, inline=False)
         if ctx.author.guild_permissions.manage_roles:
-            # Le 1er rôle de la liste est "everyone"
+            # Le 1er rôle de la liste est "everyone".
             roles = [r.mention for r in member.roles[1:]]
             # On affiche les rôles par ordre de permissions
             roles.reverse()
@@ -698,8 +698,6 @@ class CogTwitch(commands.Cog):
                 channel = await guild.fetch_channel(channel_id)
                 for streamer in streamers:
                     await streamer.annonce(self.bot, channel)
-                    # on note qu'un message a été créé / modifié
-                    # annonces[guild_id][channel_id][i] = streamer.json()
         json.dump(annonces, open(self.db, 'w'), cls=GBEncoder, indent=4)
 
     @CustomSlash
