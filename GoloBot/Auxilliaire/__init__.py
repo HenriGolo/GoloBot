@@ -16,7 +16,6 @@ from subprocess import check_output
 from traceback import format_exc
 from unicodedata import normalize
 
-
 GBpath = environ.get('path', '')
 
 url = re.compile(r'https?://[a-zA-Z0-9/.#?-]*')
@@ -29,14 +28,14 @@ emoji = re.compile(r'<a?:[a-zA-Z0-9]*:[0-9]*>')
 timestamp = re.compile(r'<t:[0-9]*:[RDdTtFf]>')
 
 
+# Class à hériter pour être compatible avec la serialisation JSON
+# définie par GBEncoder et GBDecoder
 class Storable:
     def to_json(self):
         std = repr(self.__class__)  # de la forme <class 'nom'>
         cls = std.split("'")[1]
-        keys = [k for k in self.__dict__ if k in self.__init__.__code__.co_varnames]
-        keys.sort()
-        attr = [f"{k}={self.__dict__[k]}" for k in keys]
-        return f"<{cls} {' '.join(attr)}>"
+        kwargs = {k: v for k, v in self.__dict__.items() if k in self.__init__.__code__.co_varnames}
+        return {'cls': cls, 'kwargs': kwargs}
 
 
 class DictPasPareil:
@@ -310,12 +309,11 @@ class GBEncoder(json.JSONEncoder):
         try:
             return super().default(o)
         except TypeError:
-            if hasattr(o, 'json'):
-                if isinstance(o.json, function):
-                    return o.json()
-            if hasattr(o, 'to_json'):
-                if isinstance(o.to_json, function):
-                    return o.to_json()
+            for fun in ['json', 'to_json']:
+                if hasattr(o, fun):
+                    f = getattr(o, fun)
+                    if callable(f):
+                        return f()
             return repr(o)
 
 
@@ -325,69 +323,36 @@ class GBDecoder(json.JSONDecoder):
         self.create_instance = True
 
     def decode(self, s, _w=...):
-        if isinstance(s, (list, tuple)):
-            return [self.decode(e) for e in s]
-        elif isinstance(s, set):
-            return {self.decode(e) for e in s}
-        elif isinstance(s, dict):
-            return {self.decode(k): self.decode(v) for k, v in s.items()}
-        elif not isinstance(s, str):
-            return s
-
-        s = s.strip('"').strip("'")
-        if s.startswith('<') and s.endswith('>'):
-            s = s[1:-1].strip('"').strip("'")
-            if s.startswith("class "):
-                self.create_instance = False
-                return self.decode(f"<{s[7:]}>")  # s de la forme <class truc>
-
-            cls, kwargs = self.repr_parser(s)
-            cls = self.instanciate(cls)
-            if not self.create_instance:
-                return cls
-            return cls(**kwargs)
-
-        try:
-            std = super().decode(s)
-        except:
+        if not isinstance(s, str):
+            std = s
+        else:
             try:
-                std = super().decode(f"'{s}'")
+                std = super().decode(s)
             except:
-                std = s
+                std = super().decode(f'"{s}"')
 
-        if isinstance(std, str):
+        if isinstance(std, (list, tuple)):
+            return [self.decode(e) for e in std]
+
+        elif isinstance(std, set):
+            return {self.decode(e) for e in std}
+
+        elif isinstance(std, dict):
+            std = {self.decode(k): self.decode(v) for k, v in std.items()}
+            if {'cls', 'kwargs'}.issubset(std.keys()):
+                cls = self.instanciate(std['cls'].split('.'))
+                return cls(**std['kwargs'])
+
+        elif isinstance(std, str):
             if std.lower() in ['oui', 'o', 'yes', 'y', 'vrai', 'v', 'true']:
                 std = True
             elif std.lower() in ['non', 'n', 'no', 'faux', 'f', 'false']:
-                std = False
+                std = True
             elif std.lower() in ['none', 'null']:
                 std = None
             elif std.isdigit():
                 std = int(std)
-        elif isinstance(std, (list, tuple)):
-            return [self.decode(e) for e in std]
-        elif isinstance(std, dict):
-            return {self.decode(k): self.decode(v) for k, v in std.items()}
         return std
-
-    @classmethod
-    def repr_parser(cls, s):
-        # s de la forme <path.to.class.classname champ1=valeur1 champ2=valeur2>
-        s = s.strip('<').strip('>') + ' '
-        elts = s.split('=')  # on commence par split sur = sinon c'est + dur de s'y retrouver
-        elts = [e.split(' ') for e in elts]
-        klass = elts[0][0]  # cls de la forme path.to.class.classname
-        klass = klass.split('.')
-        kwargs = dict()
-        for i in range(1, len(elts)):
-            data = ' '.join(elts[i][:-1])
-            try:
-                data = json.loads(data, cls=GBDecoder)
-            except:
-                pass
-            finally:
-                kwargs[elts[i - 1][-1]] = data
-        return klass, kwargs
 
     @classmethod
     def instanciate(cls, path: list[str], _from=None):
@@ -602,7 +567,7 @@ async def delay(until: datetime, coro, *args, **kwargs):
 
 # générateur qui renvoie un gradient de couleur
 def grad(start: discord.Color, end: discord.Color, nb: int):
-    pas = {c: (getattr(end, c) - getattr(start, c))//nb for c in 'rgb'}
+    pas = {c: (getattr(end, c) - getattr(start, c)) // nb for c in 'rgb'}
     for i in range(nb):
         kwargs = {c: getattr(start, c) + i * pas[c] for c in 'rgb'}
         yield Color.from_rgb(**kwargs)
