@@ -309,7 +309,13 @@ class GBEncoder(json.JSONEncoder):
         try:
             return super().default(o)
         except TypeError:
-            for fun in ['json', 'to_json']:
+            # o est une classe, pas un objet
+            if isinstance(o, type):
+                # repr d'une classe de la forme <class 'foo'>
+                # None va être interprété par GBDecoder
+                return {'cls': repr(o).split("'")[1], 'kwargs': None}
+
+            for fun in ['to_json', 'json']:
                 if hasattr(o, fun):
                     f = getattr(o, fun)
                     if callable(f):
@@ -341,7 +347,10 @@ class GBDecoder(json.JSONDecoder):
             std = {self.decode(k): self.decode(v) for k, v in std.items()}
             if {'cls', 'kwargs'}.issubset(std.keys()):
                 cls = self.instanciate(std['cls'].split('.'))
-                return cls(**std['kwargs'])
+                kwargs = std['kwargs']
+                if kwargs is None:
+                    return cls
+                return cls(**kwargs)
 
         elif isinstance(std, str):
             if std.lower() in ['oui', 'o', 'yes', 'y', 'vrai', 'v', 'true']:
