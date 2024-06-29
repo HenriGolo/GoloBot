@@ -406,7 +406,7 @@ class DataBase(Storable):
             return self.data.__getitem__(str(item))
 
     def __contains__(self, item):
-        return self.data.__contains__(item)
+        return self.data.__contains__(item) or self.data.__contains__(str(item))
 
     def __bool__(self):
         return bool(self.data)
