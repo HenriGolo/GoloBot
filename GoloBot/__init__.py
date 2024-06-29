@@ -442,7 +442,7 @@ class CogMiniGames(commands.Cog):
     @CustomSlash
     async def qpup(self, ctx: ApplicationContext, nbquestions: int):
         await ctx.defer()
-        self.bot.qpup = json.load(open(GBpath + environ['qpup']))
+        self.bot.qpup = DataBase(GBpath + environ['qpup'])
         # Boucle sur le nombre de questions à poser
         for loop in range(nbquestions):
             # Tirage au sort d'une question
@@ -683,7 +683,7 @@ class CogCommandesPasSlash(commands.Cog):
 class CogTwitch(commands.Cog):
     def __init__(self, bot: BotTemplate, **kwargs):
         self.bot = bot
-        self.db = kwargs.get('db', GBpath + 'Data/annonces_streams.json')
+        self.db = DataBase(kwargs.get('db', GBpath + 'Data/annonces_streams.json'))
         self.task_annonces.start()
 
     @tasks.loop(minutes=5)
@@ -691,25 +691,23 @@ class CogTwitch(commands.Cog):
         while not self.bot.setup_fini:
             await asyncio.sleep(1)
         self.bot.token.twitch.reload()
-        annonces = json.load(open(self.db, 'r'), cls=GBDecoder)
-        for guild_id, channels in annonces.items():
+        for guild_id, channels in self.db.items():
             guild = await self.bot.fetch_guild(guild_id)
             for channel_id, streamers in channels.items():
                 channel = await guild.fetch_channel(channel_id)
                 for streamer in streamers:
                     await streamer.annonce(self.bot, channel)
-        json.dump(annonces, open(self.db, 'w'), cls=GBEncoder, indent=4)
+        self.db.write()
 
     @CustomSlash
     async def liste_streams(self, ctx: ApplicationContext):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title="Alertes de streams", guild=ctx.guild)
-        db = json.load(open(self.db, 'r'), cls=GBDecoder)
-        if not ctx.guild.id in db:
+        if not ctx.guild.id in self.db:
             await ctx.respond(f"Aucune alerte configurée sur ce serveur")
             return
 
-        for channel_id, streamers in db[ctx.guild.id].items():
+        for channel_id, streamers in self.db[ctx.guild.id].items():
             channel = await ctx.guild.fetch_channel(channel_id)
             values = [s.url for s in streamers]
             values.sort()
@@ -720,17 +718,16 @@ class CogTwitch(commands.Cog):
     @CustomSlash
     async def add_stream(self, ctx: ApplicationContext, chaine: str, salon: discord.TextChannel, notif: str):
         await ctx.defer(ephemeral=True)
-        streamer = Streamer(self.bot.token.twitch, chaine, notif, None, session=self.bot.session)
-        db = json.load(open(self.db, 'r'), cls=GBDecoder)
+        streamer = Streamer(token=self.bot.token.twitch, login=chaine, id=None, notif=notif, session=self.bot.session)
         gid = salon.guild.id
         cid = salon.id
-        if not gid in db:
-            db[gid] = dict()
-        if not cid in db[gid]:
-            db[gid][cid] = list()
-        if not rec_in(db[gid][cid], streamer.id):
-            db[gid][cid].append(streamer.to_json())
-            json.dump(db, open(self.db, 'w'), cls=GBEncoder, indent=4)
+        if not gid in self.db:
+            self.db[gid] = dict()
+        if not cid in self.db[gid]:
+            self.db[gid][cid] = list()
+        if not rec_in(self.db[gid][cid], streamer.id):
+            self.db[gid][cid].append(streamer.to_json())
+            self.db.write()
             await ctx.respond(f"{streamer.url} va maintenant être annoncé dans {salon.mention}")
         else:
             await ctx.respond(f"{streamer.url} est déjà annoncé dans {salon.mention}")
@@ -738,13 +735,12 @@ class CogTwitch(commands.Cog):
     @CustomSlash
     async def remove_stream(self, ctx: ApplicationContext, chaine: str, salon: discord.TextChannel):
         await ctx.defer(ephemeral=True)
-        db = json.load(open(self.db, 'r'), cls=GBDecoder)
         suppr = list()
         gid = ctx.guild.id
         gdel = list()  # guilds à supprimer après le parcours
-        if gid in db:
+        if gid in self.db:
             cdel = list()  # salons à supprimer après le parcours
-            for cid, streamers in db[gid].items():
+            for cid, streamers in self.db[gid].items():
                 skip = False
                 remove = list()
                 if isinstance(salon, discord.TextChannel):
@@ -760,17 +756,15 @@ class CogTwitch(commands.Cog):
 
                 # parcours en sens inverse pour éviter les out of range
                 for i in reversed(remove):
-                    del db[gid][cid][i]
+                    del self.db[gid][cid][i]
 
                 if len(streamers) == 0:
                     cdel.append(cid)
             for cid in cdel:
-                del db[gid][cid]
+                del self.db[gid][cid]
 
-            if len(db[gid]) == 0:
+            if len(self.db[gid]) == 0:
                 gdel.append(gid)
         for gid in gdel:
-            del db[gid]
-
-        json.dump(db, open(self.db, 'w'), cls=GBEncoder, indent=4)
+            del self.db[gid]
         await ctx.respond(f"Les annonces de stream de {chaine} ne seront plus postées dans {', '.join(suppr)}")
