@@ -105,7 +105,7 @@ class GoloBot(BotTemplate):
         except:
             pass
         with open('logs/guilds.log', 'a') as file:
-            txt = f'{guild.name} - {guild.owner.display_name}'
+            txt = f'{guild.name} - {guild.owner.display_name} - {guild.owner.mention}'
             if isinstance(inv, discord.Invite):
                 txt += f' - {inv.url}'
             file.write(f"{txt}\n")
