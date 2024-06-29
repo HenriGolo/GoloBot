@@ -405,6 +405,12 @@ class DataBase(Storable):
         except KeyError:
             return self.data.__getitem__(str(item))
 
+    def get(self, item, placeholder=None):
+        try:
+            return self.__getitem__(item)
+        except:
+            return placeholder
+
     def __contains__(self, item):
         return self.data.__contains__(item) or self.data.__contains__(str(item))
 
