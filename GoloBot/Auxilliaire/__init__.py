@@ -422,6 +422,11 @@ class DataBase(Storable):
         if self.auto_update:
             self.write()
 
+    def __delitem__(self, key):
+        del self.data[key]
+        if self.auto_update:
+            self.write()
+
 
 # Commande bash tail avec un peu de traitement
 def tail(file: str, lastN=10) -> str:
