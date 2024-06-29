@@ -402,7 +402,7 @@ class DataBase(Storable):
     def __getitem__(self, item):
         try:
             return self.data.__getitem__(item)
-        except:
+        except KeyError:
             return self.data.__getitem__(str(item))
 
     def __contains__(self, item):
@@ -423,7 +423,10 @@ class DataBase(Storable):
             self.write()
 
     def __delitem__(self, key):
-        del self.data[key]
+        try:
+            del self.data[key]
+        except KeyError:
+            del self.data[str(key)]
         if self.auto_update:
             self.write()
 
