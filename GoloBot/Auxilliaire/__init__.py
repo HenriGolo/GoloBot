@@ -379,6 +379,50 @@ class GBDecoder(json.JSONDecoder):
                 return cls.instanciate(path[1:], getattr(_from, path[0]))
 
 
+class DataBase(Storable):
+    def __init__(self, path, auto_update=True):
+        self.path: str = path
+        self.auto_update: bool = auto_update
+        self.data = dict()
+        self.read()
+
+    def read(self, **kwargs):
+        kwargs['cls'] = kwargs.get('cls', GBDecoder)
+        self.data = json.load(open(self.path, 'r'), **kwargs)
+        return self
+
+    def write(self, **kwargs):
+        kwargs['cls'] = kwargs.get('cls', GBEncoder)
+        kwargs['indent'] = kwargs.get('indent', 4)
+        json.dump(self.data, open(self.path, 'w'), **kwargs)
+
+    def items(self):
+        return self.data.items()
+
+    def __getitem__(self, item):
+        try:
+            return self.data.__getitem__(item)
+        except:
+            return self.data.__getitem__(str(item))
+
+    def __contains__(self, item):
+        return self.data.__contains__(item)
+
+    def __bool__(self):
+        return bool(self.data)
+
+    def __len__(self):
+        return len(self.data)
+
+    def __str__(self):
+        return f"{type(self.data)} de taille {len(self.data)} stocké dans {self.path}"
+
+    def __setitem__(self, key, value):
+        self.data[key] = value
+        if self.auto_update:
+            self.write()
+
+
 # Commande bash tail avec un peu de traitement
 def tail(file: str, lastN=10) -> str:
     cmd = check_output(["tail", file, "-n", str(lastN)])
