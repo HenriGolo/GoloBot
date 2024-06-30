@@ -395,6 +395,7 @@ class DataBase(Storable):
         kwargs['cls'] = kwargs.get('cls', GBEncoder)
         kwargs['indent'] = kwargs.get('indent', 4)
         json.dump(self.data, open(self.path, 'w'), **kwargs)
+        self.read()  # évite certains problèmes de parallélisation
 
     def items(self):
         return self.data.items()
