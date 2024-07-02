@@ -41,6 +41,10 @@ class GoloBot(BotTemplate):
         # Ce qui ne serait pas possible (ou moins intuitif / facile) avec des instances de PrivateResponse
         self.PR = [pr(self) for pr in PrivateResponse.__subclasses__()]
 
+        # Gestion du PID pour kill proprement
+        with open(environ['pidfile'], 'w') as pid:
+            pid.write(str(getpid()))
+
         # Sera défini dans on_ready
         self.startTime: datetime = None
         self.dev: discord.User = None
@@ -81,10 +85,6 @@ class GoloBot(BotTemplate):
 
         for guild in self.guilds:
             await self.on_guild_join(guild)
-
-        # Gestion du PID pour kill proprement
-        with open(environ['pidfile'], 'w') as pid:
-            pid.write(str(getpid()))
 
         # c'est bon, on est prêt
         print(f"{self} connecté !")
