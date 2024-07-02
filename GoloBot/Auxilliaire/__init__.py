@@ -641,3 +641,9 @@ def grad(start: discord.Color, end: discord.Color, nb: int):
         kwargs = {c: getattr(start, c) + i * pas[c] for c in 'rgb'}
         yield Color.from_rgb(**kwargs)
     yield end
+
+
+def color_visualizer(color: discord.Color):
+    # color.value au format int base 10, on prend le hex pour avoir la base 16
+    # et à partir du 2e caractère pour enlever le 0x du hex
+    return f"[{color}](https://www.colorhexa.com/{hex(color.value)[2:]})"
