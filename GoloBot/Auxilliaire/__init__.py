@@ -400,11 +400,21 @@ class DataBase(Storable):
     def items(self):
         return self.data.items()
 
+    def keys(self):
+        return self.data.keys()
+
+    def values(self):
+        return self.data.values()
+
     def __getitem__(self, item):
         try:
             return self.data.__getitem__(item)
         except KeyError:
             return self.data.__getitem__(str(item))
+
+    def __iter__(self):
+        for stuff in self.data:
+            yield stuff
 
     def get(self, item, placeholder=None):
         try:
