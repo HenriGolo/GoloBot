@@ -67,6 +67,7 @@ class GBSession(Storable, Session):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._cache = dict()
+        self.clear.start()
         self.data = namedtuple("RequestResult", ["result", "time"])
 
     def get(self, url, *, timeout=timedelta(hours=1), **kwargs):
@@ -95,6 +96,10 @@ class GBSession(Storable, Session):
             r = super().post(url, **kwargs)
             self._cache[f"POST {url}"] = self.data(r, t)
             return r
+
+    @tasks.loop(hours=24)
+    async def clear(self):
+        self._cache = dict()
 
 
 class Timestamp:
