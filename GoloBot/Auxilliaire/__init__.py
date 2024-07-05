@@ -344,7 +344,7 @@ class GBDecoder(json.JSONDecoder):
             if std.lower() in ['oui', 'o', 'yes', 'y', 'vrai', 'v', 'true']:
                 std = True
             elif std.lower() in ['non', 'n', 'no', 'faux', 'f', 'false']:
-                std = True
+                std = False
             elif std.lower() in ['none', 'null']:
                 std = None
             elif std.isdigit():
