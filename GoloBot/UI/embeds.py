@@ -1,6 +1,8 @@
+from numpy.distutils.misc_util import colour_text
+
 from .base_imports import *
 from ..Auxilliaire.doc import base_value
-from discord import Colour
+from discord import Color, Colour
 
 
 # Création d'Embed
@@ -33,6 +35,8 @@ class ModalEditEmbed(ui.Modal):
         self.embed = embed
         self.msg_id = msg_id
         self.send = send_new
+        if not embed.color:
+            embed.color = Color(0xffffff)
         old = [embed.title, embed.description, hex(embed.color.value)]
         self.add_item(ui.InputText(label="Titre", value=old[0], required=False))
         self.add_item(ui.InputText(label="Description", value=old[1], style=InputTextStyle.long, required=False))
@@ -240,7 +244,10 @@ class BoutonAjouterEmbed(GButton):
     @logger
     # Ajouter un Embed
     async def callback(self, interaction: Interaction):
-        color = self.embeds[-1].color.value
+        color = self.embeds[-1].color
+        if not color:
+            color = Color(0xffffff)
+        color = color.value
         self.embeds.append(GBEmbed(title=f"Embed {len(self.embeds)}", color=color))
         modal = ModalEditEmbed(self.bot, self.embeds, self.embeds[-1], self.msg_id, title="Nouvel Embed")
         await interaction.response.send_modal(modal)
