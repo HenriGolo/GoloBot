@@ -1,5 +1,3 @@
-from numpy.distutils.misc_util import colour_text
-
 from .base_imports import *
 from ..Auxilliaire.doc import base_value
 from discord import Color, Colour
