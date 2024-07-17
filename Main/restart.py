@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-from os import environ
-from subprocess import Popen, DEVNULL
+import os
+import subprocess
 from GoloBot.Auxilliaire import GBpath
 
 # kill ancien bot, si existant
-with open(GBpath + environ['pidfile'], 'r') as pid:
+with open(GBpath + os.environ['pidfile'], 'r') as pid, open(GBpath + os.environ['stderr'], 'a') as stderr:
     try:
-        Popen(["kill", pid.read()])
+        subprocess.Popen(f'kill {pid.read()}', shell=True, stderr=subprocess.DEVNULL)
     except:
         pass
     finally:
         # lancement du bot
-        Popen([GBpath + environ['bot_path']],
-              stdin=DEVNULL,
-              stdout=DEVNULL,
-              stderr=open(GBpath + environ['stderr'], 'a'),
-              start_new_session=True,
-              shell=True)
+        subprocess.Popen([GBpath + os.environ['bot_path']],
+                         stdin=subprocess.DEVNULL,
+                         stdout=subprocess.DEVNULL,
+                         stderr=stderr,
+                         start_new_session=True,
+                         shell=True)
