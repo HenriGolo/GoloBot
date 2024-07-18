@@ -389,17 +389,23 @@ class DataBase(Storable):
         self.path: str = path
         self.auto_update: bool = auto_update
         self.data = dict()
+        self.writing: bool = False
         self.read()
 
     def read(self, **kwargs):
-        kwargs['cls'] = kwargs.get('cls', GBDecoder)
-        self.data = json.load(open(self.path, 'r'), **kwargs)
+        if not self.writing:
+            kwargs['cls'] = kwargs.get('cls', GBDecoder)
+            with open(self.path, 'r') as file:
+                self.data = json.load(file, **kwargs)
         return self
 
     def write(self, **kwargs):
+        self.writing = True
         kwargs['cls'] = kwargs.get('cls', GBEncoder)
         kwargs['indent'] = kwargs.get('indent', 4)
-        json.dump(self.data, open(self.path, 'w'), **kwargs)
+        with open(self.path, 'w') as file:
+            json.dump(self.data, file, **kwargs)
+        self.writing = False
         self.read()  # évite certains problèmes de parallélisation
 
     def items(self):

@@ -97,8 +97,8 @@ class Settings:
         return response
 
     def reload(self):
-        source = open(self.chemin, 'r')
-        self.json_data = json.load(source, cls=GBDecoder)
+        with open(self.chemin, 'r') as source:
+            self.json_data = json.load(source, cls=GBDecoder)
         target = None
         for server in self.json_data:
             server = self.json_data[server]
