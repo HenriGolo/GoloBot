@@ -78,11 +78,11 @@ Param.instances.sort()
 class Settings:
     template = {p.name: p for p in Param.instances}
     indent = 4
-    chemin = GBpath + 'Data/settings.json'
-    excluded = ["id"]
+    excluded = list()
 
-    def __init__(self, guild):
+    def __init__(self, guild, **kwargs):
         self.guild = guild
+        self.path = kwargs.get('path', GBpath + 'Data/settings.json')
         self.json_data = None
         self.config = None
         self.reload()
@@ -91,21 +91,20 @@ class Settings:
     def write(self, setting, value):
         params = {p.name: p for p in Param.instances}
         response = self.config.get(setting, params[setting]).update(value)
-        with open(self.chemin, 'w') as source:
+        with open(self.path, 'w') as source:
             json.dump(self.json_data, source, cls=GBEncoder, indent=self.indent)
         self.reload()
         return response
 
     def reload(self):
-        with open(self.chemin, 'r') as source:
+        with open(self.path, 'r') as source:
             self.json_data = json.load(source, cls=GBDecoder)
         target = None
-        for server in self.json_data:
-            server = self.json_data[server]
+        for guild_id, data in self.json_data.items():
             if self.guild is None:
                 continue
-            if server['id'] == self.guild.id:
-                target = server
+            if guild_id == self.guild.id:
+                target = data
 
         if target is None:
             return self.create()
@@ -123,14 +122,13 @@ class Settings:
             self.config[key] = self.template.get(key)
             refresh = True
         if refresh:
-            with open(self.chemin, 'w') as source:
+            with open(self.path, 'w') as source:
                 json.dump(self.json_data, source, cls=GBEncoder, indent=self.indent)
             self.reload()
 
     def create(self):
         self.json_data[self.guild.id] = self.template
-        self.json_data[self.guild.id]['id'] = self.guild.id
-        with open(self.chemin, 'w') as source:
+        with open(self.path, 'w') as source:
             json.dump(self.json_data, source, cls=GBEncoder, indent=self.indent)
         self.reload()
 
