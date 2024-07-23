@@ -173,6 +173,9 @@ class AudioController:
             downloader = yt_dlp.YoutubeDL({'title': True, "cookiefile": "cookies.txt"})
             r = downloader.extract_info(track, download=False)
 
+        if r is None:
+            return
+
         if r.get('thumbnails') is not None:
             thumbnail = r.get('thumbnails')[len(r.get('thumbnails')) - 1]['url']
         else:
