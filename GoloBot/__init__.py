@@ -383,7 +383,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
     @CustomSlash
     async def dashboard(self, ctx):
         await ctx.defer()
-        sett = guild_to_settings[ctx.guild]
+        sett = guild_to_settings[ctx.guild.id]
         view = GBView(self.bot)
         view.add_item(SelectDashboard(self.bot, ctx.guild))
         await ctx.respond(embed=sett.to_embed(), view=view)
@@ -515,7 +515,7 @@ class CogMusic(commands.Cog):
     @discord.guild_only()
     async def play(self, ctx: ApplicationContext, search: str):
         await ctx.defer(invisible=False)
-        audiocontroller = guild_to_audiocontroller[ctx.guild]
+        audiocontroller = guild_to_audiocontroller[ctx.guild.id]
         if await is_connected(ctx) is None:
             if not await audiocontroller.uconnect(ctx):
                 return
@@ -551,9 +551,9 @@ class CogMusic(commands.Cog):
             await ctx.respond(f"La playlist est vide {self.bot.bools[False]}")
             return
 
-        playlist = guild_to_audiocontroller[ctx.guild].playlist
+        playlist = guild_to_audiocontroller[ctx.guild.id].playlist
         embed = GBEmbed(title=f"À venir ({len(playlist.playque)} en tout)", color=ctx.author.color)
-        current = guild_to_audiocontroller[ctx.guild].current_song
+        current = guild_to_audiocontroller[ctx.guild.id].current_song
         if current:
             current = current.info.format_output("En Cours", color=ctx.author.color)
         for counter, song in enumerate(list(playlist.playque)[:5], start=1):
@@ -572,9 +572,9 @@ class CogMusic(commands.Cog):
         await ctx.defer(ephemeral=True)
         if not await play_check(ctx):
             return
-        audiocontroller = guild_to_audiocontroller[ctx.guild]
+        audiocontroller = guild_to_audiocontroller[ctx.guild.id]
         audiocontroller.playlist.loop = False
-        await guild_to_audiocontroller[ctx.guild].stop_player()
+        await guild_to_audiocontroller[ctx.guild.id].stop_player()
         await ctx.guild.voice_client.disconnect()
         await ctx.respond(f"Arrêt de la musique {self.bot.bools[False]}")
 
@@ -584,7 +584,7 @@ class CogMusic(commands.Cog):
         await ctx.defer(ephemeral=True)
         if not await play_check(ctx):
             return
-        audiocontroller = guild_to_audiocontroller[ctx.guild]
+        audiocontroller = guild_to_audiocontroller[ctx.guild.id]
         audiocontroller.playlist.loop = False
         audiocontroller.timer.cancel()
         audiocontroller.timer = Timer(audiocontroller.timeout_handler)
@@ -601,7 +601,7 @@ class CogMusic(commands.Cog):
         await ctx.defer(ephemeral=True)
         if not await play_check(ctx):
             return
-        song = guild_to_audiocontroller[ctx.guild].current_song
+        song = guild_to_audiocontroller[ctx.guild.id].current_song
         if song is None:
             return
         await ctx.respond(embed=song.info.format_output("Infos", color=ctx.author.color))
@@ -612,7 +612,7 @@ class CogMusic(commands.Cog):
         await ctx.defer(ephemeral=True)
         if not await play_check(ctx):
             return
-        await ctx.respond(guild_to_audiocontroller[ctx.guild].track_history())
+        await ctx.respond(guild_to_audiocontroller[ctx.guild.id].track_history())
 
     @CustomSlash
     @discord.guild_only()
@@ -623,7 +623,7 @@ class CogMusic(commands.Cog):
 
         if not 0 < volume <= 100:
             return await ctx.respond(f"{volume} n'est pas compris entre 1 et 100")
-        guild_to_audiocontroller[ctx.guild].volume = volume
+        guild_to_audiocontroller[ctx.guild.id].volume = volume
         await ctx.respond(f"Nouveau volume défini sur {volume}")
 
     @CustomSlash
@@ -632,8 +632,8 @@ class CogMusic(commands.Cog):
         await ctx.defer(ephemeral=True)
         if not await play_check(ctx):
             return
-        loop = guild_to_audiocontroller[ctx.guild].playlist.loop
-        guild_to_audiocontroller[ctx.guild].playlist.loop = not loop
+        loop = guild_to_audiocontroller[ctx.guild.id].playlist.loop
+        guild_to_audiocontroller[ctx.guild.id].playlist.loop = not loop
         await ctx.respond(
             f"Changement de la boucle dans la PlayList : {self.bot.bools[loop]} -> {self.bot.bools[not loop]}",
             ephemeral=True)

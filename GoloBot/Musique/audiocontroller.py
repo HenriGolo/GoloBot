@@ -66,7 +66,7 @@ class AudioController:
         self.playlist = Playlist()
         self.current_song = None
         self.guild = guild
-        sett = guild_to_settings[guild]
+        sett = guild_to_settings[guild.id]
         self._volume = sett['default volume'].value
         self.timer = Timer(self.timeout_handler)
         self.loop = False
@@ -302,5 +302,5 @@ class AudioController:
 
 
 async def register(bot, guild):
-    guild_to_settings[guild] = Settings(guild)
-    guild_to_audiocontroller[guild] = AudioController(bot, guild)
+    guild_to_settings[guild.id] = Settings(guild)
+    guild_to_audiocontroller[guild.id] = AudioController(bot, guild)

@@ -122,7 +122,7 @@ class GoloBot(BotTemplate):
                 for member in before.channel.members:
                     # On arrête la musique éventuelle en cours
                     if member.id == self.user.id:
-                        await guild_to_audiocontroller[member.guild].stop_player()
+                        await guild_to_audiocontroller[member.guild.id].stop_player()
                     # Déconnexion
                     await member.move_to(None)
 
@@ -133,7 +133,7 @@ class GoloBot(BotTemplate):
             if message.guild is None:
                 return
             if message.reference is None:
-                if guild_to_settings[message.guild].config["autopublish bots"]:
+                if guild_to_settings[message.guild.id].config["autopublish bots"]:
                     try:
                         await message.publish()
                     except:
@@ -155,7 +155,7 @@ class GoloBot(BotTemplate):
                         fichier.write(f"\n{currentTime} {message.author.display_name} a envoyé un DM :\n{message.content}\n")
                 await message.add_reaction(self.bools[True])
         else:
-            if guild_to_settings[message.guild].config["reponses custom"]:
+            if guild_to_settings[message.guild.id].config["reponses custom"]:
                 # S'obtient avec un '@silent ' devant le message
                 if not message.flags.suppress_notifications:
                     for pr in self.PR:

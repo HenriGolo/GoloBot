@@ -10,7 +10,7 @@ class ModalDashboard(ui.Modal):
         self.guild = guild
         self.setting = setting
         self.message = msg
-        self.sett = guild_to_settings[guild]
+        self.sett = guild_to_settings[guild.id]
         self.add_item(ui.InputText(label=f"Nouvelle valeur pour {setting}",
                                    value=str(self.sett[setting].value),
                                    style=InputTextStyle.long))
@@ -34,7 +34,7 @@ class SelectDashboard(ui.Select):
     def __init__(self, bot, guild):
         self.bot = bot
         self.guild = guild
-        options = [SelectOption(label=sett) for sett in guild_to_settings[guild].config if not sett in Settings.excluded]
+        options = [SelectOption(label=sett) for sett in guild_to_settings[guild.id].config if not sett in Settings.excluded]
         super().__init__(placeholder="Modifier un paramètre", min_values=1, options=options)
 
     @logger
