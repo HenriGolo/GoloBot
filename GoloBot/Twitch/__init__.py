@@ -39,7 +39,7 @@ def get_streams(login, token: AccessToken):
     headers = {'Content-Type': 'application/json',
                'Authorization': f'Bearer {token.use()}',
                'Client-Id': token.twitchID}
-    response = requests.get(request, headers=headers, timeout=timedelta(minutes=1))
+    response = requests.get(request, headers=headers)
     data = response.json()['data']
     return data
 
@@ -51,7 +51,7 @@ def get_users(login, id, token: AccessToken):
     headers = {'Content-Type': 'application/json',
                'Authorization': f'Bearer {token.use()}',
                'Client-Id': token.twitchID}
-    response = requests.get(request, headers=headers, timeout=timedelta(minutes=1))
+    response = requests.get(request, headers=headers)
     data = response.json()['data']
     return data
 
