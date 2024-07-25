@@ -1,5 +1,4 @@
 import discord
-
 from ..Auxilliaire import *
 from ..template import *
 import requests
@@ -7,10 +6,9 @@ import json
 
 
 class AccessToken(Storable):
-    def __init__(self, twitchID, twitchSecret, *, session=GBSession()):
+    def __init__(self, twitchID, twitchSecret):
         self.twitchID = twitchID
         self.twitchSecret = twitchSecret
-        self.session = session
         self.reload()
 
     def use(self):
@@ -29,43 +27,42 @@ class AccessToken(Storable):
         data = {'client_id': self.twitchID,
                 'client_secret': self.twitchSecret,
                 'grant_type': 'client_credentials'}
-        response = self.session.post(request, headers=headers, data=data)
+        response = requests.post(request, headers=headers, data=data)
         for key, value in response.json().items():
             setattr(self, key, value)
         if hasattr(self, 'expires_in'):
             setattr(self, 'expires_at', now() + timedelta(seconds=self.expires_in))
 
 
-def get_streams(login, token: AccessToken, *, session=GBSession()):
+def get_streams(login, token: AccessToken):
     request = f'https://api.twitch.tv/helix/streams?user_login={login}'
     headers = {'Content-Type': 'application/json',
                'Authorization': f'Bearer {token.use()}',
                'Client-Id': token.twitchID}
-    response = session.get(request, headers=headers, timeout=timedelta(minutes=1))
+    response = requests.get(request, headers=headers, timeout=timedelta(minutes=1))
     data = response.json()['data']
     return data
 
 
-def get_users(login, id, token: AccessToken, *, session=GBSession()):
+def get_users(login, id, token: AccessToken):
     request = f'https://api.twitch.tv/helix/users?login={login}'
     if id:
         request = f'https://api.twitch.tv/helix/users?id={id}'
     headers = {'Content-Type': 'application/json',
                'Authorization': f'Bearer {token.use()}',
                'Client-Id': token.twitchID}
-    response = session.get(request, headers=headers, timeout=timedelta(minutes=1))
+    response = requests.get(request, headers=headers, timeout=timedelta(minutes=1))
     data = response.json()['data']
     return data
 
 
 class Streamer(Storable):
-    def __init__(self, token: AccessToken, login: str = '', id: int = 0, notif: str = '', msg_url: str = '', *, session=GBSession()):
+    def __init__(self, token: AccessToken, login: str = '', id: int = 0, notif: str = '', msg_url: str = ''):
         self.token = token
         self.login = login.strip('/').split('/')[-1]
         self.id = id
         self.notif = notif
         self.msg_url = msg_url
-        self.session = session
         self.reload()
         self.url = f'https://twitch.tv/{self.login}'
 
@@ -81,7 +78,7 @@ class Streamer(Storable):
         return self.url
 
     def reload(self):
-        data = get_users(login=self.login, id=self.id, token=self.token, session=self.session)[0]
+        data = get_users(login=self.login, id=self.id, token=self.token)[0]
         for key, value in data.items():
             if key == 'created_at':
                 value = datetime.fromisoformat(value[:-1])  # format RFC3339, termine par Z
@@ -93,7 +90,7 @@ class Streamer(Storable):
         return self
 
     def generate_embed(self) -> GBEmbed:
-        streams = get_streams(self.login, self.token, session=self.session)
+        streams = get_streams(self.login, self.token)
         if not streams:
             return None
         stream = streams[0]

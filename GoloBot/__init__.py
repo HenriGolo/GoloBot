@@ -718,7 +718,7 @@ class CogTwitch(commands.Cog):
     @CustomSlash
     async def add_stream(self, ctx: ApplicationContext, chaine: str, salon: discord.TextChannel, notif: str):
         await ctx.defer(ephemeral=True)
-        streamer = Streamer(token=self.bot.token.twitch, login=chaine, id=None, notif=notif, session=self.bot.session)
+        streamer = Streamer(token=self.bot.token.twitch, login=chaine, id=None, notif=notif)
         gid = salon.guild.id
         cid = salon.id
         if not gid in self.db:
