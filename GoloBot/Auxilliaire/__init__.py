@@ -11,7 +11,6 @@ import json
 from os import environ
 import pytz
 import re
-from requests import Session
 from subprocess import check_output
 from traceback import format_exc
 from unicodedata import normalize
@@ -61,45 +60,6 @@ class Cycle(list):
 class Exit(Enum):
     Success = True
     Fail = False
-
-
-class GBSession(Storable, Session):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._cache = dict()
-        self.clear.start()
-        self.data = namedtuple("RequestResult", ["result", "time"])
-
-    def get(self, url, *, timeout=timedelta(hours=1), **kwargs):
-        t = now()
-        try:
-            resp = self._cache[f"GET {url}"]
-            if t - resp.time > timeout:
-                raise KeyError  # Va se faire attraper par l'except
-            return resp.result
-
-        except KeyError:
-            r = super().get(url, **kwargs)
-            self._cache[f"GET {url}"] = self.data(r, t)
-            return r
-
-    def post(self, url, *, timeout=timedelta(hours=1), **kwargs):
-        # idem que get, mais pour post
-        t = now()
-        try:
-            resp = self._cache[f"POST {url}"]
-            if t - resp.time > timeout:
-                raise KeyError  # Va se faire attraper par l'except
-            return resp.result
-
-        except KeyError:
-            r = super().post(url, **kwargs)
-            self._cache[f"POST {url}"] = self.data(r, t)
-            return r
-
-    @tasks.loop(hours=24)
-    async def clear(self):
-        self._cache = dict()
 
 
 class Timestamp:

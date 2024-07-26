@@ -690,13 +690,14 @@ class CogTwitch(commands.Cog):
     async def task_annonces(self):
         while not self.bot.setup_fini:
             await asyncio.sleep(1)
-        self.bot.token.twitch.reload()
-        for guild_id, channels in self.db.items():
-            guild = await self.bot.fetch_guild(guild_id)
-            for channel_id, streamers in channels.items():
-                channel = await guild.fetch_channel(channel_id)
-                for streamer in streamers:
-                    await streamer.annonce(self.bot, channel)
+        async with ClientSession() as session:
+            await self.bot.token.twitch.reload(session)
+            for guild_id, channels in self.db.items():
+                guild = await self.bot.fetch_guild(guild_id)
+                for channel_id, streamers in channels.items():
+                    channel = await guild.fetch_channel(channel_id)
+                    for streamer in streamers:
+                        await streamer.annonce(self.bot, channel, session)
         self.db.write()
 
     @CustomSlash
@@ -735,6 +736,7 @@ class CogTwitch(commands.Cog):
     @CustomSlash
     async def remove_stream(self, ctx: ApplicationContext, chaine: str, salon: discord.TextChannel):
         await ctx.defer(ephemeral=True)
+        chaine = chaine.lower()
         suppr = list()
         gid = ctx.guild.id
         gdel = list()  # guilds à supprimer après le parcours

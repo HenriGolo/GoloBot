@@ -11,9 +11,6 @@ class GoloBot(BotTemplate):
     token = DictPasPareil(discord=environ['token'],
                           twitch=AccessToken(environ['twitchID'], environ['twitchSecret']))
 
-    # Création de session pour les requêtes
-    session = GBSession()
-
     # Jeux en cours
     games = dict()
 
