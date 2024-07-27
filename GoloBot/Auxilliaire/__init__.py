@@ -240,10 +240,10 @@ class PrivateResponse:
 
     async def do_stuff(self, msg: discord.Message) -> bool:
         if await self.trigger(msg) and await self.guilds(msg) and await self.users(msg):
-            if self.message_predicate(msg):
+            if await self.message_predicate(msg):
                 await self.reply(msg)
 
-            if self.reac_predicate(msg):
+            if await self.reac_predicate(msg):
                 await self.react(msg)
 
             return True
