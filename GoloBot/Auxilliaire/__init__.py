@@ -226,7 +226,7 @@ class PrivateResponse:
                 elif isinstance(reac, (discord.Emoji, str)):
                     emoji = reac
                 else:
-                    return True
+                    continue
                 await msg.add_reaction(emoji)
 
             return True
