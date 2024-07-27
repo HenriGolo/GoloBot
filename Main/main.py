@@ -69,7 +69,7 @@ class GoloBot(BotTemplate):
 
         # Emojis personnalisés
         self.support = GoloBotGuild = await self.fetch_guild(1158154606124204072)
-        self.emotes = {e.name: str(e) for e in GoloBotGuild.emojis}
+        self.emotes = {e.name: e for e in list(self.emojis) + list(GoloBotGuild.emojis)}
         self.bools = {True: self.emotes['check'], False: self.emotes['denied']}
 
         # View persistantes
