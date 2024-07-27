@@ -14,6 +14,7 @@ import re
 from subprocess import check_output
 from traceback import format_exc
 from unicodedata import normalize
+import inspect
 
 GBpath = environ.get('path', '')
 
@@ -215,19 +216,35 @@ class PrivateResponse:
     async def guilds(self, msg: discord.Message) -> bool:
         return self.Aguilds == () or msg.guild.id in self.Aguilds
 
+    @staticmethod
+    async def message_predicate(msg: discord.Message) -> bool:
+        return hasattr(msg, 'reply') and inspect.iscoroutinefunction(msg.reply)
+
+    @staticmethod
+    async def reac_predicate(msg: discord.Message) -> bool:
+        return hasattr(msg, 'add_reaction') and inspect.iscoroutinefunction(msg.add_reaction)
+
+    async def reply(self, msg: discord.Message):
+        if self.message.strip():
+            await msg.reply(self.message)
+
+    async def react(self, msg: discord.Message):
+        for reac in self.reac:
+            if isinstance(reac, int):
+                emoji = self.bot.get_emoji(reac)
+            elif isinstance(reac, (discord.Emoji, str)):
+                emoji = reac
+            else:
+                continue
+            await msg.add_reaction(emoji)
+
     async def do_stuff(self, msg: discord.Message) -> bool:
         if await self.trigger(msg) and await self.guilds(msg) and await self.users(msg):
-            if self.message.strip():
-                await msg.reply(self.message)
+            if self.message_predicate(msg):
+                await self.reply(msg)
 
-            for reac in self.reac:
-                if isinstance(reac, int):
-                    emoji = self.bot.get_emoji(reac)
-                elif isinstance(reac, (discord.Emoji, str)):
-                    emoji = reac
-                else:
-                    continue
-                await msg.add_reaction(emoji)
+            if self.reac_predicate(msg):
+                await self.react(msg)
 
             return True
         return False
