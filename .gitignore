@@ -11,5 +11,5 @@ Data
 *.txt
 *.json
 *.pid
-secrets.py
+GBsecrets.py
 privatebot.py

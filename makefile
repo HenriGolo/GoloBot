@@ -21,8 +21,8 @@ clean_pip :
 
 
 secrets :
-	cp secrets_template.py secrets.py
-	cd Main && ln -s ../secrets.py . && cd ..
+	cp secrets_template.py GBsecrets.py
+	cd Main && ln -s ../GBsecrets.py . && cd ..
 	echo "secrets.py à remplir manuellement"
 
 pid :

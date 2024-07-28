@@ -1,4 +1,4 @@
-import secrets
+import GBsecrets
 import json
 from functools import wraps
 from discord import Forbidden, ui, Interaction, ButtonStyle
@@ -102,8 +102,8 @@ def logger(func):
 
         except (Forbidden, ManquePerms, MissingPermissions):
             await data.action(f"{data.caller.bot.emotes['error']} Manque de permissions", ephemeral=True)
-            if hasattr(secrets, 'stderr'):
-                with open(secrets.stderr, 'a') as stderr:
+            if hasattr(GBsecrets, 'stderr'):
+                with open(GBsecrets.stderr, 'a') as stderr:
                     stderr.write(f"\n{start}\n{fail()}\n")
 
         except Exception:
@@ -115,14 +115,14 @@ def logger(func):
             embed_err.title = f"Erreur de {user} avec {func.__name__}"
             view = ViewError(data.caller.bot, full_embed, embed_err)
             await data.action(embed=embed, view=view, ephemeral=True)
-            if hasattr(secrets, 'stderr'):
-                with open(secrets.stderr, 'a') as stderr:
+            if hasattr(GBsecrets, 'stderr'):
+                with open(GBsecrets.stderr, 'a') as stderr:
                     stderr.write(f"\n{start}\n{err}\n")
 
         else:
             # Sera exécuté si aucune exception n'est soulevée
-            if hasattr(secrets, 'stdout'):
-                with open(secrets.stdout, 'a') as stdout:
+            if hasattr(GBsecrets, 'stdout'):
+                with open(GBsecrets.stdout, 'a') as stdout:
                     stdout.write(f"\n{time} {user} : {cname}.{func.__name__} "
                                  f"dans {gname} avec comme arguments\n\t{signature}\n")
                     stdout.write(f"{func.__name__} terminé en {now(True) - start}s\n")

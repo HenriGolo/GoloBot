@@ -1,5 +1,5 @@
 # Code Principal
-import secrets
+import GBsecrets
 import asyncio
 import json
 import discord
@@ -37,8 +37,8 @@ class CogGeneral(commands.Cog):
         # Embed des informations sur la commande
         embed = GBEmbed(title="Aide", description=mention, color=ctx.author.color)
         url = ''
-        if hasattr(secrets, 'invite_server'):
-            url = secrets.invite_server
+        if hasattr(GBsecrets, 'invite_server'):
+            url = GBsecrets.invite_server
         embed.set_author(name=self.bot.support.name,
                          url=url,
                          icon_url=self.bot.support.icon.url)
@@ -49,7 +49,7 @@ class CogGeneral(commands.Cog):
         if not commande.aide == "":
             embed.add_field(name="Aide Supplémentaire", value=commande.aide, inline=False)
         embed.add_field(name="Encore des questions ?",
-                        value=f"Le <:discord:1164579176146288650> [Serveur de Support]({secrets.invite_server}) est là pour ça",
+                        value=f"Le <:discord:1164579176146288650> [Serveur de Support]({GBsecrets.invite_server}) est là pour ça",
                         inline=False)
         await ctx.respond(embed=embed, view=ViewAide(self.bot), ephemeral=not visible)
 
@@ -58,11 +58,11 @@ class CogGeneral(commands.Cog):
     async def invite(self, ctx):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title=f"Inviter {self.bot.user.display_name}",
-                        description=f"""Tu peux m'inviter avec [ce lien]({secrets.invite_bot})
-Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci]({secrets.invite_server})""",
+                        description=f"""Tu peux m'inviter avec [ce lien]({GBsecrets.invite_bot})
+Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci]({GBsecrets.invite_server})""",
                         color=ctx.author.color)
-        if hasattr(secrets, 'support_qr'):
-            embed.set_thumbnail(url=secrets.support_qr)
+        if hasattr(GBsecrets, 'support_qr'):
+            embed.set_thumbnail(url=GBsecrets.support_qr)
         await ctx.respond(embed=embed, ephemeral=True)
 
     # Renvoie le code source du bot
@@ -70,11 +70,11 @@ Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci
     async def github(self, ctx):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title="Code Source",
-                        description=f"Le code source est disponible sur <:github:1164672088934711398> [Github]({secrets.github})\n\
-Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({secrets.invite_server})",
+                        description=f"Le code source est disponible sur <:github:1164672088934711398> [Github]({GBsecrets.github})\n\
+Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({GBsecrets.invite_server})",
                         color=ctx.author.color)
-        if hasattr(secrets, 'support_qr'):
-            embed.set_thumbnail(url=secrets.support_qr)
+        if hasattr(GBsecrets, 'support_qr'):
+            embed.set_thumbnail(url=GBsecrets.support_qr)
         await ctx.respond(embed=embed, ephemeral=True)
 
     # Quelques stats sur le nombre de box à ouvrir pour espérer un certain pourcentage
@@ -182,12 +182,12 @@ class CogDev(commands.Cog):
             await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
             raise ManquePerms("N'est pas dev")
 
-        if not hasattr(secrets, 'stderr'):
+        if not hasattr(GBsecrets, 'stderr'):
             raise Exception("Aucun fichier de log renseigné")
 
-        stderr = discord.File(fp=secrets.stderr, filename=secrets.stderr.split("/")[-1])
+        stderr = discord.File(fp=GBsecrets.stderr, filename=GBsecrets.stderr.split("/")[-1])
         embed = GBEmbed(title=f"Dernières {last_x_lines} lignes de {stderr.filename}", user=ctx.author)
-        embed.description = f"```python\n{tail(secrets.stderr, last_x_lines)}\n```"
+        embed.description = f"```python\n{tail(GBsecrets.stderr, last_x_lines)}\n```"
         await ctx.respond(embed=embed, files=[stderr], ephemeral=True)
 
     @CustomSlash
@@ -198,11 +198,11 @@ class CogDev(commands.Cog):
             await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
             raise ManquePerms("N'est pas dev")
 
-        if not hasattr(secrets, 'stdout'):
+        if not hasattr(GBsecrets, 'stdout'):
             raise Exception("Aucun fichier de sortie renseigné")
 
-        stdout = File(fp=secrets.stdout, filename=secrets.stdout.split("/")[-1])
-        reponse = f"Dernières {last_x_lines} lignes de **{stdout}** :\n{tail(secrets.stdout, last_x_lines)[-1900:]}"
+        stdout = File(fp=GBsecrets.stdout, filename=GBsecrets.stdout.split("/")[-1])
+        reponse = f"Dernières {last_x_lines} lignes de **{stdout}** :\n{tail(GBsecrets.stdout, last_x_lines)[-1900:]}"
         await ctx.respond(f"Voici les logs demandés\n{reponse}", files=[stdout], ephemeral=True)
 
 
@@ -444,7 +444,7 @@ class CogMiniGames(commands.Cog):
     @CustomSlash
     async def qpup(self, ctx: ApplicationContext, nbquestions: int):
         await ctx.defer()
-        self.bot.qpup = DataBase(secrets.qpup)
+        self.bot.qpup = DataBase(GBsecrets.qpup)
         # Boucle sur le nombre de questions à poser
         for loop in range(nbquestions):
             # Tirage au sort d'une question
@@ -685,7 +685,7 @@ class CogCommandesPasSlash(commands.Cog):
 class CogTwitch(commands.Cog):
     def __init__(self, bot: BotTemplate, **kwargs):
         self.bot = bot
-        self.db = DataBase(kwargs.get('db', secrets.annonces_streams))
+        self.db = DataBase(kwargs.get('db', GBsecrets.annonces_streams))
         self.task_annonces.start()
 
     @tasks.loop(minutes=5)

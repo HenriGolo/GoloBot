@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import secrets
+import GBsecrets
 from os import getpid
 import discord
 from discord.ext import tasks
@@ -9,8 +9,8 @@ from privatebot import *  # Réponses custom à certains contenus de messages
 
 class GoloBot(BotTemplate):
     # Récupération des tokens
-    token = DictPasPareil(discord=secrets.token,
-                          twitch=AccessToken(secrets.twitchID, secrets.twitchSecret))
+    token = DictPasPareil(discord=GBsecrets.token,
+                          twitch=AccessToken(GBsecrets.twitchID, GBsecrets.twitchSecret))
 
     # Jeux en cours
     games = dict()
@@ -40,7 +40,7 @@ class GoloBot(BotTemplate):
         self.PR = [pr(self) for pr in PrivateResponse.__subclasses__()]
 
         # Gestion du PID pour kill proprement
-        with open(secrets.pidfile, 'w') as pid:
+        with open(GBsecrets.pidfile, 'w') as pid:
             pid.write(str(getpid()))
 
         # Sera défini dans on_ready
@@ -61,8 +61,8 @@ class GoloBot(BotTemplate):
 
         # Récupération de l'User du dev
         owner = self.owner_id
-        if hasattr(secrets, 'ownerID'):
-            owner = secrets.ownerID
+        if hasattr(GBsecrets, 'ownerID'):
+            owner = GBsecrets.ownerID
         self.dev = await self.fetch_user(owner)
 
         # Message de statut du bot
@@ -151,8 +151,8 @@ class GoloBot(BotTemplate):
                                     embed=embed,
                                     files=files,
                                     view=ViewDM(bot=self))
-                if hasattr(secrets, 'dm'):
-                    with open(secrets.dm, 'a') as fichier:
+                if hasattr(GBsecrets, 'dm'):
+                    with open(GBsecrets.dm, 'a') as fichier:
                         fichier.write(f"\n{currentTime} {message.author.display_name} a envoyé un DM :\n{message.content}\n")
                 await message.add_reaction(self.bools[True])
         else:
