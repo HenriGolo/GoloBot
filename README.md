@@ -18,19 +18,6 @@ Créer le module python avec `make build`.
 `import GoloBot` pour l'utiliser dans vos scripts python.
 
 `make update` ou simplement `make` pour démarrer le bot en tâche de fond.
-Attention, vous devez définir les variables suivantes dans votre environnement virtuel.
-Certaines ne vont pas causer d'erreurs si non renseignées, mais risque de rendre un affichage moins aggréable
 
-| Nom de la variable         | Description                                                                 | Format |
-|----------------------------|-----------------------------------------------------------------------------|--------|
-| token                      | Token de connexion à [Discord](https://discord.com/developers/applications) | string |
-| ownerID                    | Votre identifiant discord                                                   | int    |
-| invite_bot                 | Lien pour inviter votre bot                                                 | string |
-| github                     | Lien vers le repository [GitHub](https://github.com)                        | string |
-| invite_server              | Lien vers votre serveur de support                                          | string |
-| support_qr                 | Pareil mais un lien avec un QR Code                                         | string |
-| path                       | Chemin relatif vers le dossier principal du bot                             | string |
-| stdout, stderr, dm         | Chemins relatifs aux fichiers de log correspondants                         | string |
-| qpup                       | Chemins relatifs vers une DB de question / réponse                          | string |
-| pidfile, restart, bot_path | Chemins relatifs aux fichiers correspondants                                | string |
-| error_msg                  | Message à envoyer en cas d'erreur                                           | string |
+Certains variables sont à définir dans un fichier `secrets.py`. 
+Un fichier d'exemple `secrets_template.py` est fourni.
