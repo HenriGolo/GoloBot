@@ -1,4 +1,7 @@
-import GBsecrets
+try:
+    import GBsecrets
+except ModuleNotFoundError:
+    pass
 import json
 from functools import wraps
 from discord import Forbidden, ui, Interaction, ButtonStyle

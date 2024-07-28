@@ -1,5 +1,8 @@
 # Code Principal
-import GBsecrets
+try:
+    import GBsecrets
+except ModuleNotFoundError:
+    pass
 import asyncio
 import json
 import discord

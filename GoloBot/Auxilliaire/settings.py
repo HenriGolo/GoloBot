@@ -1,4 +1,7 @@
-import GBsecrets
+try:
+    import GBsecrets
+except ModuleNotFoundError:
+    pass
 import json
 import discord
 from . import *
