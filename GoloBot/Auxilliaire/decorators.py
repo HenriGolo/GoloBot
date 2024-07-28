@@ -1,6 +1,6 @@
+import secrets
 import json
 from functools import wraps
-from os import environ
 from discord import Forbidden, ui, Interaction, ButtonStyle
 from discord.ext.commands import slash_command, user_command, message_command, MissingPermissions
 from discord.commands.context import ApplicationContext
@@ -102,8 +102,8 @@ def logger(func):
 
         except (Forbidden, ManquePerms, MissingPermissions):
             await data.action(f"{data.caller.bot.emotes['error']} Manque de permissions", ephemeral=True)
-            if 'stderr' in environ:
-                with open(GBpath + environ['stderr'], 'a') as stderr:
+            if hasattr(secrets, 'stderr'):
+                with open(secrets.stderr, 'a') as stderr:
                     stderr.write(f"\n{start}\n{fail()}\n")
 
         except Exception:
@@ -115,14 +115,14 @@ def logger(func):
             embed_err.title = f"Erreur de {user} avec {func.__name__}"
             view = ViewError(data.caller.bot, full_embed, embed_err)
             await data.action(embed=embed, view=view, ephemeral=True)
-            if 'stderr' in environ:
-                with open(GBpath + environ['stderr'], 'a') as stderr:
+            if hasattr(secrets, 'stderr'):
+                with open(secrets.stderr, 'a') as stderr:
                     stderr.write(f"\n{start}\n{err}\n")
 
         else:
             # Sera exécuté si aucune exception n'est soulevée
-            if 'stdout' in environ:
-                with open(GBpath + environ['stdout'], 'a') as stdout:
+            if hasattr(secrets, 'stdout'):
+                with open(secrets.stdout, 'a') as stdout:
                     stdout.write(f"\n{time} {user} : {cname}.{func.__name__} "
                                  f"dans {gname} avec comme arguments\n\t{signature}\n")
                     stdout.write(f"{func.__name__} terminé en {now(True) - start}s\n")

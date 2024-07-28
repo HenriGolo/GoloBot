@@ -1,4 +1,5 @@
 # Code Principal
+import secrets
 import asyncio
 import json
 import discord
@@ -35,8 +36,11 @@ class CogGeneral(commands.Cog):
         commande = cmds[name]
         # Embed des informations sur la commande
         embed = GBEmbed(title="Aide", description=mention, color=ctx.author.color)
+        url = ''
+        if hasattr(secrets, 'invite_server'):
+            url = secrets.invite_server
         embed.set_author(name=self.bot.support.name,
-                         url=environ.get('invite_server', ''),
+                         url=url,
                          icon_url=self.bot.support.icon.url)
         embed.add_field(name="Description", value=commande.desc, inline=False)
         embed.add_field(name="Permissions Nécessaires", value=', '.join(commande.perms), inline=False)
@@ -45,7 +49,7 @@ class CogGeneral(commands.Cog):
         if not commande.aide == "":
             embed.add_field(name="Aide Supplémentaire", value=commande.aide, inline=False)
         embed.add_field(name="Encore des questions ?",
-                        value=f"Le <:discord:1164579176146288650> [Serveur de Support]({environ.get('invite_server', None)}) est là pour ça",
+                        value=f"Le <:discord:1164579176146288650> [Serveur de Support]({secrets.invite_server}) est là pour ça",
                         inline=False)
         await ctx.respond(embed=embed, view=ViewAide(self.bot), ephemeral=not visible)
 
@@ -54,12 +58,11 @@ class CogGeneral(commands.Cog):
     async def invite(self, ctx):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title=f"Inviter {self.bot.user.display_name}",
-                        description=f"""Tu peux m'inviter avec [ce lien]({environ.get('invite_bot', None)})
-Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci]({environ.get('invite_server', None)})""",
+                        description=f"""Tu peux m'inviter avec [ce lien]({secrets.invite_bot})
+Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci]({secrets.invite_server})""",
                         color=ctx.author.color)
-        support_qrcode = environ.get('support_qr', None)
-        if support_qrcode:
-            embed.set_thumbnail(url=support_qrcode)
+        if hasattr(secrets, 'support_qr'):
+            embed.set_thumbnail(url=secrets.support_qr)
         await ctx.respond(embed=embed, ephemeral=True)
 
     # Renvoie le code source du bot
@@ -67,12 +70,11 @@ Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci
     async def github(self, ctx):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title="Code Source",
-                        description=f"Le code source est disponible sur <:github:1164672088934711398> [Github]({environ.get('github', None)})\n\
-Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({environ.get('invite_server', None)})",
+                        description=f"Le code source est disponible sur <:github:1164672088934711398> [Github]({secrets.github})\n\
+Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({secrets.invite_server})",
                         color=ctx.author.color)
-        support_qrcode = environ.get('support_qr', None)
-        if support_qrcode:
-            embed.set_thumbnail(url=support_qrcode)
+        if hasattr(secrets, 'support_qr'):
+            embed.set_thumbnail(url=secrets.support_qr)
         await ctx.respond(embed=embed, ephemeral=True)
 
     # Quelques stats sur le nombre de box à ouvrir pour espérer un certain pourcentage
@@ -180,12 +182,12 @@ class CogDev(commands.Cog):
             await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
             raise ManquePerms("N'est pas dev")
 
-        if not 'stderr' in environ:
+        if not hasattr(secrets, 'stderr'):
             raise Exception("Aucun fichier de log renseigné")
 
-        stderr = discord.File(fp=environ['stderr'], filename=environ['stderr'].split("/")[-1])
+        stderr = discord.File(fp=secrets.stderr, filename=secrets.stderr.split("/")[-1])
         embed = GBEmbed(title=f"Dernières {last_x_lines} lignes de {stderr.filename}", user=ctx.author)
-        embed.description = f"```python\n{tail(environ['stderr'], last_x_lines)}\n```"
+        embed.description = f"```python\n{tail(secrets.stderr, last_x_lines)}\n```"
         await ctx.respond(embed=embed, files=[stderr], ephemeral=True)
 
     @CustomSlash
@@ -196,11 +198,11 @@ class CogDev(commands.Cog):
             await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
             raise ManquePerms("N'est pas dev")
 
-        if not 'stdout' in environ:
+        if not hasattr(secrets, 'stdout'):
             raise Exception("Aucun fichier de sortie renseigné")
 
-        stdout = File(fp=environ['stdout'], filename=environ['stdout'].split("/")[-1])
-        reponse = f"Dernières {last_x_lines} lignes de **{stdout}** :\n{tail(environ['stdout'], last_x_lines)[-1900:]}"
+        stdout = File(fp=secrets.stdout, filename=secrets.stdout.split("/")[-1])
+        reponse = f"Dernières {last_x_lines} lignes de **{stdout}** :\n{tail(secrets.stdout, last_x_lines)[-1900:]}"
         await ctx.respond(f"Voici les logs demandés\n{reponse}", files=[stdout], ephemeral=True)
 
 
@@ -442,7 +444,7 @@ class CogMiniGames(commands.Cog):
     @CustomSlash
     async def qpup(self, ctx: ApplicationContext, nbquestions: int):
         await ctx.defer()
-        self.bot.qpup = DataBase(GBpath + environ['qpup'])
+        self.bot.qpup = DataBase(secrets.qpup)
         # Boucle sur le nombre de questions à poser
         for loop in range(nbquestions):
             # Tirage au sort d'une question
@@ -683,7 +685,7 @@ class CogCommandesPasSlash(commands.Cog):
 class CogTwitch(commands.Cog):
     def __init__(self, bot: BotTemplate, **kwargs):
         self.bot = bot
-        self.db = DataBase(kwargs.get('db', GBpath + 'Data/annonces_streams.json'))
+        self.db = DataBase(kwargs.get('db', secrets.annonces_streams))
         self.task_annonces.start()
 
     @tasks.loop(minutes=5)

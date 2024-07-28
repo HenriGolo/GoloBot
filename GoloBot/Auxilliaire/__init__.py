@@ -8,15 +8,12 @@ from enum import Enum
 from fast_autocomplete import AutoComplete
 from functools import partial
 import json
-from os import environ
 import pytz
 import re
 from subprocess import check_output
 from traceback import format_exc
 from unicodedata import normalize
 import inspect
-
-GBpath = environ.get('path', '')
 
 url = re.compile(r'https?://[a-zA-Z0-9/.#?-]*')
 all_mentions = re.compile(r'<[@#!&]+[0-9]*>')
@@ -194,7 +191,7 @@ class PrivateResponse:
                  allowed_guilds: list[int] = ()):
         self.bot = bot
         self.triggers = triggers  # Contenu d'un message pour activer la réponse
-        self.message = message  # Réponse à envoyer
+        self.message = message  # Réponse à envœoyer
         self.reac = reac  # Réactions à ajouter
         self.Aguilds = allowed_guilds  # Servers sur lesquels la réponse fonctionne ([] = tous)
 

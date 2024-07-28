@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import secrets
 from os import getpid
 import discord
 from discord.ext import tasks
@@ -8,8 +9,8 @@ from privatebot import *  # Réponses custom à certains contenus de messages
 
 class GoloBot(BotTemplate):
     # Récupération des tokens
-    token = DictPasPareil(discord=environ['token'],
-                          twitch=AccessToken(environ['twitchID'], environ['twitchSecret']))
+    token = DictPasPareil(discord=secrets.token,
+                          twitch=AccessToken(secrets.twitchID, secrets.twitchSecret))
 
     # Jeux en cours
     games = dict()
@@ -39,7 +40,7 @@ class GoloBot(BotTemplate):
         self.PR = [pr(self) for pr in PrivateResponse.__subclasses__()]
 
         # Gestion du PID pour kill proprement
-        with open(environ['pidfile'], 'w') as pid:
+        with open(secrets.pidfile, 'w') as pid:
             pid.write(str(getpid()))
 
         # Sera défini dans on_ready
@@ -59,7 +60,10 @@ class GoloBot(BotTemplate):
         self.startTime = now()
 
         # Récupération de l'User du dev
-        self.dev = await self.fetch_user(environ.get('ownerID', self.owner_id))
+        owner = self.owner_id
+        if hasattr(secrets, 'ownerID'):
+            owner = secrets.ownerID
+        self.dev = await self.fetch_user(owner)
 
         # Message de statut du bot
         activity = discord.Activity(name="GitHub",
@@ -147,8 +151,8 @@ class GoloBot(BotTemplate):
                                     embed=embed,
                                     files=files,
                                     view=ViewDM(bot=self))
-                if 'dm' in environ:
-                    with open(environ['dm'], 'a') as fichier:
+                if hasattr(secrets, 'dm'):
+                    with open(secrets.dm, 'a') as fichier:
                         fichier.write(f"\n{currentTime} {message.author.display_name} a envoyé un DM :\n{message.content}\n")
                 await message.add_reaction(self.bools[True])
         else:
