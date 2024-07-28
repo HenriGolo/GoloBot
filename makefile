@@ -13,13 +13,36 @@ build :
 test : build
 	python3 -m unittest discover --start-directory Tests
 
-clean :
+clean_pip :
 	pip freeze > piplist.txt
 	pip uninstall -r piplist.txt -y
 	rm piplist.txt
 	pip install build
 
-clean_settings :
-	echo {} > logs/settings.json
 
-reset : clean clean_settings build
+secrets :
+	cp secrets_template.py secrets.py
+	cd Main && ln -s ../secrets.py . && cd ..
+	echo "secrets.py à remplir manuellement"
+
+pid :
+	touch discord.pid
+
+logs :
+	touch logs/dev.log
+	touch logs/error.log
+	touch logs/dm.log
+
+data :
+	echo {} > Data/settings.json
+	echo {} > Data/annonces_streams.json
+	echo {} > Data/qpup.json
+
+# À utiliser pour le premier démarrage du bot, crée tous les fichiers dans .gitignore
+setup : secrets pid
+	mkdir logs
+	make logs
+	mkdir Data
+	make data
+
+reset : clean_pip clean_settings build logs data
