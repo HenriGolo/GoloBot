@@ -688,7 +688,10 @@ class CogCommandesPasSlash(commands.Cog):
 class CogTwitch(commands.Cog):
     def __init__(self, bot: BotTemplate, **kwargs):
         self.bot = bot
-        self.db = DataBase(kwargs.get('db', GBsecrets.annonces_streams))
+        path = kwargs.get('db')
+        if path is None:
+            path = GBsecrets.annonces_streams
+        self.db = DataBase(path)
         self.task_annonces.start()
 
     @tasks.loop(minutes=5)
