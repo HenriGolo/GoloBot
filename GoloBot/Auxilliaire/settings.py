@@ -1,4 +1,4 @@
-import secrets
+import GBsecrets
 import json
 import discord
 from . import *
@@ -83,7 +83,7 @@ class Settings:
 
     def __init__(self, guild, **kwargs):
         self.guild = guild
-        self.path = kwargs.get('path', secrets.settings)
+        self.path = kwargs.get('path', GBsecrets.settings)
         self.json_data = None
         self.config = None
         self.reload()
