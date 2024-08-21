@@ -523,7 +523,7 @@ def now(ms: bool = False) -> datetime:
     time = datetime.now()
     time = pytz.timezone('Europe/Paris').localize(time)
     if not ms:
-        time.replace(microsecond=0)
+        time = time.replace(microsecond=0)
     return time
 
 
