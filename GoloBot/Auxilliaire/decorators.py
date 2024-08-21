@@ -105,7 +105,7 @@ def logger(func):
 
         except (Forbidden, ManquePerms, MissingPermissions):
             await data.action(f"{data.caller.bot.emotes['error']} Manque de permissions", ephemeral=True)
-            if hasattr(GBsecrets, 'stderr'):
+            if hasattr(GBsecrets, 'stderr') and '.' in GBsecrets.stderr:
                 with open(GBsecrets.stderr, 'a') as stderr:
                     stderr.write(f"\n{start}\n{fail()}\n")
 
@@ -118,13 +118,13 @@ def logger(func):
             embed_err.title = f"Erreur de {user} avec {func.__name__}"
             view = ViewError(data.caller.bot, full_embed, embed_err)
             await data.action(embed=embed, view=view, ephemeral=True)
-            if hasattr(GBsecrets, 'stderr'):
+            if hasattr(GBsecrets, 'stderr') and '.' in GBsecrets.stderr:
                 with open(GBsecrets.stderr, 'a') as stderr:
                     stderr.write(f"\n{start}\n{err}\n")
 
         else:
             # Sera exécuté si aucune exception n'est soulevée
-            if hasattr(GBsecrets, 'stdout'):
+            if hasattr(GBsecrets, 'stdout') and '.' in GBsecrets.stdout:
                 with open(GBsecrets.stdout, 'a') as stdout:
                     stdout.write(f"\n{time} {user} : {cname}.{func.__name__} "
                                  f"dans {gname} avec comme arguments\n\t{signature}\n")
