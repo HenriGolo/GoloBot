@@ -25,6 +25,17 @@ emoji = re.compile(r'<a?:[a-zA-Z0-9]*:[0-9]*>')
 timestamp = re.compile(r'<t:[0-9]*:[RDdTtFf]>')
 
 
+class Dummy:
+    def __init__(self, *args, **kwargs):
+        default = tuple(k for k, v in object.__dict__.items() if inspect.isfunction(v))
+        for dum in args + default:
+            if dum in []:
+                continue
+            kwargs[dum] = kwargs.get(dum, lambda *a, **kwa: None)
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+
 # Class à hériter pour être compatible avec la serialisation JSON
 # définie par GBEncoder et GBDecoder
 class Storable:
