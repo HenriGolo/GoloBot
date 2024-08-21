@@ -29,11 +29,14 @@ class Dummy:
     def __init__(self, *args, **kwargs):
         default = tuple(k for k, v in object.__dict__.items() if inspect.isfunction(v))
         for dum in args + default:
-            if dum in []:
+            if dum in ('__getattr__',):
                 continue
             kwargs[dum] = kwargs.get(dum, lambda *a, **kwa: None)
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+    def __getattr__(self, item):
+        return item
 
 
 # Class à hériter pour être compatible avec la serialisation JSON

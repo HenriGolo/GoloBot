@@ -285,9 +285,13 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
             salon = ctx.channel
         await ctx.defer(ephemeral=True)
         hist = await salon.history(limit=nombre).flatten()
+        logs = Dummy()
         # messages privés
         if salon.type == discord.ChannelType.private:
-            logs = open(GBsecrets.path + 'logs/dm.log')
+            try:
+                logs = open(GBsecrets.path + 'logs/dm.log')
+            except:
+                pass
 
         # Manque de permissions
         elif not ctx.channel.permissions_for(ctx.author).manage_messages:
@@ -296,7 +300,10 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
         # situation normale
         else:
-            logs = open(GBsecrets.path + f"logs/{ctx.guild.name.replace(' ', '_')}.log", 'a')
+            try:
+                logs = open(GBsecrets.path + f"logs/{ctx.guild.name.replace(' ', '_')}.log", 'a')
+            except:
+                pass
 
         await ctx.respond(f"Début du clear de {salon.mention}", ephemeral=True)
         cpt = 0
