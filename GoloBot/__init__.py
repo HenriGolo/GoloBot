@@ -284,42 +284,33 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         if salon == base_value:
             salon = ctx.channel
         await ctx.defer(ephemeral=True)
-        if ctx.channel.type == discord.ChannelType.private:
-            with open(GBpath + "logs/logs_dm.txt", "a") as logs:
-                await ctx.respond("Début du clear", ephemeral=True, delete_after=2)
-                hist = ctx.channel.history(limit=nombre).flatten()
-                for msg in await hist:
-                    try:
-                        await msg.delete()
-                        logs.write(f"""
-{now()} message de {msg.author} supprimé dans #{salon.name} :
-    {msg.content}
-""")
-                    # Erreur la plus probable : message de l'humain, pas du bot
-                    except:
-                        pass
-
-                await ctx.respond(f"Mes derniers messages ont été clear", ephemeral=True)
-                logs.write(f"\n{now()} Les derniers messages envoyés à {ctx.author.display_name} on été effacés\n")
-            return
+        hist = await salon.history(limit=nombre).flatten()
+        # messages privés
+        if salon.type == discord.ChannelType.private:
+            logs = open(GBsecrets.path + 'logs/dm.log')
 
         # Manque de permissions
-        if not ctx.channel.permissions_for(ctx.author).manage_messages:
+        elif not ctx.channel.permissions_for(ctx.author).manage_messages:
             await ctx.respond(f"Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
             raise ManquePerms("Manque de permissions")
 
+        # situation normale
+        else:
+            logs = open(GBsecrets.path + f"logs/{ctx.guild.name.replace(' ', '_')}.log", 'a')
+
         await ctx.respond(f"Début du clear de {salon.mention}", ephemeral=True)
         cpt = 0
-        with open(GBpath + f'logs/logs_{ctx.guild.name}.txt', 'a') as logs:
-            hist = await salon.history(limit=nombre).flatten()
-            for msg in hist:
-                if user == base_value or user == msg.author:
+        for msg in hist:
+            if user == base_value or user == msg.author:
+                try:
                     await msg.delete()
-                    logs.write(f"""
+                except:
+                    continue
+                logs.write(f"""
 {now()} message de {msg.author} supprimé dans #{salon.name} :
     {msg.content}
 """)
-                    cpt += 1
+                cpt += 1
 
         await ctx.respond(f"{salon.mention} a été clear de {cpt} messages", ephemeral=True, delete_after=10)
 
