@@ -1,13 +1,13 @@
+from . import *
 try:
     import GBsecrets
 except ModuleNotFoundError:
-    pass
+    GBsecrets = Dummy()
 import json
 from functools import wraps
 from discord import Forbidden, ui, Interaction, ButtonStyle
 from discord.ext.commands import slash_command, user_command, message_command, MissingPermissions
 from discord.commands.context import ApplicationContext
-from . import *
 from .doc import cmds
 from ..template import *
 

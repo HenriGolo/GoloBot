@@ -1,10 +1,10 @@
+from . import *
 try:
     import GBsecrets
 except ModuleNotFoundError:
-    pass
+    GBsecrets = Dummy()
 import json
 import discord
-from . import *
 from .converters import ANSI
 
 guild_to_settings = dict()
