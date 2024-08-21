@@ -31,7 +31,7 @@ class Dummy:
         for dum in args + default:
             if dum in ('__getattr__',):
                 continue
-            kwargs[dum] = kwargs.get(dum, lambda *a, **kwa: None)
+            kwargs[dum] = kwargs.get(dum, lambda *a, **kwa: self)
         for key, value in kwargs.items():
             setattr(self, key, value)
 
