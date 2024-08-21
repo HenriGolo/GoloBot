@@ -27,7 +27,7 @@ timestamp = re.compile(r'<t:[0-9]*:[RDdTtFf]>')
 
 class Dummy:
     def __init__(self, *args, **kwargs):
-        default = tuple(k for k, v in object.__dict__.items() if inspect.isfunction(v))
+        default = tuple(k for k, v in object.__dict__.items() if callable(v))
         for dum in args + default:
             if dum in ('__getattr__',):
                 continue
@@ -37,6 +37,18 @@ class Dummy:
 
     def __getattr__(self, item):
         return item
+
+    def __add__(self, other):
+        try:
+            return type(other)()
+        except:
+            return
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        return
 
 
 # Class à hériter pour être compatible avec la serialisation JSON
