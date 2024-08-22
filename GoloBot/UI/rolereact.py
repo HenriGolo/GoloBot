@@ -1,3 +1,5 @@
+import discord
+
 from .base_imports import *
 from discord import Role
 
@@ -14,10 +16,9 @@ class SelectRoleReact(ui.Select):
         super().__init__(placeholder="Choisir un rôle", min_values=1, options=choix, custom_id="role_react")
         self.bot = bot
 
-    # Ce n'est pas un modal, mais c'est le même format d'arguments
     @logger
     async def callback(self, interaction: Interaction):
-        user = interaction.user
+        member = interaction.user
         msg = interaction.message
         guild = interaction.guild
         if self.values[0] == "Actualiser":
@@ -25,12 +26,12 @@ class SelectRoleReact(ui.Select):
             return
 
         for role in self.roles:
-            if self.values[0] == role.name:
-                if role in user.roles:
-                    await user.remove_roles(role)
+            if self.values[0].endswith(role.name):
+                if role.id in [r.id for r in member.roles]:
+                    await member.remove_roles(role)
                     await interaction.respond(content=f"Rôle supprimé : {role.mention}", ephemeral=True)
                 else:
-                    await user.add_roles(role)
+                    await member.add_roles(role)
                     await interaction.respond(content=f"Rôle ajouté : {role.mention}", ephemeral=True)
         await msg.edit(view=ViewRoleReact(self.bot, self.roles))
 
