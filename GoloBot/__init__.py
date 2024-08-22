@@ -269,9 +269,9 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         roles = rolesInStr(roles, ctx.guild)
         view = ViewRoleReact(self.bot, roles=roles)
         rolesm = [e.mention for e in roles]
-        if not message == base_value:
+        if isinstance(message, discord.Message):
             await message.delete()
-            await ctx.respond(content=msg.content, view=view)
+            await ctx.respond(content=message.content, view=view)
         else:
             content = "Choisis les rôles que tu veux récupérer parmi\n- {}".format('\n- '.join(rolesm))
             if not texte == "":
