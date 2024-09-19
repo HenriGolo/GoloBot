@@ -51,6 +51,9 @@ class Dummy:
     def __exit__(self, exc_type, exc_val, exc_tb):
         return
 
+    def __iter__(self):
+        yield self
+
 
 # Class à hériter pour être compatible avec la serialisation JSON
 # définie par GBEncoder et GBDecoder
