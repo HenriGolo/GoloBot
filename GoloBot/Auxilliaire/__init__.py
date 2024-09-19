@@ -40,10 +40,7 @@ class Dummy:
         return self
 
     def __add__(self, other):
-        try:
-            return type(other)()
-        except:
-            return
+        return other
 
     def __enter__(self):
         return self
