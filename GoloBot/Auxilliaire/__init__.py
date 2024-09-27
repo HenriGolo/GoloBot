@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import discord
 from discord.ext import tasks
 from enum import Enum
-from fast_autocomplete import AutoComplete
+import difflib
 from functools import partial
 import json
 import pytz
@@ -272,25 +272,6 @@ class PrivateResponse:
 
             return True
         return False
-
-
-class Completer(AutoComplete):
-    def search(self, word: str, max_cost=None, size=1) -> list[list[str]]:
-        if max_cost is None:
-            max_cost = len(word)
-        return super().search(word=word, max_cost=max_cost, size=size)
-
-    @staticmethod
-    def from_db(db):
-        words = dict()
-        synonyms = dict()
-
-        for data in db:
-            words[data[0].lower()] = dict()
-            if not data[1] == ['']:
-                synonyms[data[0].lower()] = [e.lower() for e in data[1]]
-
-        return Completer(words=words, synonyms=synonyms)
 
 
 # Stocke un set comme une liste

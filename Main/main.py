@@ -15,11 +15,6 @@ class GoloBot(BotTemplate):
     # Jeux en cours
     games = dict()
 
-    # Plus de 25 commandes, seul moyen d'avoir une forme d'autocomplétion
-    words = {cmd: {} for cmd in cmds}
-    synonyms = {cmd: {' '.join(cmd.split('_'))} for cmd in cmds}
-    commands_names = Completer(words=words, synonyms=synonyms)
-
     # Lettres de l'alphabet en caractères Unicode, utilisable comme emotes
     alphabet = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲',
                 '🇳', '🇴', '🇵', '🇶', '🇷', '🇸', '🇹', '🇺', '🇻', '🇼', '🇽', '🇾', '🇿']

@@ -5,9 +5,6 @@ from .Auxilliaire import *
 class BotTemplate(discord.AutoShardedBot):
     token: DictPasPareil
     games: dict
-    words: dict[str: set]
-    synonyms: dict[str: set[str]]
-    commands_names: Completer
     alphabet = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲',
                 '🇳', '🇴', '🇵', '🇶', '🇷', '🇸', '🇹', '🇺', '🇻', '🇼', '🇽', '🇾', '🇿']
     PR: list[PrivateResponse]
