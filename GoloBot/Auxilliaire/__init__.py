@@ -161,6 +161,25 @@ class GButton(discord.ui.Button):
         self.bot = bot
 
 
+class ButtonModal(GButton):
+    def __init__(self, bot, modal, *args, **kwargs):
+        super().__init__(bot, *args, **kwargs)
+        self.modal = modal
+
+    async def callback(self, interaction):
+        await interaction.response.send_modal(self.modal)
+
+
+class GBModal(discord.ui.Modal):
+    def __init__(self, bot, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.bot = bot
+
+    def gen_button(self, *args, **kwargs):
+        kwargs['label'] = kwargs.get('label', self.title)
+        return ButtonModal(self.bot, self, *args, **kwargs)
+
+
 class Trigger:
     def __init__(self, trigger: str, *,
                  rmurl: bool = True, rmention: bool = True,
