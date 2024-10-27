@@ -155,7 +155,7 @@ class GBView(discord.ui.View):
 
 class GButton(discord.ui.Button):
     def __init__(self, bot, *args, **kwargs):
-        kwargs['label'] = kwargs.get('label', "Gneu ! Bouton !")
+        kwargs['label'] = kwargs.get('label', "Gneu ! Bouton !").title()
         kwargs['custom_id'] = kwargs.get('custom_id', kwargs['label'].lower().replace(' ', '_'))
         super().__init__(*args, **kwargs)
         self.bot = bot
