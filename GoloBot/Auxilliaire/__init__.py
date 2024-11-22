@@ -373,16 +373,16 @@ class GBDecoder(json.JSONDecoder):
     def instanciate(cls, path: list[str], _from=None):
         if not path:
             return _from
-        try:
+        if path[-1] in __builtins__:
             return __builtins__[path[-1]]
-        except:
-            try:
-                return globals()[path[-1]]
-            except KeyError:
-                if _from is None:
-                    _from = __import__(path[0])
-                    path = path[1:]
-                return cls.instanciate(path[1:], getattr(_from, path[0]))
+        if path[-1] in globals():
+            return globals()[path[-1]]
+        if path[-1] in locals():
+            return locals()[path[-1]]
+        if _from is None:
+            _from = __import__(path[0])
+            path = path[1:]
+        return cls.instanciate(path[1:], getattr(_from, path[0]))
 
 
 class DataBase(Storable):
