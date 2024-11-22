@@ -261,11 +261,14 @@ class PrivateResponse:
 
     @staticmethod
     async def message_predicate(msg: discord.Message) -> bool:
-        return not msg.channel.is_news() and hasattr(msg, 'reply') and inspect.iscoroutinefunction(msg.reply)
+        return (not msg.channel.is_news()
+                and hasattr(msg, 'reply')
+                and inspect.iscoroutinefunction(msg.reply))
 
     @staticmethod
     async def reac_predicate(msg: discord.Message) -> bool:
-        return hasattr(msg, 'add_reaction') and inspect.iscoroutinefunction(msg.add_reaction)
+        return (hasattr(msg, 'add_reaction')
+                and inspect.iscoroutinefunction(msg.add_reaction))
 
     async def reply(self, msg: discord.Message):
         if self.message.strip():
