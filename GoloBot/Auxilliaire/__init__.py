@@ -15,7 +15,7 @@ from traceback import format_exc
 from unicodedata import normalize
 import inspect
 
-url = re.compile("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
+url = re.compile(r'https?://(?:[a-zA-Z0-9$-_@.&+!*(),]|%[0-9a-fA-F]{2})+')
 all_mentions = re.compile(r'<[@#!&]+[0-9]*>')
 user_mentions = re.compile(r'<@[0-9]*>')
 role_mentions = re.compile(r'<@&[0-9]*>')
