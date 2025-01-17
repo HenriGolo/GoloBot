@@ -30,7 +30,8 @@ class CogGeneral(commands.Cog):
     async def aide(self, ctx: ApplicationContext, commande: str, visible: bool):
         await ctx.defer(ephemeral=not visible)
         if not commande in cmds:
-            command = difflib.get_close_matches(commande)[0]
+            return await ctx.respond(f"Commande '**{commande}**' inconnue. Vérifiez l'orthographe.",
+                                     ephemeral=True)
         # Nom, ID et mention de la commande concernée
         commande = self.bot.get_application_command(commande)
         name = commande.qualified_name
