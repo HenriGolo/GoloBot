@@ -404,13 +404,13 @@ class DataBase(Storable):
         return self
 
     def write(self, **kwargs):
+        self.read()  # évite certains problèmes de parallélisation
         self.writing = True
         kwargs['cls'] = kwargs.get('cls', GBEncoder)
         kwargs['indent'] = kwargs.get('indent', 4)
         with open(self.path, 'w') as file:
             json.dump(self.data, file, **kwargs)
         self.writing = False
-        self.read()  # évite certains problèmes de parallélisation
 
     def items(self):
         return self.data.items()
