@@ -222,7 +222,7 @@ class Trigger:
         string = self.remove_pattern(emoji, string)
         pattern = str(self)
         if self.complet:
-            sep = "[ .\?!,;/|]"
+            sep = r"[ .\?!,;/|]"
             pattern = sep + pattern + sep
             string = ' ' + string + ' '
         pattern = re.compile(pattern)
