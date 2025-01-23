@@ -450,7 +450,8 @@ class DataBase(Storable):
         return f"{type(self.data)} de taille {len(self.data)} stocké dans {self.path}"
 
     def __setitem__(self, key, value):
-        self.read()  # Actualise la DB
+        if self.auto_update:
+            self.read()  # Actualise la DB
         self.data[key] = value
         if self.auto_update:
             self.write()
