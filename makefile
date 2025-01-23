@@ -1,3 +1,5 @@
+.NOTPARALLEL: update
+
 update : pull build start
 
 start :
