@@ -646,6 +646,7 @@ def flatten(parse):
 
     if isinstance(parse, str):
         yield parse
+        return  # fin de la récursion
 
     try:
         for elt in parse:
