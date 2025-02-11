@@ -1,28 +1,28 @@
+def produit(*args, init=1):
+    res = init
+    for i in args:
+        res *= i
+    return res
+
+
 def factorielle(n):
     if n < 0:
         raise Exception
-    if n == 0 or n == 1:
+    if n in (0, 1):
         return 1
     return n * factorielle(n - 1)
 
 
+# n! / (n-k)!
 def arrangement(k, n):
-    if k > n:
-        return 0
-    a = 1
-    for i in range(n, k, -1):
-        a *= i
-    return a
+    return produit(*[n - i for i in range(k)])
 
 
+# n! / (k! * (n-k)!)
 def parmi(k, n):
-    if n - k < k:
-        return parmi(n - k, n)
-    if k == 0:
-        return 1
-    if k == 1:
+    if 1 in [k, n-k]:
         return n
-    return arrangement(k, n) // factorielle(k)
+    return parmi(k-1, n-1) + parmi(k, n-1)
 
 
 # VAR uniforme sur [|1,n|]
