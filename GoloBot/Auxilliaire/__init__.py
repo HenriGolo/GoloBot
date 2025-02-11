@@ -649,8 +649,7 @@ def flatten(parse):
 
     try:
         for elt in parse:
-            for e in flatten(elt):
-                yield e
+            yield from flatten(elt)
     except:
         yield parse
 
