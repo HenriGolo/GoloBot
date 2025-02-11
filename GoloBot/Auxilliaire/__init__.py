@@ -640,7 +640,7 @@ def convert_timezone(dt: datetime, tz1, tz2) -> datetime:
     return dt
 
 
-def get_all(parse):
+def flatten(parse):
     if isinstance(parse, dict):
         parse = parse.items()
 
@@ -649,7 +649,7 @@ def get_all(parse):
 
     try:
         for elt in parse:
-            for e in get_all(elt):
+            for e in flatten(elt):
                 yield e
     except:
         yield parse
