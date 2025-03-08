@@ -12,8 +12,6 @@ Me contacter → envoyer un message privé au bot ou rejoindre le [Serveur de Su
 
 **Nécessite un environnement virtuel**
 
-*Makefile* : ne pas exécuter avec `make -j`
-
 `make setup` la première fois pour créer tous les fichiers.
 
 Créer le module python avec `make build`.
