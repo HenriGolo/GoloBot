@@ -519,28 +519,29 @@ class CogMusic(commands.Cog):
     @discord.guild_only()
     async def play(self, ctx: ApplicationContext, search: str):
         await ctx.defer(invisible=False)
-        audiocontroller = guild_to_audiocontroller[ctx.guild.id]
-        if await is_connected(ctx) is None:
-            if not await audiocontroller.uconnect(ctx):
-                return
-        if not await play_check(ctx):
-            return
-
-        # reset timer
-        audiocontroller.timer.cancel()
-        audiocontroller.timer = Timer(audiocontroller.timeout_handler)
-        song = await audiocontroller.process_song(search)
-        if song is None:
-            return await ctx.respond("Échec de récupération de la vidéo.")
-
-        if song.origin == Origins.Default:
-            if audiocontroller.current_song is not None and len(audiocontroller.playlist.playque) == 0:
-                await ctx.respond(embed=song.info.format_output("En cours", color=ctx.author.color))
-            else:
-                await ctx.respond(embed=song.info.format_output("Ajouté à la playlist", color=ctx.author.color))
-
-        elif song.origin == Origins.Playlist:
-            await ctx.invoke(self.playlist)
+        return await ctx.respond("C'est cassé ...", ephemeral=True, delete_after=3)
+        # audiocontroller = guild_to_audiocontroller[ctx.guild.id]
+        # if await is_connected(ctx) is None:
+        #     if not await audiocontroller.uconnect(ctx):
+        #         return
+        # if not await play_check(ctx):
+        #     return
+        #
+        # # reset timer
+        # audiocontroller.timer.cancel()
+        # audiocontroller.timer = Timer(audiocontroller.timeout_handler)
+        # song = await audiocontroller.process_song(search)
+        # if song is None:
+        #     return await ctx.respond("Échec de récupération de la vidéo.")
+        #
+        # if song.origin == Origins.Default:
+        #     if audiocontroller.current_song is not None and len(audiocontroller.playlist.playque) == 0:
+        #         await ctx.respond(embed=song.info.format_output("En cours", color=ctx.author.color))
+        #     else:
+        #         await ctx.respond(embed=song.info.format_output("Ajouté à la playlist", color=ctx.author.color))
+        #
+        # elif song.origin == Origins.Playlist:
+        #     await ctx.invoke(self.playlist)
 
     @CustomSlash
     @discord.guild_only()
