@@ -174,7 +174,7 @@ class AudioController:
             r = downloader.extract_info(track, download=False)
 
         if r is None:
-            return
+            return None
 
         if r.get('thumbnails') is not None:
             thumbnail = r.get('thumbnails')[len(r.get('thumbnails')) - 1]['url']
@@ -232,6 +232,7 @@ class AudioController:
             song.info.duration = r.get('duration')
             song.info.webpage_url = r.get('webpage_url')
             song.info.thumbnail = r.get('thumbnails')[0]['url']
+            return None
 
         loop = asyncio.get_event_loop()
         executor = concurrent.futures.ThreadPoolExecutor(
@@ -266,7 +267,7 @@ class AudioController:
         self.timer.cancel()
         self.timer = Timer(self.timeout_handler)
         if len(self.playlist.playhistory) == 0:
-            return
+            return None
 
         prev_song = self.playlist.prev(self.current_song)
         if not self.guild.voice_client.is_playing() and not self.guild.voice_client.is_paused():
@@ -276,6 +277,7 @@ class AudioController:
             await self.play_song(prev_song)
         else:
             self.guild.voice_client.stop()
+        return None
 
     async def timeout_handler(self):
         if self.guild.voice_client is not None and self.guild.voice_client.is_playing():
@@ -295,6 +297,7 @@ class AudioController:
             return True
         else:
             await ctx.respond("Le bot est déjà dans un autre vocal", ephemeral=True)
+            return None
 
     async def udisconnect(self):
         await self.stop_player()
