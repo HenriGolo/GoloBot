@@ -106,7 +106,8 @@ class GoloBot(BotTemplate):
                 txt += f' - {inv.url}'
             file.write(f"{txt}\n")
 
-    async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
+    async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState,
+                                    after: discord.VoiceState):
         # On ne tient pas compte des join / disconnect des bots
         if member.bot:
             return
@@ -124,12 +125,12 @@ class GoloBot(BotTemplate):
 
     async def on_message(self, message: discord.Message):
         currentTime = now()
+        if message.guild is not None and not message.guild.id in guild_to_settings:
+            await register(self, message.guild)
         # Message d'un bot / webhook
         if message.author.bot:
             if message.guild is None:
                 return
-            if not message.guild.id in guild_to_settings:
-                guild_to_settings[message.guild.id] = Settings(guild=message.guild)
             if message.reference is None:
                 if guild_to_settings[message.guild.id].config["autopublish bots"]:
                     try:
@@ -150,11 +151,10 @@ class GoloBot(BotTemplate):
                                     view=ViewDM(bot=self))
                 if hasattr(GBsecrets, 'dm'):
                     with open(GBsecrets.dm, 'a') as fichier:
-                        fichier.write(f"\n{currentTime} {message.author.display_name} a envoyé un DM :\n{message.content}\n")
+                        fichier.write(
+                            f"\n{currentTime} {message.author.display_name} a envoyé un DM :\n{message.content}\n")
                 await message.add_reaction(self.bools[True])
         else:
-            if not message.guild.id in guild_to_settings:
-                guild_to_settings[message.guild.id] = Settings(guild=message.guild)
             if guild_to_settings[message.guild.id].config["reponses custom"]:
                 # S'obtient avec un '@silent ' devant le message
                 if not message.flags.suppress_notifications:
