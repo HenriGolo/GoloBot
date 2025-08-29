@@ -278,7 +278,7 @@ class AudioController:
             self.guild.voice_client.stop()
 
     async def timeout_handler(self):
-        if self.guild.voice_client.is_playing():
+        if self.guild.voice_client is not None and self.guild.voice_client.is_playing():
             self.timer = Timer(self.timeout_handler)  # restart timer
             return
 
