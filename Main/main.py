@@ -124,12 +124,12 @@ class GoloBot(BotTemplate):
 
     async def on_message(self, message: discord.Message):
         currentTime = now()
-        if not message.guild.id in guild_to_settings:
-            guild_to_settings[message.guild.id] = Settings(guild=message.guild)
         # Message d'un bot / webhook
         if message.author.bot:
             if message.guild is None:
                 return
+            if not message.guild.id in guild_to_settings:
+                guild_to_settings[message.guild.id] = Settings(guild=message.guild)
             if message.reference is None:
                 if guild_to_settings[message.guild.id].config["autopublish bots"]:
                     try:
@@ -153,6 +153,8 @@ class GoloBot(BotTemplate):
                         fichier.write(f"\n{currentTime} {message.author.display_name} a envoyé un DM :\n{message.content}\n")
                 await message.add_reaction(self.bools[True])
         else:
+            if not message.guild.id in guild_to_settings:
+                guild_to_settings[message.guild.id] = Settings(guild=message.guild)
             if guild_to_settings[message.guild.id].config["reponses custom"]:
                 # S'obtient avec un '@silent ' devant le message
                 if not message.flags.suppress_notifications:
