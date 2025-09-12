@@ -515,6 +515,10 @@ class CogMusic(commands.Cog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
 
+    # Désactive la cog
+    def __bool__(self):
+        return False
+
     @CustomSlash
     @discord.guild_only()
     async def play(self, ctx: ApplicationContext, search: str):

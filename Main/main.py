@@ -161,6 +161,10 @@ class GoloBot(BotTemplate):
                     for pr in self.PR:
                         await pr.do_stuff(message)
 
+    def add_cog(self, cog: commands.Cog):
+        if cog:
+            super().add_cog(cog)
+
 
 # Création du Bot
 intents = discord.Intents.all()
