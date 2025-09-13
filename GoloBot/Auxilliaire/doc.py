@@ -246,7 +246,7 @@ Utilisation avec le bot : <couleur>, <bgcouleur> ou <reset>.""",
            [Arg("edit", "ID du message à modifier.", default=base_value)])
 
 DocCommand("play",
-           "Joue une musiqe / playlist à partir d'une recherche / url.",
+           "Joue une musique / playlist à partir d'une recherche / url.",
            ['Aucune'],
            "Sources supportées : YouTube, Twitter, SoundCloud, BandCamp",
            [Arg("search", "Mots clé ou URL de la vidéo / playlist à jouer.")])
