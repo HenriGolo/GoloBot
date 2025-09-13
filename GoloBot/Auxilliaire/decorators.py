@@ -1,4 +1,5 @@
 from . import *
+
 try:
     import GBsecrets
 except ModuleNotFoundError:
@@ -144,12 +145,17 @@ def apply_list(decorators):
     return wrapper
 
 
-def CustomSlash(func):
-    name = func.__name__.strip('_')
-    func = logger(func)
-    func = apply_list(cmds[name].options)(func)
-    func = slash_command(name=name, description=cmds[name].desc)(func)
-    return func
+def CustomSlash(*, activated: bool = True):
+    def wrapper(func):
+        if activated:
+            name = func.__name__.strip('_')
+            func = logger(func)
+            func = apply_list(cmds[name].options)(func)
+            func = slash_command(name=name, description=cmds[name].desc)(func)
+            return func
+        return None
+
+    return wrapper
 
 
 def CustomUser(func):
