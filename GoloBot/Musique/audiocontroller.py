@@ -256,7 +256,8 @@ class AudioController:
     async def stop_player(self):
         """Stops the player and removes all songs from the queue"""
         if self.guild.voice_client is None or (
-                not self.guild.voice_client.is_paused() and not self.guild.voice_client.is_playing()):
+                not self.guild.voice_client.is_paused()
+                and not self.guild.voice_client.is_playing()):
             return
         self.playlist.next(self.current_song)
         self.clear_queue()
@@ -301,7 +302,8 @@ class AudioController:
 
     async def udisconnect(self):
         await self.stop_player()
-        await self.guild.voice_client.disconnect(force=True)
+        if self.guild.voice_client:
+            await self.guild.voice_client.disconnect(force=True)
 
     def clear_queue(self):
         self.playlist.playque.clear()
