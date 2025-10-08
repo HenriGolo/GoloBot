@@ -63,18 +63,33 @@ class Storable:
 
 
 class DictPasPareil:
-    def __init__(self, **kwargs):
+    def __init__(self, *, casse: bool = True, **kwargs):
+        self.casse = casse
+        self.data = dict()
         for key, value in kwargs.items():
-            setattr(self, key, value)
+            self.data[self(key)] = value
 
     def __add__(self, other):
         if isinstance(other, self.__class__):
-            kwargs = self.__dict__
-            for key, value in other.__dict__.items():
-                if not key in kwargs:
-                    kwargs[key] = value
+            kwargs = self.data
+            kwargs['casse'] = self.casse and other.casse
+            for key, value in other.data.items():
+                if not self(key) in kwargs:
+                    kwargs[self(key)] = value
             return self.__class__(**kwargs)
         raise Exception(f"{type(other)} n'est pas un type valide pour une addition avec {type(self)}")
+
+    def get(self, key, default=None):
+        return self.data.get(self(key), default)
+
+    def __call__(self, key: str) -> str:
+        return key.lower() if not self.casse else key
+
+    def __getattr__(self, item):
+        return self.get(item)
+
+    def __contains__(self, item):
+        return item in self.data
 
 
 class Cycle(list):
