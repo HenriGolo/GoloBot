@@ -14,3 +14,6 @@ deploy
 *.pid
 GBsecrets.py
 privatebot.py
+.env
+.env.*
+!.env.example
