@@ -276,7 +276,7 @@ class PrivateResponse:
 
     @staticmethod
     async def message_predicate(msg: discord.Message) -> bool:
-        return (hasattr(mes.channel, 'is_news') and not msg.channel.is_news()
+        return (hasattr(msg.channel, 'is_news') and not msg.channel.is_news()
                 and hasattr(msg, 'reply') and inspect.iscoroutinefunction(msg.reply))
 
     @staticmethod
