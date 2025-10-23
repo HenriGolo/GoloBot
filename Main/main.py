@@ -121,7 +121,10 @@ class GoloBot(BotTemplate):
                     if member.id == self.user.id:
                         await guild_to_audiocontroller[member.guild.id].stop_player()
                     # Déconnexion
-                    await member.move_to(None)
+                    try:
+                        await member.move_to(None)
+                    except:
+                        pass
 
     async def on_message(self, message: discord.Message):
         currentTime = now()
