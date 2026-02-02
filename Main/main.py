@@ -162,7 +162,10 @@ class GoloBot(BotTemplate):
                 # S'obtient avec un '@silent ' devant le message
                 if not message.flags.suppress_notifications:
                     for pr in self.PR:
-                        await pr.do_stuff(message)
+                        try:
+                            await pr.do_stuff(message)
+                        except:
+                            pass
 
 
 # Création du Bot
