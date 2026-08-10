@@ -1,4 +1,4 @@
-from .base_imports import *
+from GoloBot.UI.base_imports import *
 
 
 # Transmission d'un message privé par le bot

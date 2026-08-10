@@ -1,6 +1,7 @@
-from .base_imports import *
-from ..Auxilliaire.doc import base_value
 from discord import Color, Colour
+
+from GoloBot.Auxilliaire.doc import base_value
+from GoloBot.UI.base_imports import *
 
 
 # Création d'Embed
@@ -159,7 +160,8 @@ class SelectFieldEmbed(ui.Select):
         if index is None:
             modal = ModalEditEmbed(self.bot, self.embeds, self.embed, self.msg_id, title="Édition de l'Embed")
         else:
-            modal = ModalEditEmbedFields(self.bot, self.embeds, self.embed, index, self.msg_id, title="Édition de Champ")
+            modal = ModalEditEmbedFields(self.bot, self.embeds, self.embed, index, self.msg_id,
+                                         title="Édition de Champ")
         await interaction.response.send_modal(modal)
 
 

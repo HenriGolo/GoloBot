@@ -1,7 +1,6 @@
-import discord
-
-from .base_imports import *
 from discord import Role
+
+from GoloBot.UI.base_imports import *
 
 
 # Menu déroulant pour le role react

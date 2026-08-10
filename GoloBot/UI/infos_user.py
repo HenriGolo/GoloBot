@@ -1,5 +1,4 @@
-from .base_imports import *
-from discord import Permissions
+from GoloBot.UI.base_imports import *
 
 
 class BoutonInfos(GButton):
