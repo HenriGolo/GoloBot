@@ -40,7 +40,7 @@ def generate_autoaddedbot_class(cogclass: type = AutoAddedCog):
     class autoaddbot(discord.Bot):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
-            plugin_path = Path(config['PATH'])
+            plugin_path = Path.cwd().resolve()
             self.add_module(plugin_path)
 
         def add_module(self, module_path):
