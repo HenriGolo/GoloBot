@@ -17,3 +17,4 @@ privatebot.py
 .env
 .env.*
 !.env.example
+.envrc
