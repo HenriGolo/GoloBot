@@ -27,9 +27,6 @@ secrets :
 	cd Main && ln -s ../GBsecrets.py . && cd ..
 	echo "secrets.py à remplir manuellement"
 
-pid :
-	touch discord.pid
-
 logs :
 	touch logs/dev.log
 	touch logs/error.log
@@ -41,10 +38,21 @@ data :
 	echo {} > Data/qpup.json
 
 # À utiliser pour le premier démarrage du bot, crée tous les fichiers dans .gitignore
-setup : secrets pid
-	mkdir logs
+setup : secrets
+	mkdir -p logs
 	make logs
-	mkdir Data
+	mkdir -p Data
 	make data
+
+check_env_path:
+	@for f in .env .env.*; do \
+		[ -f "$$f" ] || continue; \
+		if ! grep -q '^PATH=' "$$f"; then \
+			tmpfile=$$(mktemp); \
+			echo "PATH=$$(pwd)" > "$$tmpfile"; \
+			cat "$$f" >> "$$tmpfile"; \
+			mv "$$tmpfile" "$$f"; \
+		fi \
+	done
 
 reset : clean_pip clean_settings build logs data

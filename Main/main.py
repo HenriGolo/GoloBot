@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 import GBsecrets
-from os import getpid
-import discord
-from discord.ext import tasks
 from GoloBot import *  # Contient tout ce qu'il faut, imports compris
 from privatebot import *  # Réponses custom à certains contenus de messages
 
@@ -25,25 +22,17 @@ class GoloBot(BotTemplate):
         # À priori inutile, mais nécessaire pour le décorateur @logger des events
         self.bot = self
 
-        # Ajout des commandes
-        for cog in commands.Cog.__subclasses__():
-            self.add_cog(cog(self))
-
         # Réponses personalisées
         # On cherche dans les subclass pour se laisser la possibilité d'overwrite les fonctions
         # Ce qui ne serait pas possible (ou moins intuitif / facile) avec des instances de PrivateResponse
         self.PR = [pr(self) for pr in PrivateResponse.__subclasses__()]
 
-        # Gestion du PID pour kill proprement
-        with open(GBsecrets.pidfile, 'w') as pid:
-            pid.write(str(getpid()))
-
         # Sera défini dans on_ready
         self.startTime: datetime = None
         self.dev: discord.User = None
         self.support: discord.Guild = None
-        self.emotes: dict[discord.Emoji] = None
-        self.bools: dict[discord.Emoji] = None
+        self.emotes: dict = None
+        self.bools: dict = None
         self.setup_fini: bool = False
 
     def __str__(self):
@@ -83,7 +72,9 @@ class GoloBot(BotTemplate):
             await self.on_guild_join(guild)
 
         # c'est bon, on est prêt
-        print(f"{self} connecté !")
+        if config.debug:
+            print(f"{self} connecté !")
+            print(config['DISCORD_INVITE_BOT'])
         self.setup_fini = True
 
     async def on_guild_join(self, guild: discord.Guild):

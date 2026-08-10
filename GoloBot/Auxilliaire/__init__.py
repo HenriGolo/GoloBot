@@ -1,19 +1,22 @@
-from .converters import ANSI
 import asyncio
-from collections import namedtuple
-from datetime import datetime, timedelta
-import discord
-from discord.ext import tasks
-from enum import Enum
-import difflib
-from functools import partial
+import importlib
+import inspect
 import json
-import pytz
+import pkgutil
 import re
+from datetime import datetime, timedelta
+from enum import Enum
+from pathlib import Path
 from subprocess import check_output
 from traceback import format_exc
 from unicodedata import normalize
-import inspect
+
+import discord
+import pytz
+from discord.ext import tasks
+
+from .config import config
+from .converters import ANSI
 
 url = re.compile(r'https?://(?:[a-zA-Z0-9$-_@.&+!*(),]|%[0-9a-fA-F]{2})+')
 all_mentions = re.compile(r'<[@#!&]+[0-9]*>')
@@ -23,6 +26,41 @@ channel_mentions = re.compile(r'<#[0-9]*>')
 slash_mention = re.compile(r'</[a-zA-Z0-9]*:[0-9]*>')
 emoji = re.compile(r'<a?:[a-zA-Z0-9]*:[0-9]*>')
 timestamp = re.compile(r'<t:[0-9]*:[RDdTtFf]>')
+
+
+class AutoAddedCog(discord.ext.commands.Cog):
+    def __init__(self, bot: discord.Bot):
+        self.bot = bot
+        for name, method in inspect.getmembers(self):
+            if inspect.iscoroutinefunction(method) and name.startswith("on_"):
+                bot.add_listener(method, name)
+
+
+def generate_autoaddedbot_class(cogclass: type = AutoAddedCog):
+    class autoaddbot(discord.Bot):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            plugin_path = Path(config['PATH'])
+            self.add_module(plugin_path)
+
+        def add_module(self, module_path):
+            # print(module_path)
+            for _, module_name, _ in pkgutil.iter_modules([module_path]):
+                if (module_path / f'{module_name}.py').exists():
+                    file_path = module_path / f"{module_name}.py"
+                    spec = importlib.util.spec_from_file_location(module_name, file_path)
+                    module = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(module)
+                    for obj in module.__dict__.values():
+                        if inspect.isclass(obj) and issubclass(obj, cogclass) and obj is not cogclass:
+                            self.add_cog(obj(self))
+                elif (module_path / module_name).is_dir():
+                    self.add_module(module_path / module_name)
+
+    return autoaddbot
+
+
+AutoAddBot = generate_autoaddedbot_class(AutoAddedCog)
 
 
 class Dummy:
@@ -52,9 +90,11 @@ class Dummy:
         yield self
 
 
-# Class à hériter pour être compatible avec la serialisation JSON
-# définie par GBEncoder et GBDecoder
 class Storable:
+    """
+    Classe à hériter pour être compatible avec la sérialisation JSON définie par GBEncoder et GBDecoder.
+    """
+
     def to_json(self):
         std = repr(self.__class__)  # de la forme <class 'nom'>
         cls = std.split("'")[1]
@@ -90,6 +130,9 @@ class DictPasPareil:
 
     def __contains__(self, item):
         return item in self.data
+
+    def __len__(self):
+        return len(self.data)
 
 
 class Cycle(list):

@@ -1,16 +1,10 @@
-from . import *
-
-try:
-    import GBsecrets
-except ModuleNotFoundError:
-    GBsecrets = Dummy()
-import json
 from functools import wraps
+
 from discord import Forbidden, ui, Interaction, ButtonStyle
 from discord.ext.commands import slash_command, user_command, message_command, MissingPermissions
-from discord.commands.context import ApplicationContext
-from .doc import cmds
-from ..template import *
+
+from GoloBot.Auxilliaire.doc import cmds
+from GoloBot.template import *
 
 
 class ManquePerms(Exception):
@@ -106,8 +100,8 @@ def logger(func):
 
         except (Forbidden, ManquePerms, MissingPermissions):
             await data.action(f"{data.caller.bot.emotes['error']} Manque de permissions", ephemeral=True)
-            if hasattr(GBsecrets, 'stderr') and '.' in GBsecrets.stderr:
-                with open(GBsecrets.stderr, 'a') as stderr:
+            if 'LOGS_STDERR' in config:
+                with open(config['LOGS_STDERR'], 'a') as stderr:
                     stderr.write(f"\n{start}\n{fail()}\n")
 
         except Exception:
@@ -119,14 +113,14 @@ def logger(func):
             embed_err.title = f"Erreur de {user} avec {func.__name__}"
             view = ViewError(data.caller.bot, full_embed, embed_err)
             await data.action(embed=embed, view=view, ephemeral=True)
-            if hasattr(GBsecrets, 'stderr') and '.' in GBsecrets.stderr:
-                with open(GBsecrets.stderr, 'a') as stderr:
+            if 'LOGS_STDERR' in config:
+                with open(config['LOGS_STDERR'], 'a') as stderr:
                     stderr.write(f"\n{start}\n{err}\n")
 
         else:
             # Sera exécuté si aucune exception n'est soulevée
-            if hasattr(GBsecrets, 'stdout') and '.' in GBsecrets.stdout:
-                with open(GBsecrets.stdout, 'a') as stdout:
+            if 'LOGS_STDOUT' in config:
+                with open(config['LOGS_STDOUT'], 'a') as stdout:
                     stdout.write(f"\n{time} {user} : {cname}.{func.__name__} "
                                  f"dans {gname} avec comme arguments\n\t{signature}\n")
                     stdout.write(f"{func.__name__} terminé en {now(True) - start}s\n")

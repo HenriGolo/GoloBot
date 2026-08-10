@@ -1,8 +1,8 @@
-from .Auxilliaire import *
+from GoloBot.Auxilliaire import *
 
 
 # Signature de la classe du bot
-class BotTemplate(discord.AutoShardedBot):
+class BotTemplate(AutoAddBot):
     token: DictPasPareil
     games: dict
     alphabet = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲',
@@ -11,6 +11,6 @@ class BotTemplate(discord.AutoShardedBot):
     startTime: datetime
     dev: discord.User
     support: discord.Guild
-    emotes: dict[str: discord.Emoji]
-    bools: dict[bool: discord.Emoji]
+    emotes: dict[str, discord.Emoji]
+    bools: dict[bool, discord.Emoji]
     setup_fini: bool

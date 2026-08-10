@@ -1,11 +1,6 @@
-from . import *
-try:
-    import GBsecrets
-except ModuleNotFoundError:
-    GBsecrets = Dummy()
-import json
-import discord
-from .converters import ANSI
+from GoloBot.Auxilliaire import *
+from GoloBot.Auxilliaire.config import config
+from GoloBot.Auxilliaire.converters import ANSI
 
 guild_to_settings = dict()
 
@@ -86,7 +81,7 @@ class Settings:
 
     def __init__(self, guild, **kwargs):
         self.guild = guild
-        self.path = kwargs.get('path', GBsecrets.settings)
+        self.path = kwargs.get('path', config['DB_SETTINGS'])
         self.json_data = None
         self.config = None
         self.reload()
@@ -117,6 +112,7 @@ class Settings:
         for key, value in self.config.items():
             if isinstance(value, (str, bytes, bytearray)):
                 self.config[key] = json.loads(value, cls=GBDecoder)
+        return None
 
     def upgrade(self):
         refresh = False

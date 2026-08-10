@@ -1,27 +1,23 @@
 # Code Principal
-try:
-    import GBsecrets
-except ModuleNotFoundError:
-    pass
-import asyncio
-import json
-import discord
-from discord.ext import commands, tasks
+
 from discord.commands.context import ApplicationContext
+from discord.ext import commands
+
 from .Auxilliaire import *  # Quelques fonctions utiles
 from .Auxilliaire.aux_maths import *  # Outils mathématiques
+from .Auxilliaire.config import config
 from .Auxilliaire.converters import *  # Converters vers mes types custom
 from .Auxilliaire.decorators import *  # Decorateurs custom
 from .Auxilliaire.doc import *  # Raccourcis et noms customs
 from .Auxilliaire.games import *  # Jeux de plateau custom
 from .Musique import *  # Adapté de https://github.com/Raptor123471/DingoLingo
+from .Twitch import *
 from .UI import *  # Les composants de l'UI custom
 from .template import *  # Signatures du bot défini dans 'main.py' et donc pas importable
-from .Twitch import *
 
 
 # Code du bot
-class CogGeneral(commands.Cog):
+class CogGeneral(AutoAddedCog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
 
@@ -41,8 +37,8 @@ class CogGeneral(commands.Cog):
         # Embed des informations sur la commande
         embed = GBEmbed(title="Aide", description=mention, color=ctx.author.color)
         url = ''
-        if hasattr(GBsecrets, 'invite_server'):
-            url = GBsecrets.invite_server
+        if hasattr(config, 'invite_server'):
+            url = config['DISCORD_INVITE_SERVER']
         embed.set_author(name=self.bot.support.name,
                          url=url,
                          icon_url=self.bot.support.icon.url)
@@ -53,7 +49,7 @@ class CogGeneral(commands.Cog):
         if not commande.aide == "":
             embed.add_field(name="Aide Supplémentaire", value=commande.aide, inline=False)
         embed.add_field(name="Encore des questions ?",
-                        value=f"Le <:discord:1164579176146288650> [Serveur de Support]({GBsecrets.invite_server}) est là pour ça",
+                        value=f"Le <:discord:1164579176146288650> [Serveur de Support]({config['DISCORD_INVITE_SERVER']}) est là pour ça",
                         inline=False)
         return await ctx.respond(embed=embed, view=ViewAide(self.bot), ephemeral=not visible)
 
@@ -62,11 +58,11 @@ class CogGeneral(commands.Cog):
     async def invite(self, ctx):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title=f"Inviter {self.bot.user.display_name}",
-                        description=f"""Tu peux m'inviter avec [ce lien]({GBsecrets.invite_bot})
-Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci]({GBsecrets.invite_server})""",
+                        description=f"""Tu peux m'inviter avec [ce lien]({config['DISCORD_INVITE_BOT']})
+Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci]({config['DISCORD_INVITE_SERVER']})""",
                         color=ctx.author.color)
-        if hasattr(GBsecrets, 'support_qr'):
-            embed.set_thumbnail(url=GBsecrets.support_qr)
+        if hasattr(config, 'support_qr'):
+            embed.set_thumbnail(url=config['DISCORD_SUPPORT_QR'])
         await ctx.respond(embed=embed, ephemeral=True)
 
     # Renvoie le code source du bot
@@ -74,11 +70,11 @@ Et rejoindre le <:discord:1164579176146288650> Serveur de Support [avec celui ci
     async def github(self, ctx):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title="Code Source",
-                        description=f"Le code source est disponible sur <:github:1164672088934711398> [Github]({GBsecrets.github})\n\
-Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({GBsecrets.invite_server})",
+                        description=f"Le code source est disponible sur <:github:1164672088934711398> [Github]({config['GITHUB']})\n\
+Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({config['DISCORD_INVITE_SERVER']})",
                         color=ctx.author.color)
-        if hasattr(GBsecrets, 'support_qr'):
-            embed.set_thumbnail(url=GBsecrets.support_qr)
+        if hasattr(config, 'support_qr'):
+            embed.set_thumbnail(url=config['DISCORD_SUPPORT_QR'])
         await ctx.respond(embed=embed, ephemeral=True)
 
     # Quelques stats sur le nombre de box à ouvrir pour espérer un certain pourcentage
@@ -118,7 +114,7 @@ Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({
 
 
 # Fonctions Dev
-class CogDev(commands.Cog):
+class CogDev(AutoAddedCog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
 
@@ -186,12 +182,12 @@ class CogDev(commands.Cog):
             await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
             raise ManquePerms("N'est pas dev")
 
-        if not hasattr(GBsecrets, 'stderr'):
+        if not hasattr(config, 'stderr'):
             raise Exception("Aucun fichier de log renseigné")
 
-        stderr = discord.File(fp=GBsecrets.stderr, filename=GBsecrets.stderr.split("/")[-1])
+        stderr = discord.File(fp=config['LOGS_STDERR'], filename=config['LOGS_STDERR'].split('/')[-1])
         embed = GBEmbed(title=f"Dernières {last_x_lines} lignes de {stderr.filename}", user=ctx.author)
-        embed.description = f"```python\n{tail(GBsecrets.stderr, last_x_lines)}\n```"
+        embed.description = f"```python\n{tail(config['LOGS_STDERR'], last_x_lines)}\n```"
         await ctx.respond(embed=embed, files=[stderr], ephemeral=True)
 
     @CustomSlash()
@@ -202,16 +198,16 @@ class CogDev(commands.Cog):
             await ctx.respond("Tu n'as pas la permission d'utiliser cette commande", ephemeral=True)
             raise ManquePerms("N'est pas dev")
 
-        if not hasattr(GBsecrets, 'stdout'):
+        if not hasattr(config, 'stdout'):
             raise Exception("Aucun fichier de sortie renseigné")
 
-        stdout = File(fp=GBsecrets.stdout, filename=GBsecrets.stdout.split("/")[-1])
-        reponse = f"Dernières {last_x_lines} lignes de **{stdout}** :\n{tail(GBsecrets.stdout, last_x_lines)[-1900:]}"
+        stdout = File(fp=config['LOGS_STDOUT'], filename=config['LOGS_STDOUT'].split("/")[-1])
+        reponse = f"Dernières {last_x_lines} lignes de **{stdout}** :\n{tail(config['LOGS_STDOUT'], last_x_lines)[-1900:]}"
         await ctx.respond(f"Voici les logs demandés\n{reponse}", files=[stdout], ephemeral=True)
 
 
 # Fonctions Admin
-class CogAdmin(commands.Cog):
+class CogAdmin(AutoAddedCog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
 
@@ -290,7 +286,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         # messages privés
         if salon.type == discord.ChannelType.private:
             try:
-                logs = open(GBsecrets.path + 'logs/dm.log')
+                logs = open(config['LOGS_DM'])
             except:
                 pass
 
@@ -302,7 +298,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         # situation normale
         else:
             try:
-                logs = open(GBsecrets.path + f"logs/{ctx.guild.name.replace(' ', '_')}.log", 'a')
+                logs = open(config['PATH'] + f"logs/{ctx.guild.name.replace(' ', '_')}.log", 'a')
             except:
                 pass
 
@@ -438,7 +434,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
 
 # Fonctions Random
-class CogMiniGames(commands.Cog):
+class CogMiniGames(AutoAddedCog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
 
@@ -446,7 +442,7 @@ class CogMiniGames(commands.Cog):
     @CustomSlash()
     async def qpup(self, ctx: ApplicationContext, nbquestions: int):
         await ctx.defer()
-        self.bot.qpup = DataBase(GBsecrets.qpup)
+        self.bot.qpup = DataBase(config['DB_QPUP'])
         # Boucle sur le nombre de questions à poser
         for loop in range(nbquestions):
             # Tirage au sort d'une question
@@ -472,7 +468,7 @@ class CogMiniGames(commands.Cog):
         await ctx.respond(embed=embed, view=View2048(self.bot))
 
 
-class CogTroll(commands.Cog):
+class CogTroll(AutoAddedCog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
         super().__init__()
@@ -511,7 +507,7 @@ class CogTroll(commands.Cog):
         await ctx.respond(emote, ephemeral=True)
 
 
-class CogMusic(commands.Cog):
+class CogMusic(AutoAddedCog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
 
@@ -644,7 +640,7 @@ class CogMusic(commands.Cog):
             ephemeral=True)
 
 
-class CogCommandesPasSlash(commands.Cog):
+class CogCommandesPasSlash(AutoAddedCog):
     def __init__(self, bot: BotTemplate):
         self.bot = bot
 
@@ -661,7 +657,8 @@ class CogCommandesPasSlash(commands.Cog):
         embed.add_field(name="Date de Création", value=Timestamp(member.created_at).relative, inline=False)
         embed.add_field(name="Dans le serveur depuis", value=Timestamp(member.joined_at).relative, inline=False)
         if member.premium_since is not None:
-            embed.add_field(name="Booste le serveur depuis", value=Timestamp(member.premium_since).relative, inline=False)
+            embed.add_field(name="Booste le serveur depuis", value=Timestamp(member.premium_since).relative,
+                            inline=False)
         if ctx.author.guild_permissions.manage_roles:
             # Le 1er rôle de la liste est "everyone".
             roles = [r.mention for r in member.roles[1:]]
@@ -685,13 +682,15 @@ class CogCommandesPasSlash(commands.Cog):
         await ctx.respond(**kwargs)
 
 
-class CogTwitch(commands.Cog):
+class CogTwitch(AutoAddedCog):
     def __init__(self, bot: BotTemplate, **kwargs):
         self.bot = bot
-        path = kwargs.get('db')
-        if path is None:
-            path = GBsecrets.annonces_streams
-        self.db = DataBase(path)
+        db_path = kwargs.get('db')
+        # LAISSER COMME ÇA, PAS EN SECOND ARGUMENT DU GET
+        # Sinon ça casse lorsque ce bot est réutilisé comme base
+        if not db_path:
+            db_path = config['DB_STREAMS']
+        self.db = DataBase(db_path)
         self.task_annonces.start()
 
     @tasks.loop(minutes=10)
