@@ -53,7 +53,10 @@ def generate_autoaddedbot_class(cogclass: type = AutoAddedCog):
                     spec.loader.exec_module(module)
                     for obj in module.__dict__.values():
                         if inspect.isclass(obj) and issubclass(obj, cogclass) and obj is not cogclass:
-                            self.add_cog(obj(self))
+                            try:
+                                self.add_cog(obj(self))
+                            except discord.ClientException as e:
+                                print(f"Error adding cog {obj.__name__}: {e}")
                 elif (module_path / module_name).is_dir():
                     self.add_module(module_path / module_name)
 
