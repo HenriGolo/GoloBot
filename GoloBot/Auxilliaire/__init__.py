@@ -15,8 +15,8 @@ import discord
 import pytz
 from discord.ext import tasks
 
-from .config import config
-from .converters import ANSI
+from GoloBot.Auxilliaire.config import config
+from GoloBot.Auxilliaire.converters import ANSI
 
 url = re.compile(r'https?://(?:[a-zA-Z0-9$-_@.&+!*(),]|%[0-9a-fA-F]{2})+')
 all_mentions = re.compile(r'<[@#!&]+[0-9]*>')

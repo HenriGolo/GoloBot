@@ -1,9 +1,6 @@
-import discord
 from aiohttp import ClientSession
-from ..Auxilliaire import *
-from ..template import *
-import requests
-import json
+
+from GoloBot.template import *
 
 
 class AccessToken(Storable):

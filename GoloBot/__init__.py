@@ -3,17 +3,17 @@
 from discord.commands.context import ApplicationContext
 from discord.ext import commands
 
-from .Auxilliaire import *  # Quelques fonctions utiles
-from .Auxilliaire.aux_maths import *  # Outils mathématiques
-from .Auxilliaire.config import config
-from .Auxilliaire.converters import *  # Converters vers mes types custom
-from .Auxilliaire.decorators import *  # Decorateurs custom
-from .Auxilliaire.doc import *  # Raccourcis et noms customs
-from .Auxilliaire.games import *  # Jeux de plateau custom
-from .Musique import *  # Adapté de https://github.com/Raptor123471/DingoLingo
-from .Twitch import *
-from .UI import *  # Les composants de l'UI custom
-from .template import *  # Signatures du bot défini dans 'main.py' et donc pas importable
+from GoloBot.Auxilliaire import *  # Quelques fonctions utiles
+from GoloBot.Auxilliaire.aux_maths import *  # Outils mathématiques
+from GoloBot.Auxilliaire.config import config
+from GoloBot.Auxilliaire.converters import *  # Converters vers mes types custom
+from GoloBot.Auxilliaire.decorators import *  # Decorateurs custom
+from GoloBot.Auxilliaire.doc import *  # Raccourcis et noms customs
+from GoloBot.Auxilliaire.games import *  # Jeux de plateau custom
+from GoloBot.Musique import *  # Adapté de https://github.com/Raptor123471/DingoLingo
+from GoloBot.Twitch import *
+from GoloBot.UI import *  # Les composants de l'UI custom
+from GoloBot.template import *  # Signatures du bot défini dans 'main.py' et donc pas importable
 
 
 # Code du bot
