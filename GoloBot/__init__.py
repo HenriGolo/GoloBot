@@ -18,9 +18,6 @@ from GoloBot.template import *  # Signatures du bot défini dans 'main.py' et do
 
 # Code du bot
 class CogGeneral(AutoAddedCog):
-    def __init__(self, bot: BotTemplate):
-        self.bot = bot
-
     # Aide
     @CustomSlash()
     async def aide(self, ctx: ApplicationContext, commande: str, visible: bool):
@@ -115,9 +112,6 @@ Tu peux aussi rejoindre le <:discord:1164579176146288650> [Serveur de Support]({
 
 # Fonctions Dev
 class CogDev(AutoAddedCog):
-    def __init__(self, bot: BotTemplate):
-        self.bot = bot
-
     # Les ID sont ceux de mon serveur de test et du serveur de support
     @commands.slash_command(guild_ids=[664006363508244481, 1158154606124204072],
                             description="Commande de test, ne pas utiliser.")
@@ -208,9 +202,6 @@ class CogDev(AutoAddedCog):
 
 # Fonctions Admin
 class CogAdmin(AutoAddedCog):
-    def __init__(self, bot: BotTemplate):
-        self.bot = bot
-
     # Création de sondage
     @CustomSlash()
     async def poll(self, ctx: ApplicationContext, question: str, reponses: Splitter, salon: discord.TextChannel):
@@ -435,9 +426,6 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
 
 # Fonctions Random
 class CogMiniGames(AutoAddedCog):
-    def __init__(self, bot: BotTemplate):
-        self.bot = bot
-
     # QPUP, bon courage pour retrouver le lore...
     @CustomSlash()
     async def qpup(self, ctx: ApplicationContext, nbquestions: int):
@@ -469,10 +457,6 @@ class CogMiniGames(AutoAddedCog):
 
 
 class CogTroll(AutoAddedCog):
-    def __init__(self, bot: BotTemplate):
-        self.bot = bot
-        super().__init__()
-
     # Spamme un texte (emote ou autre) jusqu'à atteindre la limite de caractères
     @CustomSlash()
     async def write_emote(self, ctx: ApplicationContext, mot: str, message: discord.Message):
@@ -508,9 +492,6 @@ class CogTroll(AutoAddedCog):
 
 
 class CogMusic(AutoAddedCog):
-    def __init__(self, bot: BotTemplate):
-        self.bot = bot
-
     @CustomSlash(activated=False)
     @discord.guild_only()
     async def play(self, ctx: ApplicationContext, search: str):
@@ -641,9 +622,6 @@ class CogMusic(AutoAddedCog):
 
 
 class CogCommandesPasSlash(AutoAddedCog):
-    def __init__(self, bot: BotTemplate):
-        self.bot = bot
-
     # Affiche les informations d'un Member
     @CustomUser
     async def informations_utilisateur(self, ctx: ApplicationContext, member: discord.Member):
@@ -684,7 +662,7 @@ class CogCommandesPasSlash(AutoAddedCog):
 
 class CogTwitch(AutoAddedCog):
     def __init__(self, bot: BotTemplate, **kwargs):
-        self.bot = bot
+        super().__init__(bot)
         db_path = kwargs.get('db')
         # LAISSER COMME ÇA, PAS EN SECOND ARGUMENT DU GET
         # Sinon ça casse lorsque ce bot est réutilisé comme base
