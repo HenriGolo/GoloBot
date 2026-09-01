@@ -23,9 +23,8 @@ clean_pip :
 
 
 secrets :
-	cp secrets_template.py GBsecrets.py
-	cd Main && ln -s ../GBsecrets.py . && cd ..
-	echo "secrets.py à remplir manuellement"
+	cp .env.example .env
+	echo ".env à remplir manuellement"
 
 logs :
 	touch logs/dev.log
