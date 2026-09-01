@@ -36,7 +36,7 @@ class AutoAddedCog(discord.ext.commands.Cog):
                 bot.add_listener(method, name)
 
 
-def generate_autoaddedbot_class(cogclass: type = AutoAddedCog):
+def generate_autoaddedbot_class(cogclass: type) -> type:
     class autoaddbot(discord.Bot):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
@@ -44,21 +44,23 @@ def generate_autoaddedbot_class(cogclass: type = AutoAddedCog):
             self.add_module(plugin_path)
 
         def add_module(self, module_path):
-            # print(module_path)
-            for _, module_name, _ in pkgutil.iter_modules([module_path]):
-                if (module_path / f'{module_name}.py').exists():
-                    file_path = module_path / f"{module_name}.py"
-                    spec = importlib.util.spec_from_file_location(module_name, file_path)
-                    module = importlib.util.module_from_spec(spec)
-                    spec.loader.exec_module(module)
-                    for obj in module.__dict__.values():
-                        if inspect.isclass(obj) and issubclass(obj, cogclass) and obj is not cogclass:
-                            try:
-                                self.add_cog(obj(self))
-                            except discord.ClientException as e:
-                                print(f"Error adding cog {obj.__name__}: {e}")
-                elif (module_path / module_name).is_dir():
+            for _, module_name, _ in pkgutil.walk_packages(path=[str(module_path)], prefix='', onerror=print):
+                for filename in (module_name, '__init__'):
+                    if (file_path := module_path / f'{filename}.py').exists():
+                        self.add_file(module_name, file_path)
+                if (module_path / module_name).is_dir():
                     self.add_module(module_path / module_name)
+
+        def add_file(self, module_name, file_path):
+            spec = importlib.util.spec_from_file_location(module_name, file_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            for obj in module.__dict__.values():
+                if inspect.isclass(obj) and issubclass(obj, cogclass) and obj is not cogclass:
+                    try:
+                        self.add_cog(obj(self))
+                    except discord.ClientException as e:
+                        print(f"Error adding cog {obj.__name__}: {e}")
 
     return autoaddbot
 
