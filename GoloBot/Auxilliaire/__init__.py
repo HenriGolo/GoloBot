@@ -44,7 +44,7 @@ def generate_autoaddedbot_class(cogclass: type) -> type:
             self.add_module(plugin_path)
 
         def add_module(self, module_path):
-            for _, module_name, _ in pkgutil.walk_packages(path=[str(module_path)], prefix='', onerror=print):
+            for _, module_name, _ in pkgutil.walk_packages(path=[str(module_path)], prefix='', onerror=print if config.debug else None):
                 for filename in (module_name, '__init__'):
                     if (file_path := module_path / f'{filename}.py').exists():
                         self.add_file(module_name, file_path)
@@ -60,7 +60,8 @@ def generate_autoaddedbot_class(cogclass: type) -> type:
                     try:
                         self.add_cog(obj(self))
                     except discord.ClientException as e:
-                        print(f"Error adding cog {obj.__name__}: {e}")
+                        if config.debug:  # Échec silencieux sinon
+                            print(f"Error adding cog {obj.__name__}: {e}")
 
     return autoaddbot
 
