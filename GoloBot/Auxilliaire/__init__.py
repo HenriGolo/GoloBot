@@ -44,7 +44,7 @@ def generate_autoaddedbot_class(cogclass: type) -> type:
             self.add_module(plugin_path)
 
         def add_module(self, module_path):
-            for _, module_name, _ in pkgutil.walk_packages(path=[str(module_path)], prefix=''):
+            for _, module_name, _ in pkgutil.walk_packages(path=[str(module_path)], prefix='', onerror=print):
                 for filename in (module_name, '__init__'):
                     if (file_path := module_path / f'{filename}.py').exists():
                         self.add_file(module_name, file_path)
@@ -58,11 +58,9 @@ def generate_autoaddedbot_class(cogclass: type) -> type:
             for obj in module.__dict__.values():
                 if inspect.isclass(obj) and issubclass(obj, cogclass) and obj is not cogclass:
                     try:
-                        if self.get_cog(obj.__name__) is None:
-                            self.add_cog(obj(self))  # paramètre override ne marche pas
+                        self.add_cog(obj(self))
                     except discord.ClientException as e:
-                        if config.debug:  # Échec silencieux sinon
-                            print(f"Error adding cog {obj.__name__}: {e}")
+                        print(f"Error adding cog {obj.__name__}: {e}")
 
     return autoaddbot
 
