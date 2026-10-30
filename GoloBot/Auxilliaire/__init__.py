@@ -1,7 +1,6 @@
 import asyncio
 import importlib
 import inspect
-import json
 import pkgutil
 import re
 from datetime import datetime, timedelta
@@ -17,6 +16,7 @@ from discord.ext import tasks
 
 from GoloBot.Auxilliaire.config import config
 from GoloBot.Auxilliaire.converters import ANSI
+from GoloBot.Auxilliaire.json import Transaction, JsonStore
 
 url = re.compile(r'https?://(?:[a-zA-Z0-9$-_@.&+!*(),]|%[0-9a-fA-F]{2})+')
 all_mentions = re.compile(r'<[@#!&]+[0-9]*>')
@@ -364,175 +364,6 @@ class PrivateResponse:
 
             return True
         return False
-
-
-# Stocke un set comme une liste
-class SetEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, set):
-            return [e for e in o]
-        return super().default(o)
-
-
-# Interprête une liste comme un set
-class SetDecoder(json.JSONDecoder):
-    def decode(self, s, _w=...):
-        std = super().decode(s)
-        if isinstance(std, list):
-            return {self.decode(e) for e in std}
-        return std
-
-
-class GBEncoder(json.JSONEncoder):
-    def default(self, o):
-        try:
-            return super().default(o)
-        except TypeError:
-            # o est une classe, pas un objet
-            if isinstance(o, type):
-                # repr d'une classe de la forme <class 'foo'>
-                # None va être interprété par GBDecoder
-                return {'cls': repr(o).split("'")[1], 'kwargs': None}
-
-            for fun in ['to_json', 'json']:
-                if hasattr(o, fun):
-                    f = getattr(o, fun)
-                    if callable(f):
-                        return f()
-            return repr(o)
-
-
-class GBDecoder(json.JSONDecoder):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.create_instance = True
-
-    def decode(self, s, _w=...):
-        if not isinstance(s, str):
-            std = s
-        else:
-            try:
-                std = super().decode(s)
-            except:
-                std = super().decode(f'"{s}"')
-
-        if isinstance(std, (list, tuple)):
-            return [self.decode(e) for e in std]
-
-        elif isinstance(std, set):
-            return {self.decode(e) for e in std}
-
-        elif isinstance(std, dict):
-            std = {self.decode(k): self.decode(v) for k, v in std.items()}
-            if {'cls', 'kwargs'}.issubset(std.keys()):
-                cls = self.instanciate(std['cls'].split('.'))
-                kwargs = std['kwargs']
-                if kwargs is None:
-                    return cls
-                return cls(**kwargs)
-
-        elif isinstance(std, str):
-            if std.lower() in ['oui', 'o', 'yes', 'y', 'vrai', 'v', 'true']:
-                std = True
-            elif std.lower() in ['non', 'n', 'no', 'faux', 'f', 'false']:
-                std = False
-            elif std.lower() in ['none', 'null']:
-                std = None
-            elif std.isdigit():
-                std = int(std)
-        return std
-
-    @classmethod
-    def instanciate(cls, path: list[str], _from=None):
-        if not path:
-            return _from
-        if path[-1] in __builtins__:
-            return __builtins__[path[-1]]
-        if path[-1] in globals():
-            return globals()[path[-1]]
-        if path[-1] in locals():
-            return locals()[path[-1]]
-        if _from is None:
-            _from = __import__(path[0])
-            path = path[1:]
-        return cls.instanciate(path[1:], getattr(_from, path[0]))
-
-
-class DataBase(Storable):
-    def __init__(self, path, auto_update=True):
-        self.path: str = path
-        self.auto_update: bool = auto_update
-        self.data = dict()
-        self.writing: bool = False
-        self.read()
-
-    def read(self, **kwargs):
-        if not self.writing:
-            kwargs['cls'] = kwargs.get('cls', GBDecoder)
-            with open(self.path, 'r') as file:
-                self.data = json.load(file, **kwargs)
-        return self
-
-    def write(self, **kwargs):
-        self.writing = True
-        kwargs['cls'] = kwargs.get('cls', GBEncoder)
-        kwargs['indent'] = kwargs.get('indent', 4)
-        with open(self.path, 'w') as file:
-            json.dump(self.data, file, **kwargs)
-        self.writing = False
-        self.read()  # évite certains problèmes de parallélisation
-
-    def items(self):
-        return self.data.items()
-
-    def keys(self):
-        return self.data.keys()
-
-    def values(self):
-        return self.data.values()
-
-    def __getitem__(self, item):
-        try:
-            return self.data.__getitem__(item)
-        except KeyError:
-            return self.data.__getitem__(str(item))
-
-    def __iter__(self):
-        for stuff in self.data:
-            yield stuff
-
-    def get(self, item, placeholder=None):
-        try:
-            return self.__getitem__(item)
-        except:
-            return placeholder
-
-    def __contains__(self, item):
-        return self.data.__contains__(item) or self.data.__contains__(str(item))
-
-    def __bool__(self):
-        return bool(self.data)
-
-    def __len__(self):
-        return len(self.data)
-
-    def __str__(self):
-        return f"{type(self.data)} de taille {len(self.data)} stocké dans {self.path}"
-
-    def __setitem__(self, key, value):
-        if self.auto_update:
-            self.read()  # Actualise la DB
-        self.data[key] = value
-        if self.auto_update:
-            self.write()
-
-    def __delitem__(self, key):
-        try:
-            del self.data[key]
-        except KeyError:
-            del self.data[str(key)]
-        if self.auto_update:
-            self.write()
 
 
 # Commande bash tail avec un peu de traitement
