@@ -277,7 +277,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         # messages privés
         if salon.type == discord.ChannelType.private:
             try:
-                logs = open(config['LOGS_DM'])
+                logs = open(config.get('LOGS_DM', 'dm.log'))
             except:
                 pass
 
@@ -289,7 +289,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
         # situation normale
         else:
             try:
-                logs = open(config['PATH'] + f"logs/{ctx.guild.name.replace(' ', '_')}.log", 'a')
+                logs = open(f"logs/{ctx.guild.name.replace(' ', '_')}.log", 'a')
             except:
                 pass
 
@@ -306,7 +306,7 @@ j'ai pas assez de symboles, mais t'as quand même les {len(used_alphaB)} premier
     {msg.content}
 """)
                 cpt += 1
-
+        logs.close()
         await ctx.respond(f"{salon.mention} a été clear de {cpt} messages", ephemeral=True, delete_after=10)
 
     # Bannir un Member
