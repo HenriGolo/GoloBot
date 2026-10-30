@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import GBsecrets
 from GoloBot import *  # Contient tout ce qu'il faut, imports compris
 
 try:
@@ -165,10 +164,8 @@ class GoloBot(BotTemplate):
                                     embed=embed,
                                     files=files,
                                     view=ViewDM(bot=self))
-                if hasattr(GBsecrets, 'dm'):
-                    with open(GBsecrets.dm, 'a') as fichier:
-                        fichier.write(
-                            f"\n{currentTime} {message.author.display_name} a envoyé un DM :\n{message.content}\n")
+                with open(config.get('LOGS_DM', 'dm.log'), 'a') as file:
+                    file.write(f"\n{currentTime} {message.author.display_name} a envoyé un DM :\n{message.content}\n")
                 await message.add_reaction(self.bools[True])
         else:
             if guild_to_settings[message.guild.id].config["reponses custom"]:
