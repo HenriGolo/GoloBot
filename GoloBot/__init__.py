@@ -430,13 +430,14 @@ class CogMiniGames(AutoAddedCog):
     @CustomSlash()
     async def qpup(self, ctx: ApplicationContext, nbquestions: int):
         await ctx.defer()
-        self.bot.qpup = DataBase(config['DB_QPUP'])
+        self.bot.qpup = Transaction(JsonStore(config.get('DB_QPUP', 'qpup.json')))
         # Boucle sur le nombre de questions à poser
-        for loop in range(nbquestions):
-            # Tirage au sort d'une question
-            line = randrange(len(self.bot.qpup))
-            # Envoi de la question
-            await ctx.respond(self.bot.qpup[line][0], view=ViewQPUP(self.bot, rep=self.bot.qpup[line][1]))
+        with selb.bot.qpup as data:
+            for loop in range(nbquestions):
+                # Tirage au sort d'une question
+                line = randrange(len(data))
+                # Envoi de la question
+                await ctx.respond(data[line][0], view=ViewQPUP(self.bot, rep=data[line][1]))
 
     # 2048, le _ est nécessaire, une fonction ne commence pas à un chiffre
     @CustomSlash()
