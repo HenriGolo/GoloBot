@@ -10,8 +10,11 @@ except ImportError:
 
 class GoloBot(BotTemplate):
     # Récupération des tokens
-    token = DictPasPareil(discord=GBsecrets.token,
-                          twitch=AccessToken(GBsecrets.twitchID, GBsecrets.twitchSecret))
+    token = DictPasPareil(
+        discord=config['DISCORD_TOKEN'],
+        twitch=AccessToken(config['TWITCH_ID'], config['TWITCH_SECRET']),
+        # youtube=config['YOUTUBE_API_KEY']
+    )
 
     # Jeux en cours
     games = dict()
