@@ -664,12 +664,8 @@ class CogCommandesPasSlash(AutoAddedCog):
 class CogTwitch(AutoAddedCog):
     def __init__(self, bot: BotTemplate, **kwargs):
         super().__init__(bot)
-        db_path = kwargs.get('db')
-        # LAISSER COMME ÇA, PAS EN SECOND ARGUMENT DU GET
-        # Sinon ça casse lorsque ce bot est réutilisé comme base
-        if not db_path:
-            db_path = config['DB_STREAMS']
-        self.db = DataBase(db_path)
+        db_path = kwargs.get('db', config.get('DB_STREAMS', 'annonces_streams.json'))
+        self.db = Transaction(JsonStore(db_path))
         self.task_annonces.start()
 
     @tasks.loop(minutes=10)
