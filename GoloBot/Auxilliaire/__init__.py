@@ -513,7 +513,7 @@ def color_permissions(perm: discord.Permissions) -> str:
     return ANSI.converter('\n'.join(perms))
 
 
-async def jumpurl2Message(bot: discord.AutoShardedBot, url: str) -> discord.Message:
+async def jumpurl2Message(bot: discord.AutoShardedBot, url: str) -> discord.Message | None:
     # url au format "https://discord.com/channels/guild_id/channel_id/message_id"
     try:
         gid, cid, mid = url.strip('/').split('/')[-3:]
