@@ -54,11 +54,6 @@ class GoloBot(BotTemplate):
         self.startTime = now()
 
         # Récupération de l'User du dev
-        # owner = self.owner_id
-        # if hasattr(GBsecrets, 'ownerID'):
-        #     owner = GBsecrets.ownerID
-        # self.dev = await self.fetch_user(owner)
-
         infos = await self.bot.application_info()
         self.dev = infos.team and next(
             filter(
