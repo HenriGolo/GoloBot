@@ -55,10 +55,19 @@ class GoloBot(BotTemplate):
         self.startTime = now()
 
         # Récupération de l'User du dev
-        owner = self.owner_id
-        if hasattr(GBsecrets, 'ownerID'):
-            owner = GBsecrets.ownerID
-        self.dev = await self.fetch_user(owner)
+        # owner = self.owner_id
+        # if hasattr(GBsecrets, 'ownerID'):
+        #     owner = GBsecrets.ownerID
+        # self.dev = await self.fetch_user(owner)
+
+        infos = await self.bot.application_info()
+        self.dev = infos.team and next(
+            filter(
+                lambda tm: tm.role in (discord.TeamRole.owner, discord.TeamRole.developer),
+                infos.team.members
+            )
+        ) or infos.owner
+        config.set_log_channel(self.dev.dm_channel)
 
         # Message de statut du bot
         activity = discord.Activity(name="GitHub",
