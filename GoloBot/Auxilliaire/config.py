@@ -11,6 +11,7 @@ class Config:
     def __init__(self, envs):
         values = {
             **os.environ,
+            **dotenv.dotenv_values('.env.default'),
             **{
                 k: v
                 for env in envs
