@@ -1,5 +1,6 @@
 from aiohttp import ClientSession
 
+from GoloBot import CustomSlash
 from GoloBot.template import *
 
 
