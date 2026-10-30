@@ -4,6 +4,11 @@ import os
 from threading import RLock
 from typing import Any
 
+load = json.load
+loads = json.loads
+dump = json.dump
+dumps = json.dumps
+
 
 class GBEncoder(json.JSONEncoder):
     def default(self, o):
