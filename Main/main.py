@@ -45,6 +45,10 @@ class GoloBot(BotTemplate):
     def __str__(self):
         return self.user.display_name
 
+    def run(self, *args, **kwargs):
+        kwargs['token'] = kwargs.get('token', self.token.discord)
+        return super().run(*args, **kwargs)
+
     @logger
     async def on_ready(self):
         # Heure de démarrage
@@ -166,9 +170,5 @@ class GoloBot(BotTemplate):
                             pass
 
 
-# Création du Bot
-intents = discord.Intents.all()
-bot = GoloBot(intents=intents)
-
-# Run
-bot.run(token=bot.token.discord)
+if __name__ == '__main__':
+    GoloBot(intents=discord.Intents.all()).run()
