@@ -212,7 +212,7 @@ class CogTwitch(AutoAddedCog):
             await ctx.respond(f"{streamer.url} est déjà annoncé dans {salon.mention}")
 
     @CustomSlash()
-    async def remove_stream(self, ctx: discord.discord.ApplicationContext, chaine: str, salon: discord.TextChannel):
+    async def remove_stream(self, ctx: discord.ApplicationContext, chaine: str, salon: discord.TextChannel):
         await ctx.defer(ephemeral=True)
         chaine = chaine.lower()
         suppr = list()
