@@ -30,18 +30,16 @@ timestamp = re.compile(r'<t:[0-9]*:[RDdTtFf]>')
 
 class AutoAddedCog(discord.ext.commands.Cog):
     def __init__(self, bot: discord.Bot):
+        """
+        PEUT ÊTRE EXÉCUTÉE PLUSIEURS FOIS
+        Utiliser on_ready pour une méthode à activation unique
+        """
         self.bot = bot
-        for name, method in inspect.getmembers(self):
-            if inspect.iscoroutinefunction(method) and name.startswith("on_"):
-                bot.add_listener(method, name)
 
     def post_add(self):
-        """
-        Méthode appelée après l'ajout du cog au bot.
-        Peut être surchargée pour effectuer des actions supplémentaires après l'ajout.
-        Nécessaire pour excécuter du code une seule fois (2 tentatives d'ajout → 2 invocations de __init__ mais une seule de post_add)
-        """
-        return
+        for name, method in inspect.getmembers(self):
+            if inspect.iscoroutinefunction(method) and name.startswith("on_"):
+                self.bot.add_listener(method, name)
 
 
 def generate_autoaddedbot_class(cogclass: type) -> type:
