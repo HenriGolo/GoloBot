@@ -179,7 +179,7 @@ class CogTwitch(AutoAddedCog):
                             await streamer.annonce(self.bot, channel, session)
 
     @CustomSlash()
-    async def liste_streams(self, ctx: ApplicationContext):
+    async def liste_streams(self, ctx: discord.ApplicationContext):
         await ctx.defer(ephemeral=True)
         embed = GBEmbed(title="Alertes de streams", guild=ctx.guild)
         if not ctx.guild.id in self.db:
@@ -195,7 +195,7 @@ class CogTwitch(AutoAddedCog):
         await ctx.respond(embed=embed)
 
     @CustomSlash()
-    async def add_stream(self, ctx: ApplicationContext, chaine: str, salon: discord.TextChannel, notif: str):
+    async def add_stream(self, ctx: discord.ApplicationContext, chaine: str, salon: discord.TextChannel, notif: str):
         await ctx.defer(ephemeral=True)
         streamer = Streamer(token=self.bot.token.twitch, login=chaine, id=None, notif=notif)
         gid = salon.guild.id
@@ -212,7 +212,7 @@ class CogTwitch(AutoAddedCog):
             await ctx.respond(f"{streamer.url} est déjà annoncé dans {salon.mention}")
 
     @CustomSlash()
-    async def remove_stream(self, ctx: ApplicationContext, chaine: str, salon: discord.TextChannel):
+    async def remove_stream(self, ctx: discord.discord.ApplicationContext, chaine: str, salon: discord.TextChannel):
         await ctx.defer(ephemeral=True)
         chaine = chaine.lower()
         suppr = list()
