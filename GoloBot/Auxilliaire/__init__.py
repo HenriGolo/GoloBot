@@ -35,6 +35,14 @@ class AutoAddedCog(discord.ext.commands.Cog):
             if inspect.iscoroutinefunction(method) and name.startswith("on_"):
                 bot.add_listener(method, name)
 
+    def post_add(self):
+        """
+        Méthode appelée après l'ajout du cog au bot.
+        Peut être surchargée pour effectuer des actions supplémentaires après l'ajout.
+        Nécessaire pour excécuter du code une seule fois (2 tentatives d'ajout → 2 invocations de __init__ mais une seule de post_add)
+        """
+        return
+
 
 def generate_autoaddedbot_class(cogclass: type) -> type:
     class autoaddbot(discord.Bot):
@@ -58,7 +66,9 @@ def generate_autoaddedbot_class(cogclass: type) -> type:
             for obj in module.__dict__.values():
                 if inspect.isclass(obj) and issubclass(obj, cogclass) and obj is not cogclass:
                     try:
-                        self.add_cog(obj(self))
+                        cog = obj(self)
+                        self.add_cog(cog)
+                        cog.post_add()
                     except discord.ClientException as e:
                         print(f"Error adding cog {obj.__name__}: {e}")
 
