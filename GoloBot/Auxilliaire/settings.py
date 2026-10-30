@@ -56,20 +56,26 @@ class Param(Storable):
         return Exit.Fail
 
 
-Param("default volume",
-      "Volume sonore par défaut. Doit être compris entre 0 et 100.",
-      100,
-      int)
+Param(
+    "default volume",
+    "Volume sonore par défaut. Doit être compris entre 0 et 100.",
+    100,
+    int
+)
 
-Param("autopublish bots",
-      "Publie automatiquement les messages des bots.",
-      False,
-      bool)
+Param(
+    "autopublish bots",
+    "Publie automatiquement les messages des bots.",
+    False,
+    bool
+)
 
-Param("reponses custom",
-      "Autorise le bot à réagir avec un comportement personnalisable par les utilisateurs.",
-      True,
-      bool)
+Param(
+    "reponses custom",
+    "Autorise le bot à réagir avec un comportement personnalisable par les utilisateurs.",
+    True,
+    bool
+)
 
 Param.instances.sort()
 
@@ -81,7 +87,8 @@ class Settings:
 
     def __init__(self, guild, **kwargs):
         self.guild = guild
-        self.path = kwargs.get('path', config['DB_SETTINGS'])
+        self.path = kwargs.get('path', config.get('DB_SETTINGS', 'settings.json'))
+        self.db = Transaction(JsonStore(self.path))
         self.json_data = None
         self.config = None
         self.reload()
@@ -91,13 +98,13 @@ class Settings:
         params = {p.name: p for p in Param.instances}
         response = self.config.get(setting, params[setting]).update(value)
         with open(self.path, 'w') as source:
-            json.dump(self.json_data, source, cls=GBEncoder, indent=self.indent)
+            json.dump(self.json_data, source, **JsonStore.JSON_FORMAT_WRITE)
         self.reload()
         return response
 
     def reload(self):
         with open(self.path, 'r') as source:
-            self.json_data = json.load(source, cls=GBDecoder)
+            self.json_data = json.load(source, **JsonStore.JSON_FORMAT_READ)
         target = None
         for guild_id, data in self.json_data.items():
             if self.guild is None:
@@ -111,7 +118,7 @@ class Settings:
 
         for key, value in self.config.items():
             if isinstance(value, (str, bytes, bytearray)):
-                self.config[key] = json.loads(value, cls=GBDecoder)
+                self.config[key] = json.loads(value, **JsonStore.JSON_FORMAT_READ)
         return None
 
     def upgrade(self):
@@ -123,13 +130,13 @@ class Settings:
             refresh = True
         if refresh:
             with open(self.path, 'w') as source:
-                json.dump(self.json_data, source, cls=GBEncoder, indent=self.indent)
+                json.dump(self.json_data, source, **JsonStore.JSON_FORMAT_WRITE)
             self.reload()
 
     def create(self):
         self.json_data[self.guild.id] = self.template
         with open(self.path, 'w') as source:
-            json.dump(self.json_data, source, cls=GBEncoder, indent=self.indent)
+            json.dump(self.json_data, source, **JsonStore.JSON_FORMAT_WRITE)
         self.reload()
 
     def __getitem__(self, item):
