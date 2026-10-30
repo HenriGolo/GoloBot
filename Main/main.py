@@ -70,9 +70,11 @@ class GoloBot(BotTemplate):
         config.set_log_channel(self.dev.dm_channel)
 
         # Message de statut du bot
-        activity = discord.Activity(name="GitHub",
-                                    state="https://github.com/HenriGolo/GoloBot",
-                                    type=discord.ActivityType.watching)
+        activity = discord.Activity(
+            name="GitHub",
+            state="https://github.com/HenriGolo/GoloBot",
+            type=discord.ActivityType.watching
+        )
         await self.change_presence(activity=activity)
 
         # Emojis personnalisés
