@@ -432,7 +432,7 @@ class CogMiniGames(AutoAddedCog):
         await ctx.defer()
         self.bot.qpup = Transaction(JsonStore(config.get('DB_QPUP', 'qpup.json')))
         # Boucle sur le nombre de questions à poser
-        with selb.bot.qpup as data:
+        with self.bot.qpup as data:
             for loop in range(nbquestions):
                 # Tirage au sort d'une question
                 line = randrange(len(data))
