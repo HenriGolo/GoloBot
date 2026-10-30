@@ -160,9 +160,11 @@ class Streamer(Storable):
 class CogTwitch(AutoAddedCog):
     db: Transaction
 
-    async def on_ready(self, **kwargs):
-        db_path = kwargs.get('db', config.get('DB_STREAMS', 'annonces_streams.json'))
-        self.db = Transaction(JsonStore(db_path))
+    def __init__(self, *args, db: str = config.get('DB_STREAMS', 'annonces_streams.json'), **kwargs):
+        super().__init__(*args, **kwargs)
+        self.db = Transaction(JsonStore(db))
+
+    async def on_ready(self):
         self.task_annonces.start()
 
     @tasks.loop(minutes=10)
