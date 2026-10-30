@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 import GBsecrets
 from GoloBot import *  # Contient tout ce qu'il faut, imports compris
-from privatebot import *  # Réponses custom à certains contenus de messages
+
+try:
+    from privatebot import *  # Réponses custom à certains contenus de messages
+except ImportError:
+    pass
 
 
 class GoloBot(BotTemplate):
