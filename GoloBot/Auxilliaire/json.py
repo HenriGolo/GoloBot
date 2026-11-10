@@ -137,8 +137,26 @@ class JsonStore:
             self._write()
             return result
 
+    def __enter__(self):
+        return copy.deepcopy(self.__enter__())
+
+    def __exit__(self, exc_type, exc, tb):
+        return self.__exit__(exc_type, exc, tb)
+
 
 class Transaction:
+    class ReadOnly:
+        def __init__(self, store: JsonStore):
+            self.store = store
+
+        def __enter__(self):
+            with self.store._lock:
+                self.store._load()
+                return copy.deepcopy(self.store._data)
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
     def __init__(self, store: JsonStore):
         self.store = store
         self._backup = None
@@ -159,3 +177,7 @@ class Transaction:
 
         self.store._lock.release()
         return False  # ne supprime pas les exceptions
+
+    @property
+    def readonly(self) -> ReadOnly:
+        return self.ReadOnly(self.store)
